@@ -343,9 +343,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           ControllerConstants.modifyAxis(xSupplier.get());
           ControllerConstants.modifyAxis(ySupplier.get());
           double rotation =
-              ControllerConstants.modifyAxisWithCustomDeadband(rotationSupplier.get(), 0.06, 1) / 2;
-          double x = ControllerConstants.modifyAxis(-xSupplier.get());
-          double y = ControllerConstants.modifyAxis(-ySupplier.get());
+              ControllerConstants.modifyAxisWithCustomDeadband(rotationSupplier.get(), 0.00, 1) / 2;
+          double x = ControllerConstants.modifyAxis(xSupplier.get());
+          double y = ControllerConstants.modifyAxis(ySupplier.get());
           double activeThrottle;
 
           if (fieldCentricthrottle != 0) {
@@ -366,8 +366,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             // are we near stop within a tolarance
             //if (MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01) && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01) && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, 0.01)) {
-              isBraking = true;
-              brake();
+              //isBraking = true;
+              //brake();
             //}
           }
 

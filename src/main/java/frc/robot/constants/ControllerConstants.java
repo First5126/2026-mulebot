@@ -8,7 +8,7 @@ import edu.wpi.first.math.MathUtil;
 
 /** Add your docs here. */
 public class ControllerConstants {
-  public static final double DEADBAND = 0.05;
+  public static final double DEADBAND = 0.00;
 
   public static double modifyAxisWithCustomDeadband(double value, double deadband, int power) {
     value = MathUtil.applyDeadband(value, deadband);

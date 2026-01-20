@@ -334,8 +334,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         () -> {
 
           double fieldCentricthrottle =
-              (ControllerConstants.modifyAxisWithCustomDeadband(
-                  fieldCentricthrottleSupplier.get(), 0.08, 1));
+              ControllerConstants.modifyAxisWithCustomDeadband(
+                  fieldCentricthrottleSupplier.get(), 0.08, 1);
           double robotCentricThrottle =
               (ControllerConstants.modifyAxisWithCustomDeadband(
                       robotCentricthrottleSupplier.get(), 0.08, 2)

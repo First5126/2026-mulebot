@@ -54,7 +54,7 @@ public class AprilTagLocalizationConstants {
           LIMELIGHT_INVERSE_OFFSET_RIGHT);
 
   public static final AprilTagFieldLayout FIELD_LAYOUT =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
   public static final Distance MAX_TAG_DISTANCE = Meters.of(3.0);
   public static final Time LOCALIZATION_PERIOD = Seconds.of(0.02);
 }

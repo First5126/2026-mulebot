@@ -39,10 +39,10 @@
           "StatorCurrentLimit": 60
         }
       },
-      "IsEncoderInverted": true,
-      "IsSteerInverted": false,
+      "IsEncoderInverted": false,
+      "IsSteerInverted": true,
       "SelectedEncoderType": "CANcoder",
-      "EncoderOffset": -0.167724609375,
+      "EncoderOffset": -0.157958984375,
       "DriveMotorSelectionState": 1,
       "SteerMotorSelectionState": 1,
       "SteerEncoderSelectionState": 1,
@@ -88,10 +88,10 @@
           "StatorCurrentLimit": 60
         }
       },
-      "IsEncoderInverted": true,
-      "IsSteerInverted": false,
+      "IsEncoderInverted": false,
+      "IsSteerInverted": true,
       "SelectedEncoderType": "CANcoder",
-      "EncoderOffset": 0.200439453125,
+      "EncoderOffset": 0.203125,
       "DriveMotorSelectionState": 1,
       "SteerMotorSelectionState": 1,
       "SteerEncoderSelectionState": 1,
@@ -137,10 +137,10 @@
           "StatorCurrentLimit": 60
         }
       },
-      "IsEncoderInverted": true,
-      "IsSteerInverted": false,
+      "IsEncoderInverted": false,
+      "IsSteerInverted": true,
       "SelectedEncoderType": "CANcoder",
-      "EncoderOffset": -0.2763671875,
+      "EncoderOffset": -0.28564453125,
       "DriveMotorSelectionState": 1,
       "SteerMotorSelectionState": 1,
       "SteerEncoderSelectionState": 1,
@@ -186,8 +186,8 @@
           "StatorCurrentLimit": 60
         }
       },
-      "IsEncoderInverted": true,
-      "IsSteerInverted": false,
+      "IsEncoderInverted": false,
+      "IsSteerInverted": true,
       "SelectedEncoderType": "CANcoder",
       "EncoderOffset": 0.038330078125,
       "DriveMotorSelectionState": 1,

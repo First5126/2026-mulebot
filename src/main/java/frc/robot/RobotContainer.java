@@ -61,7 +61,8 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
+        joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));

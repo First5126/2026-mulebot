@@ -70,6 +70,8 @@ public class RobotContainer {
         joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
         joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
 
+        joystick.b().onTrue(WaypointConstants.goNearDepot);
+
         joystick.start().onTrue(WaypointConstants.goNearDepot);
 
         // Reset the field-centric heading on left bumper press.

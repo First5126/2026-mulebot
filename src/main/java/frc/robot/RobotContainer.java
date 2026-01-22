@@ -19,6 +19,8 @@ import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.WaypointConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -32,6 +34,7 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final PhotonVision photonVision = new PhotonVision();
 
     private AprilTagLocalization m_aprilTagLocalization =
   new AprilTagLocalization(
@@ -46,6 +49,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+
+        
+
     }
 
     private void configureBindings() {

@@ -37,11 +37,11 @@ public class RobotContainer {
     public final PhotonVision m_photonVision = new PhotonVision();
     
     private AprilTagLocalization m_aprilTagLocalization =
-  new AprilTagLocalization(
-      drivetrain::getPose2d,
-      drivetrain::resetPose,
-      drivetrain::addVisionMeasurement,
-      AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
+        new AprilTagLocalization(
+            drivetrain::getPose2d,
+            drivetrain::resetPose,
+            drivetrain::addVisionMeasurement,
+            AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -49,9 +49,6 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
-
-        
-
     }
 
     private void configureBindings() {

@@ -4,6 +4,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.constants.CameraConstants;
 import frc.robot.vision.PhotonVisionHelpers;
 
 public class PhotonVision implements Subsystem {
@@ -11,7 +12,8 @@ public class PhotonVision implements Subsystem {
     public PhotonCamera camera;
 
     public PhotonVision() {
-        camera = PhotonVisionHelpers.camerasMap.get("Camera1");
+        camera = CameraConstants.camera1;
+        camera.setFPSLimit(30);
     }
 
     public void Periodic() {

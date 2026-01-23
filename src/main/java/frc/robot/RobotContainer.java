@@ -34,8 +34,8 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final PhotonVision photonVision = new PhotonVision();
-
+    public final PhotonVision m_photonVision = new PhotonVision();
+    
     private AprilTagLocalization m_aprilTagLocalization =
   new AprilTagLocalization(
       drivetrain::getPose2d,

@@ -16,7 +16,9 @@ public class PhotonVision implements Subsystem {
 
     public void Periodic() {
         PhotonPipelineResult result = PhotonVisionHelpers.getResultOfCamera(camera);
-        System.out.println(result.getBestTarget());
+        if (result.hasTargets()) {
+            System.out.println(result.getBestTarget());
+        }
     }
 
 }

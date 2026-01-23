@@ -4,18 +4,23 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.constants.CameraConstants;
+import frc.robot.vision.PhotonVisionHelpers;
 
 public class PhotonVision implements Subsystem {
 
     public PhotonCamera camera;
 
     public PhotonVision() {
-        camera = new PhotonCamera("MyCameraName");
+        camera = CameraConstants.camera1;
+        camera.setFPSLimit(30);
     }
 
     public void Periodic() {
-    PhotonPipelineResult result = camera.getLatestResult();
-    // Use 'result' to get target data, yaw, pitch, etc.
+        PhotonPipelineResult result = PhotonVisionHelpers.getResultOfCamera(camera);
+        if (result.hasTargets()) {
+            System.out.println(result.getBestTarget());
+        }
     }
 
 }

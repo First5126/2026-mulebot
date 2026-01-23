@@ -18,7 +18,7 @@ public class WaypointConstants {
         DrivetrainConstants.maxAngularVelocityRadiansPerSecond, DrivetrainConstants.maxAngularVelocityRadiansPerSecond);
 
     private static final Pose2d nearDepotPose = new Pose2d(2,6,Rotation2d.fromDegrees(0));
-
+    
     public static final Command goNearDepot = AutoBuilder.pathfindToPose(nearDepotPose,constraints);
 
 }

@@ -19,6 +19,8 @@ import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.WaypointConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -32,13 +34,14 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+    public final PhotonVision m_photonVision = new PhotonVision();
+    
     private AprilTagLocalization m_aprilTagLocalization =
-  new AprilTagLocalization(
-      drivetrain::getPose2d,
-      drivetrain::resetPose,
-      drivetrain::addVisionMeasurement,
-      AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
+        new AprilTagLocalization(
+            drivetrain::getPose2d,
+            drivetrain::resetPose,
+            drivetrain::addVisionMeasurement,
+            AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 

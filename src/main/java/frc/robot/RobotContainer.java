@@ -69,8 +69,6 @@ public class RobotContainer {
 
         joystick.b().onTrue(WaypointConstants.goNearDepot);
 
-        joystick.start().onTrue(WaypointConstants.goNearDepot);
-
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 

@@ -15,20 +15,33 @@ import static frc.robot.constants.AprilTagLocalizationConstants.MAX_TAG_DISTANCE
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.LimelightDetails;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.LimelightHelpers.PoseEstimate;
+
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
  * A class that uses the limelight to localize the robot using AprilTags. it runs in a background
@@ -38,11 +51,13 @@ public class AprilTagLocalization {
   private Notifier m_notifier =
       new Notifier(this::poseEstimate); // calls pose estimate on the the period
   private LimelightDetails[] m_LimelightDetails; // list of limelights that can provide updates
+  private PhotonCamera[] m_PhotonVisionCameras; // list of limelights that can provide updates
   private Supplier<Pose2d> m_robotPoseSupplier; // supplies the pose of the robot
   private boolean m_FullTrust; // to allow for button trust the tag estimate over all else.
   private MutAngle m_yaw = Degrees.mutable(0);
-  ;
+  CommandSwerveDrivetrain m_drivetrain;
   private MutAngle m_OldYaw = Degrees.mutable(0); // the previous yaw
+  PhotonPoseEstimator m_frontPhotonPoseEstimator;
   private VisionConsumer m_VisionConsumer;
   private ResetPose m_poseReset;
 
@@ -58,14 +73,22 @@ public class AprilTagLocalization {
       Supplier<Pose2d> poseSupplier,
       ResetPose resetPose,
       VisionConsumer visionConsumer,
+      CommandSwerveDrivetrain drivetrain,
+      PhotonCamera[] photonCameras,
       LimelightDetails... details) {
     m_notifier.startPeriodic(
         LOCALIZATION_PERIOD.in(
             Seconds)); // set up a pose estimation loop with a 0.02 second period.
     m_LimelightDetails = details;
+    m_PhotonVisionCameras = photonCameras;
     m_robotPoseSupplier = poseSupplier;
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
+    m_drivetrain = drivetrain;
+    m_frontPhotonPoseEstimator = new PhotonPoseEstimator(FIELD_LAYOUT,
+        AprilTagLocalizationConstants.camera1RobotToCameraTransform
+     );
+
   }
 
   /**
@@ -181,14 +204,21 @@ public class AprilTagLocalization {
         m_OldYaw.mut_replace(m_yaw);
       }
     }
+
+
+    //for (PhotonCamera pCamera : m_PhotonVisionCameras) { }
   }
+
+
+  
+
 
   /**
    * Defines a function pointer to a function with a signature ( Pose2d visionRobotPoseMeters,
    * double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) to accept the vision pose
    * estimate
    */
-  @FunctionalInterface
+  @FunctionalInterface 
   public interface VisionConsumer {
     void accept(
         Pose2d visionRobotPoseMeters,

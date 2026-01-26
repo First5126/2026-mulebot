@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.photonvision.PhotonCamera;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -14,12 +16,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.WaypointConstants;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.AprilTagLocalization;
 
@@ -34,13 +33,18 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final PhotonVision m_photonVision = new PhotonVision();
+
+    PhotonCamera[] photonCameras = {
+        AprilTagLocalizationConstants.camera1
+    };
     
     private AprilTagLocalization m_aprilTagLocalization =
         new AprilTagLocalization(
             drivetrain::getPose2d,
             drivetrain::resetPose,
             drivetrain::addVisionMeasurement,
+            drivetrain,
+            photonCameras,
             AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);

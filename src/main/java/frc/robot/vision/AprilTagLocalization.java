@@ -28,10 +28,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Robot;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.LimelightDetails;
-import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.LimelightHelpers.PoseEstimate;
@@ -43,10 +41,6 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.estimation.VisionEstimation;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
@@ -57,12 +51,13 @@ public class AprilTagLocalization {
   private Notifier m_notifier =
       new Notifier(this::poseEstimate); // calls pose estimate on the the period
   private LimelightDetails[] m_LimelightDetails; // list of limelights that can provide updates
-  private PhotonDetails[] m_PhotonVisionCameras; // list of limelights that can provide updates
+  private PhotonCamera[] m_PhotonVisionCameras; // list of limelights that can provide updates
   private Supplier<Pose2d> m_robotPoseSupplier; // supplies the pose of the robot
   private boolean m_FullTrust; // to allow for button trust the tag estimate over all else.
   private MutAngle m_yaw = Degrees.mutable(0);
   CommandSwerveDrivetrain m_drivetrain;
   private MutAngle m_OldYaw = Degrees.mutable(0); // the previous yaw
+  PhotonPoseEstimator m_frontPhotonPoseEstimator;
   private VisionConsumer m_VisionConsumer;
   private ResetPose m_poseReset;
 
@@ -79,17 +74,20 @@ public class AprilTagLocalization {
       ResetPose resetPose,
       VisionConsumer visionConsumer,
       CommandSwerveDrivetrain drivetrain,
-      PhotonDetails[] photonDetails,
+      PhotonCamera[] photonCameras,
       LimelightDetails... details) {
     m_notifier.startPeriodic(
         LOCALIZATION_PERIOD.in(
             Seconds)); // set up a pose estimation loop with a 0.02 second period.
     m_LimelightDetails = details;
-    m_PhotonVisionCameras = photonDetails;
+    m_PhotonVisionCameras = photonCameras;
     m_robotPoseSupplier = poseSupplier;
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
     m_drivetrain = drivetrain;
+    m_frontPhotonPoseEstimator = new PhotonPoseEstimator(FIELD_LAYOUT,
+        AprilTagLocalizationConstants.camera1RobotToCameraTransform
+     );
 
   }
 
@@ -207,27 +205,11 @@ public class AprilTagLocalization {
       }
     }
 
-    for (PhotonDetails photonDetail : m_PhotonVisionCameras) { 
-      PhotonPipelineResult result = photonDetail.camera.getLatestResult();
-      Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
 
-      if (estimation.isPresent()) {
-        estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
-      }
-      final var finalEstimation = estimation;
-      estimation.ifPresent(
-        est -> {
-          double scale =
-            PhotonVisionHelpers.getAvrageDistanceBetweenTags(photonDetail, finalEstimation.get().estimatedPose.toPose2d())
-               / MAX_TAG_DISTANCE.in(Meters);
-          Matrix<N3, N1> interpolated =
-              interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
-
-          m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
-        }
-      );
-    }
+    //for (PhotonCamera pCamera : m_PhotonVisionCameras) { }
   }
+
+
   
 
 

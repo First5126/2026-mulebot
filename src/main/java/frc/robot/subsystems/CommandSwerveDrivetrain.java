@@ -25,6 +25,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,6 +69,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    /** Swerve request to apply during robot-centric path following */
+    private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
+        new SwerveRequest.ApplyRobotSpeeds();
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -149,38 +154,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-
-        RobotConfig config = null;
-        try{
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            // Handle exception as needed
-            e.printStackTrace();
-        }
-
-        AutoBuilder.configure(
-            this::getPose2d, // Robot pose supplier
-            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> driveRobotCentric(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-            ),
-            config, // The robot configuration
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
-            },
-            this // Reference to this subsystem to set requirements
-    );
+        configureAutobuilder();
     }
 
     /**
@@ -205,6 +179,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureAutobuilder();
     }
 
     /**
@@ -237,6 +212,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureAutobuilder();
     }
 
     /**
@@ -251,6 +227,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Pose2d getPose2d(){
         return getState().Pose;
+    }
+
+    public Command goToPose(Pose2d pose) {
+        double[] debugArray = {pose.getX(), pose.getY()};
+        SmartDashboard.putNumberArray("Going to Pose", debugArray);
+
+        return AutoBuilder.pathfindToPose(pose, DrivetrainConstants.pathConstraints);
+    }
+
+    public Command goToPose(Supplier<Pose2d> pose) {
+        return goToPose(pose.get());
     }
 
     /**
@@ -360,15 +347,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     setControl(m_brake);
   }
 
-  private Command driveRobotCentric(ChassisSpeeds speeds) {
-    return run(() -> {
-        setControl(m_RobotCentricdrive.withVelocityX(speeds.vxMetersPerSecond)
-        .withVelocityY(speeds.vyMetersPerSecond)
-        .withRotationalRate(speeds.omegaRadiansPerSecond)
-        );
-    });
-  }
-
     public Command gasPedalCommand(
       Supplier<Double> fieldCentricthrottleSupplier,
       Supplier<Double> robotCentricthrottleSupplier,
@@ -421,18 +399,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             if (activeThrottle == robotCentricThrottle) {
               setControl(
                   m_RobotCentricdrive
-                      .withVelocityX(-percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
+                      .withVelocityX(percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
                       .withDeadband(0.05)
-                      .withVelocityY(percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
+                      .withVelocityY(-percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
                       .withDeadband(0.05)
                       .withRotationalRate(
                           -percentOutputToRadiansPerSecond(m_rotationLimiter.calculate(rotation))));
             } else {
               setControl(
                   m_FieldCentricdrive
-                      .withVelocityX(-percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
+                      .withVelocityX(percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
                       .withDeadband(0.05)
-                      .withVelocityY(percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
+                      .withVelocityY(-percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
                       .withDeadband(0.05)
                       .withRotationalRate(
                           -percentOutputToRadiansPerSecond(m_rotationLimiter.calculate(rotation))));
@@ -451,5 +429,54 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   private ChassisSpeeds getSpeeds() {
     return getState().Speeds;
+  }
+
+  private void configureAutobuilder() {
+    // Load the RobotConfig from the GUI settings. You should probably
+    // store this in your Constants file
+    try {
+      RobotConfig config = RobotConfig.fromGUISettings();
+
+      // Configure AutoBuilder last
+      AutoBuilder.configure(
+          this::getPose2d, // Robot pose supplier
+          this::resetPose, // Method to reset odometry (will be called if your auto has a starting
+          // pose)
+          this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+          (speeds, feedforwards) ->
+              setControl(
+                  m_pathApplyRobotSpeeds
+                      .withSpeeds(speeds)
+                      .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                      .withWheelForceFeedforwardsY(
+                          feedforwards
+                              .robotRelativeForcesYNewtons())), // Method that will drive the robot
+          // given ROBOT RELATIVE
+          // ChassisSpeeds. Also optionally
+          // outputs individual module
+          // feedforwards
+          new PPHolonomicDriveController( // PPHolonomicController is the built in path following
+              // controller for holonomic drive trains
+              new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+              new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+              ),
+          config, // The robot configuration
+          () -> {
+            // Boolean supplier that controls when the path will be mirrored for the red alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+          },
+          this // Reference to this subsystem to set requirements
+          );
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
   }
 }

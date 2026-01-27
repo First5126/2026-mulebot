@@ -19,9 +19,10 @@ public class LEDLights extends SubsystemBase{
 
   private static final int kCANdleCANbus = 0;
   final private CoreCANdle candle = new CoreCANdle(kCANdleCANbus);
+
   
- CANdleConfiguration configs = new CANdleConfiguration();
- candle.getConfigurator().apply(configs);
+  
+ private CANdleConfiguration configs = new CANdleConfiguration();
 
   private static final Color8Bit WHITE = new Color8Bit(255, 255, 255);
   private static final Color8Bit CLEAR = new Color8Bit(0, 0, 0);
@@ -30,6 +31,13 @@ public class LEDLights extends SubsystemBase{
   private static final Color8Bit BLUE = new Color8Bit(0, 0, 255);
   private static final Color8Bit ORANGE = new Color8Bit(255, 157, 0);
   private static final Color8Bit PURPLE = new Color8Bit(151, 0, 180);
+
+
+
+  public LEDLights() {
+    candle.getConfigurator().apply(configs);
+  }
+
 
 }
 

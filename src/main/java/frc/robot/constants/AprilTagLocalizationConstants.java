@@ -7,12 +7,18 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 
@@ -57,4 +63,17 @@ public class AprilTagLocalizationConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
   public static final Distance MAX_TAG_DISTANCE = Meters.of(5.0);
   public static final Time LOCALIZATION_PERIOD = Seconds.of(0.02);
+
+
+
+    //PhotonVision Cameras
+
+  public static PhotonCamera camera1 = new PhotonCamera("Camera1");
+  public static Transform3d camera1RobotToCameraTransform =
+    new Transform3d(
+        //Meters
+        new Translation3d(0.30, 0.25, 0.50),
+        new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)
+    );
+
 }

@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -67,7 +68,9 @@ public class RobotContainer {
         joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
         joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
 
-        joystick.b().onTrue(WaypointConstants.goNearDepot);
+        joystick.povUp().onTrue(drivetrain.goToPose(WaypointConstants.nearDepotPose));
+        joystick.povRight().onTrue(drivetrain.goToPose(WaypointConstants.nearHub));
+        joystick.povDown().onTrue(drivetrain.goToPose(WaypointConstants.nearOutpost));
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));

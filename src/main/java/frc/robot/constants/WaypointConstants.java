@@ -9,16 +9,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.generated.TunerConstants;
 
 public class WaypointConstants {
-    // TODO: the acceleration is defently off so we need to find out the true value
-    private static final PathConstraints constraints = new PathConstraints(
-        DrivetrainConstants.maxSpeedMetersPerSecond, DrivetrainConstants.maxSpeedMetersPerSecond,
-        DrivetrainConstants.maxAngularVelocityRadiansPerSecond, DrivetrainConstants.maxAngularVelocityRadiansPerSecond);
-
-    private static final Pose2d nearDepotPose = new Pose2d(2,6,Rotation2d.fromDegrees(0));
-    
-    public static final Command goNearDepot = AutoBuilder.pathfindToPose(nearDepotPose,constraints);
+    public static final Pose2d nearDepotPose = new Pose2d(2,6,Rotation2d.fromDegrees(55));
+    public static final Pose2d nearOutpost = new Pose2d(2.5,2,Rotation2d.fromDegrees(116));
+    public static final Pose2d nearHub = new Pose2d(3,3.5,Rotation2d.fromDegrees(135));
 
 }

@@ -76,4 +76,11 @@ public class AprilTagLocalizationConstants {
         new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)
     );
 
+  // Our camera is mounted 0.1 meters forward and 0.5 meters up from the robot pose,
+  // (Robot pose is considered the center of rotation at the floor level, or Z = 0)
+  public static Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
+  // and pitched 15 degrees up.
+  public static Rotation3d robotToCameraRot = new Rotation3d(0, Math.toRadians(-15), 0);
+  public static Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
+
 }

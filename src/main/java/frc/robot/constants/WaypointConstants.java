@@ -13,6 +13,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.generated.TunerConstants;
 
 public class WaypointConstants {
+
+    //Debug
+    public static final Pose2d TopRightCornner = new Pose2d(6,2,Rotation2d.fromDegrees(55));
+    public static final Pose2d TopLeftCornner = new Pose2d(6,6,Rotation2d.fromDegrees(55));
+    public static final Pose2d BottomRightCornner = new Pose2d(2,2,Rotation2d.fromDegrees(55));
+    public static final Pose2d BottomLeftCornner = new Pose2d(2,6,Rotation2d.fromDegrees(55));
+
     public static final Pose2d nearDepotPose = new Pose2d(2,6,Rotation2d.fromDegrees(55));
     public static final Pose2d nearOutpost = new Pose2d(2.5,2,Rotation2d.fromDegrees(116));
     public static final Pose2d nearHub = new Pose2d(3,3.5,Rotation2d.fromDegrees(135));

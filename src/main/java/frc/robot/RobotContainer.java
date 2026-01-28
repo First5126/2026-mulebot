@@ -21,6 +21,7 @@ import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.WaypointConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.AprilTagLocalization;
 
@@ -39,6 +40,7 @@ public class RobotContainer {
     PhotonDetails[] photonDetails = {
         AprilTagLocalizationConstants.camera1Details
     };
+    public CommandFactory m_commandFactory = new CommandFactory(drivetrain);
     
     private AprilTagLocalization m_aprilTagLocalization =
         new AprilTagLocalization(
@@ -76,6 +78,7 @@ public class RobotContainer {
         joystick.povUp().onTrue(drivetrain.goToPose(WaypointConstants.nearDepotPose).onlyWhile(null));
         joystick.povRight().onTrue(drivetrain.goToPose(WaypointConstants.nearHub));
         joystick.povDown().onTrue(drivetrain.goToPose(WaypointConstants.nearOutpost));
+        joystick.povLeft().whileTrue(m_commandFactory.driveCircle());
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));

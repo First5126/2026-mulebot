@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Robot;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.LimelightDetails;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
@@ -43,6 +44,9 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.estimation.VisionEstimation;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
@@ -61,6 +65,7 @@ public class AprilTagLocalization {
   private MutAngle m_OldYaw = Degrees.mutable(0); // the previous yaw
   private VisionConsumer m_VisionConsumer;
   private ResetPose m_poseReset;
+  private VisionSystemSim visionSim;
 
   /**
    * Creates a new AprilTagLocalization.
@@ -86,6 +91,28 @@ public class AprilTagLocalization {
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
     m_drivetrain = drivetrain;
+
+    if (Robot.isSimulation()) {
+      visionSim = new VisionSystemSim("main");
+      visionSim.addAprilTags(FIELD_LAYOUT);
+
+      SimCameraProperties cameraProp = new SimCameraProperties();
+
+      // A 640 x 480 camera with a 100 degree diagonal FOV.
+      cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
+      // Approximate detection noise with average and standard deviation error in pixels.
+      cameraProp.setCalibError(0.25, 0.08);
+      // Set the camera image capture framerate (Note: this is limited by robot loop rate).
+      cameraProp.setFPS(20);
+      // The average and standard deviation in milliseconds of image data latency.
+      cameraProp.setAvgLatencyMs(35);
+      cameraProp.setLatencyStdDevMs(5);
+
+      PhotonCameraSim cameraSim = new PhotonCameraSim(AprilTagLocalizationConstants.camera1Details.camera, cameraProp);
+      
+    }
+    
+
   }
 
   /**
@@ -221,6 +248,7 @@ public class AprilTagLocalization {
         }
       );
     }
+    visionSim.update(m_robotPoseSupplier.get());
   }
 
 

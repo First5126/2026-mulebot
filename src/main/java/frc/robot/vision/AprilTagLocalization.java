@@ -41,6 +41,9 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
@@ -51,7 +54,6 @@ public class AprilTagLocalization {
   private Notifier m_notifier =
       new Notifier(this::poseEstimate); // calls pose estimate on the the period
   private LimelightDetails[] m_LimelightDetails; // list of limelights that can provide updates
-  private PhotonCamera[] m_PhotonVisionCameras; // list of limelights that can provide updates
   private Supplier<Pose2d> m_robotPoseSupplier; // supplies the pose of the robot
   private boolean m_FullTrust; // to allow for button trust the tag estimate over all else.
   private MutAngle m_yaw = Degrees.mutable(0);
@@ -60,6 +62,7 @@ public class AprilTagLocalization {
   PhotonPoseEstimator m_frontPhotonPoseEstimator;
   private VisionConsumer m_VisionConsumer;
   private ResetPose m_poseReset;
+  private VisionSystemSim visionSim = new VisionSystemSim("main");
 
   /**
    * Creates a new AprilTagLocalization.
@@ -74,20 +77,31 @@ public class AprilTagLocalization {
       ResetPose resetPose,
       VisionConsumer visionConsumer,
       CommandSwerveDrivetrain drivetrain,
-      PhotonCamera[] photonCameras,
       LimelightDetails... details) {
     m_notifier.startPeriodic(
         LOCALIZATION_PERIOD.in(
             Seconds)); // set up a pose estimation loop with a 0.02 second period.
     m_LimelightDetails = details;
-    m_PhotonVisionCameras = photonCameras;
     m_robotPoseSupplier = poseSupplier;
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
     m_drivetrain = drivetrain;
-    m_frontPhotonPoseEstimator = new PhotonPoseEstimator(FIELD_LAYOUT,
-        AprilTagLocalizationConstants.camera1RobotToCameraTransform
-     );
+     visionSim.addAprilTags(FIELD_LAYOUT);
+
+      SimCameraProperties cameraProp = new SimCameraProperties();
+
+      // A 640 x 480 camera with a 100 degree diagonal FOV.
+      cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
+      // Approximate detection noise with average and standard deviation error in pixels.
+      cameraProp.setCalibError(0.25, 0.08);
+      // Set the camera image capture framerate (Note: this is limited by robot loop rate).
+      cameraProp.setFPS(20);
+      // The average and standard deviation in milliseconds of image data latency.
+      cameraProp.setAvgLatencyMs(35);
+      cameraProp.setLatencyStdDevMs(5);
+
+      PhotonCameraSim cameraSim = new PhotonCameraSim(AprilTagLocalizationConstants.camera1, cameraProp);
+      
 
   }
 
@@ -206,7 +220,7 @@ public class AprilTagLocalization {
     }
 
 
-    //for (PhotonCamera pCamera : m_PhotonVisionCameras) { }
+    visionSim.update(m_robotPoseSupplier.get());
   }
 
 

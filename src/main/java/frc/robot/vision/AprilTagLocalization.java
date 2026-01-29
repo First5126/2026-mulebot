@@ -62,7 +62,6 @@ public class AprilTagLocalization {
   PhotonPoseEstimator m_frontPhotonPoseEstimator;
   private VisionConsumer m_VisionConsumer;
   private ResetPose m_poseReset;
-  private VisionSystemSim visionSim = new VisionSystemSim("main");
 
   /**
    * Creates a new AprilTagLocalization.
@@ -86,22 +85,6 @@ public class AprilTagLocalization {
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
     m_drivetrain = drivetrain;
-     visionSim.addAprilTags(FIELD_LAYOUT);
-
-      SimCameraProperties cameraProp = new SimCameraProperties();
-
-      // A 640 x 480 camera with a 100 degree diagonal FOV.
-      cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
-      // Approximate detection noise with average and standard deviation error in pixels.
-      cameraProp.setCalibError(0.25, 0.08);
-      // Set the camera image capture framerate (Note: this is limited by robot loop rate).
-      cameraProp.setFPS(20);
-      // The average and standard deviation in milliseconds of image data latency.
-      cameraProp.setAvgLatencyMs(35);
-      cameraProp.setLatencyStdDevMs(5);
-
-      PhotonCameraSim cameraSim = new PhotonCameraSim(AprilTagLocalizationConstants.camera1, cameraProp);
-      
 
   }
 
@@ -220,7 +203,6 @@ public class AprilTagLocalization {
     }
 
 
-    visionSim.update(m_robotPoseSupplier.get());
   }
 
 

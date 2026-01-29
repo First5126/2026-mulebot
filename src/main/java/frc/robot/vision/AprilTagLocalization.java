@@ -65,7 +65,6 @@ public class AprilTagLocalization {
   private MutAngle m_OldYaw = Degrees.mutable(0); // the previous yaw
   private VisionConsumer m_VisionConsumer;
   private ResetPose m_poseReset;
-  private VisionSystemSim visionSim;
 
   /**
    * Creates a new AprilTagLocalization.
@@ -91,27 +90,6 @@ public class AprilTagLocalization {
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
     m_drivetrain = drivetrain;
-
-    if (Robot.isSimulation()) {
-      visionSim = new VisionSystemSim("main");
-      visionSim.addAprilTags(FIELD_LAYOUT);
-
-      SimCameraProperties cameraProp = new SimCameraProperties();
-
-      // A 640 x 480 camera with a 100 degree diagonal FOV.
-      cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
-      // Approximate detection noise with average and standard deviation error in pixels.
-      cameraProp.setCalibError(0.25, 0.08);
-      // Set the camera image capture framerate (Note: this is limited by robot loop rate).
-      cameraProp.setFPS(20);
-      // The average and standard deviation in milliseconds of image data latency.
-      cameraProp.setAvgLatencyMs(35);
-      cameraProp.setLatencyStdDevMs(5);
-
-      PhotonCameraSim cameraSim = new PhotonCameraSim(AprilTagLocalizationConstants.camera1Details.camera, cameraProp);
-      
-    }
-    
 
   }
 
@@ -229,15 +207,26 @@ public class AprilTagLocalization {
       }
     }
 
-    Optional<EstimatedRobotPose> estimation = Optional.empty();
-    for (PhotonDetails photonDetail : m_PhotonVisionCameras) {
-      for (PhotonPipelineResult result : photonDetail.camera.getAllUnreadResults()) {
-        estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
-        
-        SmartDashboard.putBoolean("First Estimation Empty", estimation.isEmpty());
-        SmartDashboard.putNumber("Number of Photon Targets", result.getTargets().size());
-        if (estimation.isEmpty()) {
-          estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
+    for (PhotonDetails photonDetail : m_PhotonVisionCameras) { 
+      PhotonPipelineResult result = photonDetail.camera.getLatestResult();
+      Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
+
+      if (estimation.isEmpty()) {
+        estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
+      }
+      final var finalEstimation = estimation; 
+      estimation.ifPresent(
+        est -> {
+          double scale =
+            PhotonVisionHelpers.getAvrageDistanceBetweenTags(photonDetail, finalEstimation.get().estimatedPose.toPose2d())
+               / MAX_TAG_DISTANCE.in(Meters);
+          // TODO: replace with real STDV's new Matrix<N3, N1>
+          // TODO: interpolate this
+          Matrix<N3, N1> interpolated =
+              interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
+          var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
+
+          m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
         }
         SmartDashboard.putBoolean("Second Estimation Empty", estimation.isEmpty());
         estimation.ifPresent(
@@ -254,7 +243,10 @@ public class AprilTagLocalization {
         );
       }
     }
+<<<<<<< HEAD
     //visionSim.update(m_robotPoseSupplier.get());
+=======
+>>>>>>> 1cd7029ff1cda4cd8dba457fa97b16aabf234bd2
   }
 
 

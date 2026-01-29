@@ -47,6 +47,8 @@ public class AprilTagLocalizationConstants {
   public static class PhotonDetails {
     public PhotonCamera camera;
     public Transform3d robotToCam;
+    public Matrix<N3, N1> closeStdDevs;
+    public Matrix<N3, N1> farStdDevs;
     public PhotonPoseEstimator poseEstimator;
 
     /*
@@ -54,9 +56,13 @@ public class AprilTagLocalizationConstants {
      */
     public PhotonDetails(
         PhotonCamera camera,
-        Transform3d robotToCam) {
+        Transform3d robotToCam,
+        Matrix<N3, N1> closeStdDevs,
+        Matrix<N3, N1> farStdDevs) {
       this.camera = camera;
       this.robotToCam = robotToCam;
+      this.closeStdDevs = closeStdDevs;
+      this.farStdDevs = farStdDevs;
       this.poseEstimator = new PhotonPoseEstimator(FIELD_LAYOUT, robotToCam);
     }
   }
@@ -80,6 +86,10 @@ public class AprilTagLocalizationConstants {
 
   //PhotonVision Cameras
   private static final PhotonCamera camera1 = new PhotonCamera("Camera1");
+  public static final Matrix<N3, N1> CAMERA1_CLOSE_STDDEV_RIGHT =
+      VecBuilder.fill(0.01, 0.01, 999999999.9);
+  public static final Matrix<N3, N1> CAMERA1_FAR_STDDEV_RIGHT =
+    VecBuilder.fill(0.05, 0.05, 999999999.9);
   private static final Transform3d camera1RobotToCameraTransform =
     new Transform3d(
         //Meters
@@ -87,6 +97,6 @@ public class AprilTagLocalizationConstants {
         new Rotation3d(0.0, Units.degreesToRadians(-44), 90.0)
     );
 
-  public static final PhotonDetails camera1Details = new PhotonDetails(camera1, camera1RobotToCameraTransform);
+  public static final PhotonDetails camera1Details = new PhotonDetails(camera1, camera1RobotToCameraTransform, CAMERA1_CLOSE_STDDEV_RIGHT, CAMERA1_FAR_STDDEV_RIGHT);
 
 }

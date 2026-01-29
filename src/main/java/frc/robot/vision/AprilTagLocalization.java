@@ -229,26 +229,32 @@ public class AprilTagLocalization {
       }
     }
 
-
-    for (PhotonDetails photonDetail : m_PhotonVisionCameras) { 
-      PhotonPipelineResult result = photonDetail.camera.getLatestResult();
-      Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
-
-      if (estimation.isEmpty()) {
-        estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
-      }
-
-      estimation.ifPresent(
-        est -> {
-          // TODO: replace with real STDV's new Matrix<N3, N1>
-          // TODO: interpolate this
-          var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
-
-          m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+    Optional<EstimatedRobotPose> estimation = Optional.empty();
+    for (PhotonDetails photonDetail : m_PhotonVisionCameras) {
+      for (PhotonPipelineResult result : photonDetail.camera.getAllUnreadResults()) {
+        estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
+        
+        SmartDashboard.putBoolean("First Estimation Empty", estimation.isEmpty());
+        SmartDashboard.putNumber("Number of Photon Targets", result.getTargets().size());
+        if (estimation.isEmpty()) {
+          estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
         }
-      );
+        SmartDashboard.putBoolean("Second Estimation Empty", estimation.isEmpty());
+        estimation.ifPresent(
+          est -> {
+            // TODO: replace with real STDV's new Matrix<N3, N1>
+            // TODO: interpolate this
+            var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
+
+            SmartDashboard.putNumber("Photon Pose Esitmate X:", est.estimatedPose.getX());
+            SmartDashboard.putNumber("Photon Pose Esitmate Y:", est.estimatedPose.getY());
+
+            m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+          }
+        );
+      }
     }
-    visionSim.update(m_robotPoseSupplier.get());
+    //visionSim.update(m_robotPoseSupplier.get());
   }
 
 

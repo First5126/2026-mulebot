@@ -78,15 +78,13 @@ public class AprilTagLocalizationConstants {
   public static final Time LOCALIZATION_PERIOD = Seconds.of(0.02);
 
 
-
-    //PhotonVision Cameras
-
+  //PhotonVision Cameras
   private static final PhotonCamera camera1 = new PhotonCamera("Camera1");
   private static final Transform3d camera1RobotToCameraTransform =
     new Transform3d(
         //Meters
-        new Translation3d(0.30, 0.25, 0.50),
-        new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)
+        new Translation3d(0,-0.2794, 0.15875),
+        new Rotation3d(0.0, Units.degreesToRadians(-44), 90.0)
     );
 
   public static final PhotonDetails camera1Details = new PhotonDetails(camera1, camera1RobotToCameraTransform);

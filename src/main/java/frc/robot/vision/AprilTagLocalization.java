@@ -215,14 +215,19 @@ public class AprilTagLocalization {
       if (estimation.isEmpty()) {
         estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
       }
-
+      final var finalEstimation = estimation; 
       estimation.ifPresent(
         est -> {
+          double scale =
+            PhotonVisionHelpers.getAvrageDistanceBetweenTags(photonDetail, finalEstimation.get().estimatedPose.toPose2d())
+               / MAX_TAG_DISTANCE.in(Meters);
           // TODO: replace with real STDV's new Matrix<N3, N1>
           // TODO: interpolate this
+          Matrix<N3, N1> interpolated =
+              interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
           var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
 
-          m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+          m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
         }
       );
     }

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.WaypointConstants;
+import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -35,6 +36,10 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    PhotonDetails[] photonDetails = {
+        AprilTagLocalizationConstants.camera1Details
+    };
     public CommandFactory m_commandFactory = new CommandFactory(drivetrain);
     
     private AprilTagLocalization m_aprilTagLocalization =
@@ -43,6 +48,7 @@ public class RobotContainer {
             drivetrain::resetPose,
             drivetrain::addVisionMeasurement,
             drivetrain,
+            photonDetails,
             AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -69,7 +75,7 @@ public class RobotContainer {
         joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
         joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
 
-        joystick.povUp().onTrue(drivetrain.goToPose(WaypointConstants.nearDepotPose));
+        joystick.povUp().onTrue(drivetrain.goToPose(WaypointConstants.nearDepotPose).onlyWhile(null));
         joystick.povRight().onTrue(drivetrain.goToPose(WaypointConstants.nearHub));
         joystick.povDown().onTrue(drivetrain.goToPose(WaypointConstants.nearOutpost));
         joystick.povLeft().whileTrue(m_commandFactory.driveCircle());

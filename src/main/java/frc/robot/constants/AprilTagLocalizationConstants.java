@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -36,28 +37,40 @@ public class AprilTagLocalizationConstants {
     public LimelightDetails(
         String name,
         Matrix<N3, N1> closeStdDevs,
-        Matrix<N3, N1> farStdDevs,
-        Matrix<N3, N1> inverseOffset) {
+        Matrix<N3, N1> farStdDevs) {
       this.name = name;
       this.closeStdDevs = closeStdDevs;
       this.farStdDevs = farStdDevs;
-     // this.inverseOffset = inverseOffset;
+    }
+  }
+
+  public static class PhotonDetails {
+    public PhotonCamera camera;
+    public Transform3d robotToCam;
+    public PhotonPoseEstimator poseEstimator;
+
+    /*
+     *
+     */
+    public PhotonDetails(
+        PhotonCamera camera,
+        Transform3d robotToCam) {
+      this.camera = camera;
+      this.robotToCam = robotToCam;
+      this.poseEstimator = new PhotonPoseEstimator(FIELD_LAYOUT, robotToCam);
     }
   }
 
   public static final String LIMELIGHT_NAME_RIGHT = "limelight-right";
   public static final Matrix<N3, N1> LIMELIGHT_CLOSE_STDDEV_RIGHT =
-      VecBuilder.fill(0.05, 0.05, 999999999.9);
+      VecBuilder.fill(0.01, 0.01, 999999999.9);
   public static final Matrix<N3, N1> LIMELIGHT_FAR_STDDEV_RIGHT =
       VecBuilder.fill(0.05, 0.05, 999999999.9);
-  public static final Matrix<N3, N1> LIMELIGHT_INVERSE_OFFSET_RIGHT =
-      VecBuilder.fill(0.294, 0, -0.199);
   public static final LimelightDetails LIMELIGHT_DETAILS_RIGHT =
       new LimelightDetails(
           LIMELIGHT_NAME_RIGHT,
           LIMELIGHT_CLOSE_STDDEV_RIGHT,
-          LIMELIGHT_FAR_STDDEV_RIGHT,
-          LIMELIGHT_INVERSE_OFFSET_RIGHT);
+          LIMELIGHT_FAR_STDDEV_RIGHT);
 
   public static final AprilTagFieldLayout FIELD_LAYOUT =
       AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
@@ -68,19 +81,14 @@ public class AprilTagLocalizationConstants {
 
     //PhotonVision Cameras
 
-  public static PhotonCamera camera1 = new PhotonCamera("Camera1");
-  public static Transform3d camera1RobotToCameraTransform =
+  private static final PhotonCamera camera1 = new PhotonCamera("Camera1");
+  private static final Transform3d camera1RobotToCameraTransform =
     new Transform3d(
         //Meters
         new Translation3d(0.30, 0.25, 0.50),
         new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)
     );
 
-  // Our camera is mounted 0.1 meters forward and 0.5 meters up from the robot pose,
-  // (Robot pose is considered the center of rotation at the floor level, or Z = 0)
-  public static Translation3d robotToCameraTrl = new Translation3d(0.1, 0, 0.5);
-  // and pitched 15 degrees up.
-  public static Rotation3d robotToCameraRot = new Rotation3d(0, Math.toRadians(-15), 0);
-  public static Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
+  public static final PhotonDetails camera1Details = new PhotonDetails(camera1, camera1RobotToCameraTransform);
 
 }

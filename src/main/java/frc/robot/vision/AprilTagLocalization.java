@@ -212,10 +212,10 @@ public class AprilTagLocalization {
       PhotonPipelineResult result = photonDetail.camera.getLatestResult();
       Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
 
-      if (estimation.isEmpty()) {
+      if (estimation.isPresent()) {
         estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
       }
-      final var finalEstimation = estimation; 
+      final var finalEstimation = estimation;
       estimation.ifPresent(
         est -> {
           double scale =

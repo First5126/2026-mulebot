@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Intake;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -31,6 +32,8 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    private Intake m_intake = new Intake();
 
     private AprilTagLocalization m_aprilTagLocalization =
   new AprilTagLocalization(
@@ -71,6 +74,9 @@ public class RobotContainer {
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
+
+        joystick.x().whileTrue(m_intake.startIntake());
+        joystick.x().whileFalse(m_intake.stopIntake());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

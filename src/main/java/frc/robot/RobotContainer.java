@@ -38,7 +38,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     PhotonDetails[] photonDetails = {
-        AprilTagLocalizationConstants.camera1Details
+        //AprilTagLocalizationConstants.camera1Details
     };
     public CommandFactory m_commandFactory = new CommandFactory(drivetrain);
     

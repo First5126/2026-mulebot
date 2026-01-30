@@ -15,7 +15,6 @@ public class CommandFactory {
 
     private CommandSwerveDrivetrain m_drivetrain;
     private int m_side = 1;
-    private boolean m_running = false;
 
     public CommandFactory(
       CommandSwerveDrivetrain drivetrain

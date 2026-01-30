@@ -15,19 +15,39 @@ import static frc.robot.constants.AprilTagLocalizationConstants.MAX_TAG_DISTANCE
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Robot;
+import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.LimelightDetails;
+import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.LimelightHelpers.PoseEstimate;
+
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.estimation.VisionEstimation;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
  * A class that uses the limelight to localize the robot using AprilTags. it runs in a background
@@ -37,10 +57,11 @@ public class AprilTagLocalization {
   private Notifier m_notifier =
       new Notifier(this::poseEstimate); // calls pose estimate on the the period
   private LimelightDetails[] m_LimelightDetails; // list of limelights that can provide updates
+  private PhotonDetails[] m_PhotonVisionCameras; // list of limelights that can provide updates
   private Supplier<Pose2d> m_robotPoseSupplier; // supplies the pose of the robot
   private boolean m_FullTrust; // to allow for button trust the tag estimate over all else.
   private MutAngle m_yaw = Degrees.mutable(0);
-  ;
+  CommandSwerveDrivetrain m_drivetrain;
   private MutAngle m_OldYaw = Degrees.mutable(0); // the previous yaw
   private VisionConsumer m_VisionConsumer;
   private ResetPose m_poseReset;
@@ -57,14 +78,19 @@ public class AprilTagLocalization {
       Supplier<Pose2d> poseSupplier,
       ResetPose resetPose,
       VisionConsumer visionConsumer,
+      CommandSwerveDrivetrain drivetrain,
+      PhotonDetails[] photonDetails,
       LimelightDetails... details) {
     m_notifier.startPeriodic(
         LOCALIZATION_PERIOD.in(
             Seconds)); // set up a pose estimation loop with a 0.02 second period.
     m_LimelightDetails = details;
+    m_PhotonVisionCameras = photonDetails;
     m_robotPoseSupplier = poseSupplier;
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
+    m_drivetrain = drivetrain;
+
   }
 
   /**
@@ -138,24 +164,27 @@ public class AprilTagLocalization {
       PoseEstimate poseEstimate =
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(
               limelightDetail.name); // Get the pose from the Limelight
-
+      SmartDashboard.putBoolean("Valid Pose Estimation: ", poseEstimate != null
+          && poseEstimate.pose.getX() != 0.0
+          && poseEstimate.pose.getY() != 0.0);
       if (poseEstimate != null
           && poseEstimate.pose.getX() != 0.0
           && poseEstimate.pose.getY() != 0.0) {
         // remove the offset of the camera
-        poseEstimate.pose =
+        /*poseEstimate.pose =
             poseEstimate.pose.transformBy(
                 new Transform2d(
                     limelightDetail.inverseOffset.get(0, 0),
                     limelightDetail.inverseOffset.get(1, 0),
-                    Rotation2d.fromDegrees(limelightDetail.inverseOffset.get(2, 0))));
+                    Rotation2d.fromDegrees(limelightDetail.inverseOffset.get(2, 0))));*/
 
         double scale =
             poseEstimate.avgTagDist
                 / MAX_TAG_DISTANCE.in(Meters); // scale the std deviation by the distance
         // Validate the pose for sanity reject bad poses  if fullTrust is true accept regarless of
         // sanity
-
+        SmartDashboard.putNumber("Pose Esitmate X:", poseEstimate.pose.getX());
+        SmartDashboard.putNumber("Pose Esitmate Y:", poseEstimate.pose.getY());
         if (m_FullTrust) {
           // set the pose in the pose consumer
           m_poseReset.accept(
@@ -177,14 +206,37 @@ public class AprilTagLocalization {
         m_OldYaw.mut_replace(m_yaw);
       }
     }
+
+    for (PhotonDetails photonDetail : m_PhotonVisionCameras) { 
+      PhotonPipelineResult result = photonDetail.camera.getLatestResult();
+      Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
+
+      if (estimation.isPresent()) {
+        estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
+      }
+      final var finalEstimation = estimation;
+      estimation.ifPresent(
+        est -> {
+          double scale =
+            PhotonVisionHelpers.getAvrageDistanceBetweenTags(photonDetail, finalEstimation.get().estimatedPose.toPose2d())
+               / MAX_TAG_DISTANCE.in(Meters);
+          Matrix<N3, N1> interpolated =
+              interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
+
+          m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
+        }
+      );
+    }
   }
+  
+
 
   /**
    * Defines a function pointer to a function with a signature ( Pose2d visionRobotPoseMeters,
    * double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) to accept the vision pose
    * estimate
    */
-  @FunctionalInterface
+  @FunctionalInterface 
   public interface VisionConsumer {
     void accept(
         Pose2d visionRobotPoseMeters,

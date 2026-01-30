@@ -6,7 +6,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.photonvision.PhotonCamera;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,9 +17,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.AprilTagLocalizationConstants;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.constants.WaypointConstants;
+import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.vision.AprilTagLocalization;
@@ -33,19 +39,26 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+    PhotonDetails[] photonDetails = {
+        //AprilTagLocalizationConstants.camera1Details
+    };
+    public CommandFactory m_commandFactory = new CommandFactory(drivetrain);
+    
     private Intake m_intake = new Intake();
 
     private AprilTagLocalization m_aprilTagLocalization =
-  new AprilTagLocalization(
-      drivetrain::getPose2d,
-      drivetrain::resetPose,
-      drivetrain::addVisionMeasurement,
-      AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
+        new AprilTagLocalization(
+            drivetrain::getPose2d,
+            drivetrain::resetPose,
+            drivetrain::addVisionMeasurement,
+            drivetrain,
+            photonDetails
+            //AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT
+            );
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
-
 
     public RobotContainer() {
         configureBindings();
@@ -56,13 +69,7 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             drivetrain.gasPedalCommand(joystick::getRightTriggerAxis, joystick::getLeftTriggerAxis, joystick::getRightX, joystick::getLeftY, joystick::getLeftX));
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            );
-
+        
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -70,6 +77,13 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
+        joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
+        joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
+
+        joystick.povUp().onTrue(drivetrain.goToPose(WaypointConstants.nearDepotPose).onlyWhile(null));
+        joystick.povRight().onTrue(drivetrain.goToPose(WaypointConstants.nearHub));
+        joystick.povDown().onTrue(drivetrain.goToPose(WaypointConstants.nearOutpost));
+        joystick.povLeft().whileTrue(m_commandFactory.driveCircle());
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))

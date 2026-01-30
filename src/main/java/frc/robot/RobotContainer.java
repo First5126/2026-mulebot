@@ -23,6 +23,7 @@ import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Turret;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -54,6 +55,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final Turret m_turret = new Turret();
 
     public RobotContainer() {
         configureBindings();
@@ -75,10 +77,10 @@ public class RobotContainer {
         joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
         joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
 
-        joystick.povUp().onTrue(drivetrain.goToPose(WaypointConstants.nearDepotPose).onlyWhile(null));
-        joystick.povRight().onTrue(drivetrain.goToPose(WaypointConstants.nearHub));
-        joystick.povDown().onTrue(drivetrain.goToPose(WaypointConstants.nearOutpost));
-        joystick.povLeft().whileTrue(m_commandFactory.driveCircle());
+        joystick.povUp().onTrue(m_turret.goToPosition(0.5));
+        joystick.povLeft().onTrue(m_turret.goToPosition(0));
+        joystick.povRight().onTrue(m_turret.goToPosition(1));
+        // joystick.povLeft().whileTrue(m_commandFactory.driveCircle());
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));

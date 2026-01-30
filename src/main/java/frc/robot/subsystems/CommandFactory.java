@@ -15,6 +15,7 @@ public class CommandFactory {
 
     private CommandSwerveDrivetrain m_drivetrain;
     private int m_side = 1;
+    private int m_cycle = 1;
     private boolean m_running = false;
 
     public CommandFactory(
@@ -51,6 +52,40 @@ public class CommandFactory {
                     return m_drivetrain
                         .goToPose(WaypointConstants.BottomRightCornner)
                         .andThen(() -> m_side = 1);
+            }
+        },
+        Set.of(m_drivetrain)
+    ).repeatedly();
+}
+
+    public Command cycle() {
+    return Commands.defer(
+        () -> {
+            switch (m_cycle) {
+                case 1:
+                    System.out.println("Heading To BottomLeftCorner");
+                    return m_drivetrain
+                        .goToPose(WaypointConstants.BottomLeftCornner)
+                        .andThen(() -> m_cycle = 2);
+
+                case 2:
+                    System.out.println("Heading To TopLeftCorner");
+                    return m_drivetrain
+                        .goToPose(WaypointConstants.TopLeftCornner)
+                        .andThen(() -> m_cycle = 3);
+
+                case 3:
+                    System.out.println("Heading To TopRightCorner");
+                    return m_drivetrain
+                        .goToPose(WaypointConstants.TopRightCornner)
+                        .andThen(() -> m_cycle = 4);
+
+                case 4:
+                default:
+                    System.out.println("Heading To BottomRightCorner");
+                    return m_drivetrain
+                        .goToPose(WaypointConstants.BottomRightCornner)
+                        .andThen(() -> m_cycle = 1);
             }
         },
         Set.of(m_drivetrain)

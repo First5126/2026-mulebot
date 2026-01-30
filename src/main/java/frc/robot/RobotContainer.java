@@ -75,8 +75,8 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
-        joystick.x().onTrue(m_intake.startIntake());
-        joystick.x().onFalse(m_intake.stopIntake());
+        joystick.x().whileTrue(m_intake.startIntake());
+        joystick.x().whileFalse(m_intake.stopIntake());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

@@ -48,8 +48,9 @@ public class RobotContainer {
             drivetrain::resetPose,
             drivetrain::addVisionMeasurement,
             drivetrain,
-            photonDetails,
-            AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
+            photonDetails
+            //AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT
+            );
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 

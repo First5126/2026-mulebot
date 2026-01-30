@@ -207,7 +207,6 @@ public class AprilTagLocalization {
       }
     }
 
-
     for (PhotonDetails photonDetail : m_PhotonVisionCameras) { 
       PhotonPipelineResult result = photonDetail.camera.getLatestResult();
       Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
@@ -221,19 +220,14 @@ public class AprilTagLocalization {
           double scale =
             PhotonVisionHelpers.getAvrageDistanceBetweenTags(photonDetail, finalEstimation.get().estimatedPose.toPose2d())
                / MAX_TAG_DISTANCE.in(Meters);
-          // TODO: replace with real STDV's new Matrix<N3, N1>
-          // TODO: interpolate this
           Matrix<N3, N1> interpolated =
               interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
-          var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
 
           m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
         }
       );
     }
   }
-
-
   
 
 

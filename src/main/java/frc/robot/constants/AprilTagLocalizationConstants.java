@@ -84,9 +84,7 @@ public class AprilTagLocalizationConstants {
   public static final Time LOCALIZATION_PERIOD = Seconds.of(0.02);
 
 
-
-    //PhotonVision Cameras
-
+  //PhotonVision Cameras
   private static final PhotonCamera camera1 = new PhotonCamera("Camera1");
   public static final Matrix<N3, N1> CAMERA1_CLOSE_STDDEV_RIGHT =
       VecBuilder.fill(0.01, 0.01, 999999999.9);
@@ -95,8 +93,8 @@ public class AprilTagLocalizationConstants {
   private static final Transform3d camera1RobotToCameraTransform =
     new Transform3d(
         //Meters
-        new Translation3d(0.30, 0.25, 0.50),
-        new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)
+        new Translation3d(0,-0.2794, 0.15875),
+        new Rotation3d(0.0, Units.degreesToRadians(-44), 90.0)
     );
 
   public static final PhotonDetails camera1Details = new PhotonDetails(camera1, camera1RobotToCameraTransform, CAMERA1_CLOSE_STDDEV_RIGHT, CAMERA1_FAR_STDDEV_RIGHT);

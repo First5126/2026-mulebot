@@ -8,7 +8,10 @@ import static edu.wpi.first.units.Units.*;
 
 import org.photonvision.PhotonCamera;
 
+import org.photonvision.PhotonCamera;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -17,13 +20,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.WaypointConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
+import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Intake;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -39,18 +45,21 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     PhotonDetails[] photonDetails = {
-        AprilTagLocalizationConstants.camera1Details
+        //AprilTagLocalizationConstants.camera1Details
     };
     public CommandFactory m_commandFactory = new CommandFactory(drivetrain);
     
+    private Intake m_intake = new Intake();
+
     private AprilTagLocalization m_aprilTagLocalization =
         new AprilTagLocalization(
             drivetrain::getPose2d,
             drivetrain::resetPose,
             drivetrain::addVisionMeasurement,
             drivetrain,
-            photonDetails,
-            AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
+            photonDetails
+            //AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT
+            );
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -67,6 +76,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             drivetrain.gasPedalCommand(joystick::getRightTriggerAxis, joystick::getLeftTriggerAxis, joystick::getRightX, joystick::getLeftY, joystick::getLeftX));
         
+        
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -80,6 +90,21 @@ public class RobotContainer {
         joystick.povUp().onTrue(m_turret.goToPosition(Degrees.of(0)));
         joystick.povLeft().onTrue(m_turret.goToPosition(Degrees.of(90)));
         joystick.povRight().onTrue(m_turret.goToPosition(Degrees.of(180)));
+
+        joystick.b().whileTrue(drivetrain.applyRequest(() ->
+            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        ));
+
+        joystick.x().whileTrue(m_intake.startIntake());
+        joystick.x().whileFalse(m_intake.stopIntake());
+
+        // Run SysId routines when holding back/start and X/Y.
+        // Note that each routine should be run exactly once in a single log.
+        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
+        joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
+
         // joystick.povLeft().whileTrue(m_commandFactory.driveCircle());
 
         // Reset the field-centric heading on left bumper press.

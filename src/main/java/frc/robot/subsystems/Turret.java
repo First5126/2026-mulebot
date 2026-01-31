@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANConstants;
+import frc.robot.constants.TurretConstants;
 
 public class Turret extends SubsystemBase {
     private TalonFXS m_turretMotor = new TalonFXS(CANConstants.turretMotor,CANConstants.driveBaseCanvioreName);
@@ -35,6 +36,7 @@ public class Turret extends SubsystemBase {
         talonFXSConfiguration.Slot0 = slotConfigs;
 
         m_turretMotor.getConfigurator().apply(talonFXSConfiguration);
+
     }
 
     public Command goToPosition(Angle position){

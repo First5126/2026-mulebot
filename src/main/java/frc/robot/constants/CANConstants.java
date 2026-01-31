@@ -22,5 +22,5 @@ public class CANConstants{
     public static final int turretEncoder = 10;
     public static final int turretMotor = 11;
 
-    public static CANBus driveBaseCanvioreName =  new CANBus("DriveBase");
+    public static CANBus driveBaseCanivore =  new CANBus("DriveBase");
 }

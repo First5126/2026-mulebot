@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANConstants;
 
 public class Turret extends SubsystemBase {
-    private TalonFXS m_turretMotor = new TalonFXS(CANConstants.turretMotor,CANConstants.driveBaseCanvioreName);
-    private CANcoder m_turretEnncoder = new CANcoder(CANConstants.turretEncoder,CANConstants.driveBaseCanvioreName);
+    private TalonFXS m_turretMotor = new TalonFXS(CANConstants.turretMotor,CANConstants.driveBaseCanivore);
+    private CANcoder m_turretEnncoder = new CANcoder(CANConstants.turretEncoder,CANConstants.driveBaseCanivore);
     private PositionVoltage m_positionControl = new PositionVoltage(0);
 
     public Turret() {

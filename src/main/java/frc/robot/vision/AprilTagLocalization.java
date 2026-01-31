@@ -12,42 +12,29 @@ import static frc.robot.constants.AprilTagLocalizationConstants.FIELD_LAYOUT;
 import static frc.robot.constants.AprilTagLocalizationConstants.LOCALIZATION_PERIOD;
 import static frc.robot.constants.AprilTagLocalizationConstants.MAX_TAG_DISTANCE;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Robot;
-import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.LimelightDetails;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.LimelightHelpers.PoseEstimate;
-
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.estimation.VisionEstimation;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.simulation.VisionSystemSim;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
  * A class that uses the limelight to localize the robot using AprilTags. it runs in a background
@@ -90,7 +77,6 @@ public class AprilTagLocalization {
     m_poseReset = resetPose;
     m_VisionConsumer = visionConsumer;
     m_drivetrain = drivetrain;
-
   }
 
   /**
@@ -207,27 +193,33 @@ public class AprilTagLocalization {
       }
     }
 
+
     for (PhotonDetails photonDetail : m_PhotonVisionCameras) { 
       PhotonPipelineResult result = photonDetail.camera.getLatestResult();
       Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
 
-      if (estimation.isPresent()) {
+      if (estimation.isEmpty()) {
         estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
       }
-      final var finalEstimation = estimation;
+      final var finalEstimation = estimation; 
       estimation.ifPresent(
         est -> {
           double scale =
             PhotonVisionHelpers.getAvrageDistanceBetweenTags(photonDetail, finalEstimation.get().estimatedPose.toPose2d())
                / MAX_TAG_DISTANCE.in(Meters);
+          // TODO: replace with real STDV's new Matrix<N3, N1>
+          // TODO: interpolate this
           Matrix<N3, N1> interpolated =
               interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
+          var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
 
           m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
         }
       );
     }
   }
+
+
   
 
 

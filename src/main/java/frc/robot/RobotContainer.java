@@ -4,26 +4,23 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
-import org.photonvision.PhotonCamera;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.constants.AprilTagLocalizationConstants;
-import frc.robot.constants.WaypointConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
+import frc.robot.controller.Driver;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Turret;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -34,58 +31,41 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 
     PhotonDetails[] photonDetails = {
         AprilTagLocalizationConstants.camera1Details
     };
-    public CommandFactory m_commandFactory = new CommandFactory(drivetrain);
-    
+    public CommandFactory m_commandFactory = new CommandFactory(m_drivetrain);
+
     private AprilTagLocalization m_aprilTagLocalization =
         new AprilTagLocalization(
-            drivetrain::getPose2d,
-            drivetrain::resetPose,
-            drivetrain::addVisionMeasurement,
-            drivetrain,
-            photonDetails,
-            AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
+            m_drivetrain::getPose2d,
+            m_drivetrain::resetPose,
+            m_drivetrain::addVisionMeasurement,
+            m_drivetrain,
+            photonDetails
+            //AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT
+            );
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
-
-    private final CommandXboxController joystick = new CommandXboxController(0);
-    private final Turret m_turret = new Turret();
+    private Driver m_driverController;
 
     public RobotContainer() {
         configureBindings();
     }
 
-    private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
-            drivetrain.gasPedalCommand(joystick::getRightTriggerAxis, joystick::getLeftTriggerAxis, joystick::getRightX, joystick::getLeftY, joystick::getLeftX));
-        
+    private void configureBindings() {     
+        m_driverController = new Driver(m_drivetrain, m_aprilTagLocalization).configureBindings();
+
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
-            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+            m_drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
-        joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
-
-        joystick.povUp().onTrue(m_turret.goToPosition(Degrees.of(0)));
-        joystick.povLeft().onTrue(m_turret.goToPosition(Degrees.of(90)));
-        joystick.povRight().onTrue(m_turret.goToPosition(Degrees.of(180)));
-        // joystick.povLeft().whileTrue(m_commandFactory.driveCircle());
-
-        // Reset the field-centric heading on left bumper press.
-        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-        drivetrain.registerTelemetry(logger::telemeterize);
+        m_drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
@@ -94,16 +74,16 @@ public class RobotContainer {
         return Commands.sequence(
             // Reset our field centric heading to match the robot
             // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+            m_drivetrain.runOnce(() -> m_drivetrain.seedFieldCentric(Rotation2d.kZero)),
             // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
+            m_drivetrain.applyRequest(() ->
                 drive.withVelocityX(0.5)
                     .withVelocityY(0)
                     .withRotationalRate(0)
             )
             .withTimeout(5.0),
             // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle)
+            m_drivetrain.applyRequest(() -> idle)
         );
     }
 }

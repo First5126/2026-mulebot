@@ -10,6 +10,9 @@ import static edu.wpi.first.units.Units.Seconds;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -17,8 +20,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
@@ -30,10 +37,10 @@ public class AprilTagLocalizationConstants {
     public Matrix<N3, N1> closeStdDevs;
     public Matrix<N3, N1> farStdDevs;
     public Matrix<N3, N1> inverseOffset;
-
     /*
      *
      */
+  
     public LimelightDetails(
         String name,
         Matrix<N3, N1> closeStdDevs,
@@ -67,6 +74,8 @@ public class AprilTagLocalizationConstants {
     }
   }
 
+
+
   public static final String LIMELIGHT_NAME_RIGHT = "limelight-right";
   public static final Matrix<N3, N1> LIMELIGHT_CLOSE_STDDEV_RIGHT =
       VecBuilder.fill(0.01, 0.01, 999999999.9);
@@ -84,9 +93,7 @@ public class AprilTagLocalizationConstants {
   public static final Time LOCALIZATION_PERIOD = Seconds.of(0.02);
 
 
-
-    //PhotonVision Cameras
-
+  //PhotonVision Cameras
   private static final PhotonCamera camera1 = new PhotonCamera("Camera1");
   public static final Matrix<N3, N1> CAMERA1_CLOSE_STDDEV_RIGHT =
       VecBuilder.fill(0.01, 0.01, 999999999.9);
@@ -95,10 +102,9 @@ public class AprilTagLocalizationConstants {
   private static final Transform3d camera1RobotToCameraTransform =
     new Transform3d(
         //Meters
-        new Translation3d(0.30, 0.25, 0.50),
-        new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)
+        new Translation3d(0,-0.2794, 0.15875),
+        new Rotation3d(0.0, Units.degreesToRadians(-44), 90.0)
     );
 
   public static final PhotonDetails camera1Details = new PhotonDetails(camera1, camera1RobotToCameraTransform, CAMERA1_CLOSE_STDDEV_RIGHT, CAMERA1_FAR_STDDEV_RIGHT);
-
 }

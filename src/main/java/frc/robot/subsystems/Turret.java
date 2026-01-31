@@ -19,14 +19,17 @@ public class Turret extends SubsystemBase {
     private PositionVoltage m_positionControl = new PositionVoltage(0);
 
     public Turret() {
-        // Get base TalonFXS configuration from TurretConstants to avoid duplication
-        TalonFXSConfiguration talonFXSConfiguration = TurretConstants.getTalonFXSConfiguration();
-
-        // Ensure this instance's CANcoder is used as the fused feedback sensor
+        TalonFXSConfiguration talonFXSConfiguration = new TalonFXSConfiguration();
+        talonFXSConfiguration.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
+        talonFXSConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         talonFXSConfiguration.ExternalFeedback.withFusedCANcoder(m_turretEnncoder);
+        talonFXSConfiguration.ExternalFeedback.RotorToSensorRatio = 4;
+        talonFXSConfiguration.ExternalFeedback.SensorToMechanismRatio = 10;
+        //talonFXSConfiguration.ExternalFeedback.FeedbackRemoteSensorID = CANConstants.turretEncoder;
 
-        // Get PID slot configuration from TurretConstants
-        Slot0Configs slotConfigs = TurretConstants.getSlotConfigs();
+        Slot0Configs slotConfigs = new Slot0Configs();
+        slotConfigs.kP = 12;
+
         talonFXSConfiguration.Slot0 = slotConfigs;
 
         m_turretMotor.getConfigurator().apply(talonFXSConfiguration);

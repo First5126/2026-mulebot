@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivetrainConstants;
+import frc.robot.controller.CustomXboxController;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -358,18 +359,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         () -> {
 
           double fieldCentricthrottle =
-              (ControllerConstants.modifyAxisWithCustomDeadband(
+              (CustomXboxController.modifyAxisWithCustomDeadband(
                   fieldCentricthrottleSupplier.get(), 0.08, 1));
           double robotCentricThrottle =
-              (ControllerConstants.modifyAxisWithCustomDeadband(
+              (CustomXboxController.modifyAxisWithCustomDeadband(
                       robotCentricthrottleSupplier.get(), 0.08, 2)
                   / 2);
-          ControllerConstants.modifyAxis(xSupplier.get());
-          ControllerConstants.modifyAxis(ySupplier.get());
+          CustomXboxController.modifyAxis(xSupplier.get());
+          CustomXboxController.modifyAxis(ySupplier.get());
           double rotation =
-              ControllerConstants.modifyAxisWithCustomDeadband(rotationSupplier.get(), 0.05, 1) / 2;
-          double x = ControllerConstants.modifyAxis(xSupplier.get());
-          double y = ControllerConstants.modifyAxis(ySupplier.get());
+              CustomXboxController.modifyAxisWithCustomDeadband(rotationSupplier.get(), 0.05, 1) / 2;
+          double x = CustomXboxController.modifyAxis(xSupplier.get());
+          double y = CustomXboxController.modifyAxis(ySupplier.get());
           double activeThrottle;
 
           if (fieldCentricthrottle != 0) {

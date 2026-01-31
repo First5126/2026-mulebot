@@ -1,5 +1,6 @@
 package frc.robot.constants;
 
+import com.ctre.phoenix6.CANBus;
 
 public class CANConstants{
 
@@ -20,4 +21,6 @@ public class CANConstants{
 
     public static final int turretEncoder = 10;
     public static final int turretMotor = 11;
+
+    public static CANBus driveBaseCanvioreName =  new CANBus("DriveBase");
 }

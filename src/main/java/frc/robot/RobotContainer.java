@@ -77,9 +77,9 @@ public class RobotContainer {
         joystick.a().onTrue(m_aprilTagLocalization.setTrust(true));
         joystick.a().onFalse(m_aprilTagLocalization.setTrust(false));
 
-        joystick.povUp().onTrue(m_turret.goToPosition(0.5));
-        joystick.povLeft().onTrue(m_turret.goToPosition(0));
-        joystick.povRight().onTrue(m_turret.goToPosition(1));
+        joystick.povUp().onTrue(m_turret.goToPosition(Degrees.of(0)));
+        joystick.povLeft().onTrue(m_turret.goToPosition(Degrees.of(90)));
+        joystick.povRight().onTrue(m_turret.goToPosition(Degrees.of(180)));
         // joystick.povLeft().whileTrue(m_commandFactory.driveCircle());
 
         // Reset the field-centric heading on left bumper press.

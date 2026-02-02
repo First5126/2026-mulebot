@@ -3,12 +3,24 @@ package frc.robot.controller;
 import frc.robot.constants.ControllerConstants;
 
 public class Operator extends CustomXboxController implements Controller{
-    /**
-     * Initializes the operator xbox controller.  All subsystems the controller will need to interact
-     * with will need to be supplied to the constructor.
-     */
-    public Operator() {
+    // Singleton instance
+    private static Operator INSTANCE;
+
+    // Private constructor to prevent instantiation from outside
+    private Operator() {
         super(ControllerConstants.OPERATOR_CONTROLLER_PORT);
+    }
+
+    // Public method to access the single instance
+    public static Operator getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Operator();
+        }
+        return INSTANCE;
+    }
+
+    public static Operator init(){
+        return getInstance();
     }
 
     @Override

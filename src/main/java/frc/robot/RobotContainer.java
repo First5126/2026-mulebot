@@ -49,14 +49,13 @@ public class RobotContainer {
             );
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
-    private Driver m_driverController;
 
     public RobotContainer() {
         configureBindings();
     }
 
     private void configureBindings() {     
-        m_driverController = new Driver(m_drivetrain, m_aprilTagLocalization).configureBindings();
+        Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory).configureBindings();
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

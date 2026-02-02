@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CANConstants;
 import frc.robot.constants.HoodConstants;
 
 public class Hood extends SubsystemBase {
@@ -19,8 +20,7 @@ public class Hood extends SubsystemBase {
     private PositionVoltage m_positionVoltageRequest;
 
     public Hood() {
-        //TODO: Set the real motor ID in CANConstants file
-        m_hoodMotor = new TalonFX(0); 
+        m_hoodMotor = new TalonFX(CANConstants.hoodMotor); 
         
         m_motorConfigs = new Slot0Configs();
         // Set the PID values

@@ -70,9 +70,9 @@ public class Driver extends CustomXboxController implements Controller{
         this.a().onTrue(aprilTagLocalization.setTrust(true));
         this.a().onFalse(aprilTagLocalization.setTrust(false));
 
-        this.povUp().onTrue(turret.goToPosition(Degrees.of(0)));
-        this.povLeft().onTrue(turret.goToPosition(Degrees.of(90)));
-        this.povRight().onTrue(turret.goToPosition(Degrees.of(180)));
+        this.povUp().onTrue(turret.rotateToPosition(Degrees.of(0)));
+        this.povLeft().onTrue(turret.rotateToPosition(Degrees.of(90)));
+        this.povRight().onTrue(turret.rotateToPosition(Degrees.of(180)));
         this.povLeft().whileTrue(commandFactory.driveCircle());
 
         // Reset the field-centric heading on left bumper press.

@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -21,6 +23,8 @@ import frc.robot.controller.Driver;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Zones;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -32,6 +36,11 @@ public class RobotContainer {
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
+
+    //subsystems
+    private final Turret m_turret = new Turret();
+    private final Zones m_zone = new Zones();
+
 
     PhotonDetails[] photonDetails = {
         AprilTagLocalizationConstants.camera1Details
@@ -52,6 +61,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+
+        m_turret.setDefaultCommand(m_turret.lookAtPose(m_drivetrain::getPose2d, m_zone::getTurretShootingPose));
+
     }
 
     private void configureBindings() {     

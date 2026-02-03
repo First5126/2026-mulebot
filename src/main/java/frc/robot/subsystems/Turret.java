@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotation;
+
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
@@ -10,8 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Measure;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,7 +37,7 @@ public class Turret extends SubsystemBase {
         //talonFXSConfiguration.ExternalFeedback.FeedbackRemoteSensorID = CANConstants.turretEncoder;
 
         Slot0Configs slotConfigs = new Slot0Configs();
-        slotConfigs.kP = 12;
+        slotConfigs.kP = 24;
 
         talonFXSConfiguration.Slot0 = slotConfigs;
 
@@ -65,5 +68,20 @@ public class Turret extends SubsystemBase {
     public void periodic() {
         double currentAngle = m_turretEncoder.getAbsolutePosition().getValueAsDouble() * 360.0;
         SmartDashboard.putNumber("Turret Angle (deg)", currentAngle);
+    }
+    public Command lookAtPose(Supplier<Pose2d> currentPose, Supplier<Pose2d> targetPose) {
+        return run(() -> {
+
+            double DistanceX = currentPose.get().getX() + targetPose.get().getX();
+            double DistanceY = currentPose.get().getY() + targetPose.get().getY();
+
+            Angle angle = Angle.ofBaseUnits(Math.atan(DistanceY/DistanceX), Radians);
+           
+            SmartDashboard.putNumber("Turret Rotation in Rotations", angle.in(Rotation));
+            SmartDashboard.putString("Turret Target Poseition", "X: "  + targetPose.get().getX() + " Y: " + targetPose.get().getY());
+            SmartDashboard.putString("Turret Current Position", "X: "  + currentPose.get().getX() + " Y: " + currentPose.get().getY());
+
+            m_turretMotor.setControl(m_positionControl.withPosition(angle.in(Rotation)));
+        });
     }
 }

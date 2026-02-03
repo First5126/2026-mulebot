@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,19 +70,24 @@ public class Turret extends SubsystemBase {
         double currentAngle = m_turretEncoder.getAbsolutePosition().getValueAsDouble() * 360.0;
         SmartDashboard.putNumber("Turret Angle (deg)", currentAngle);
     }
-    public Command lookAtPose(Supplier<Pose2d> currentPose, Supplier<Pose2d> targetPose) {
+    public Command lookAtPose(Supplier<Pose2d> robotCurrentPose, Supplier<Pose2d> targetPose) {
         return run(() -> {
 
-            double DistanceX = currentPose.get().getX() + targetPose.get().getX();
-            double DistanceY = currentPose.get().getY() + targetPose.get().getY();
+            Pose2d turretPose = robotCurrentPose.get().plus(TurretConstants.TURRET_OFFSET);
 
-            Angle angle = Angle.ofBaseUnits(Math.atan(DistanceY/DistanceX), Radians);
-           
-            SmartDashboard.putNumber("Turret Rotation in Rotations", angle.in(Rotation));
+            double DistanceX = targetPose.get().getX() - turretPose.getX();
+            double DistanceY = targetPose.get().getY() - turretPose.getY();
+
+            Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(DistanceY, DistanceX));
+
+            Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotCurrentPose.get().getRotation());
+
+            SmartDashboard.putNumber("Turret Atan Calculation", Math.atan2(DistanceY,DistanceX));
+            SmartDashboard.putNumber("Turret Rotation in Rotations", robotRelativeAngle.getDegrees());
             SmartDashboard.putString("Turret Target Poseition", "X: "  + targetPose.get().getX() + " Y: " + targetPose.get().getY());
-            SmartDashboard.putString("Turret Current Position", "X: "  + currentPose.get().getX() + " Y: " + currentPose.get().getY());
+            SmartDashboard.putString("Turret Current Position", "X: "  + robotCurrentPose.get().getX() + " Y: " + robotCurrentPose.get().getY());
 
-            m_turretMotor.setControl(m_positionControl.withPosition(angle.in(Rotation)));
+            m_turretMotor.setControl(m_positionControl.withPosition(robotRelativeAngle.getRotations()));
         });
     }
 }

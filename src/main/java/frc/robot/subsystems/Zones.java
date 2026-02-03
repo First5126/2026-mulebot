@@ -60,6 +60,9 @@ public class Zones extends SubsystemBase{
 
 
     public Pose2d getTurretShootingPose() {
+        if (!m_team.isPresent()) {
+            return null;
+        }
         switch (CurrentZone) {
             case ALLIANCE_ZONE:
                 return m_team.get() == Alliance.Blue? WaypointConstants.blueHub:WaypointConstants.redHub;

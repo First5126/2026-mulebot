@@ -43,7 +43,7 @@ public class RobotContainer {
 
 
     PhotonDetails[] photonDetails = {
-        AprilTagLocalizationConstants.camera1Details
+        //AprilTagLocalizationConstants.camera1Details
     };
     public CommandFactory m_commandFactory = new CommandFactory(m_drivetrain);
 
@@ -53,8 +53,8 @@ public class RobotContainer {
             m_drivetrain::resetPose,
             m_drivetrain::addVisionMeasurement,
             m_drivetrain,
-            photonDetails
-            //AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT
+            photonDetails,
+            AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT
             );
 
     private final Telemetry logger = new Telemetry(MaxSpeed);

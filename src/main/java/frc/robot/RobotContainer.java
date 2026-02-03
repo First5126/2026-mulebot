@@ -59,9 +59,10 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+
     public RobotContainer() {
         configureBindings();
-
+        
         m_turret.setDefaultCommand(m_turret.lookAtPose(m_drivetrain::getPose2d, m_zone::getTurretShootingPose));
 
     }

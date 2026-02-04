@@ -8,12 +8,14 @@
 
 package frc.robot.subsystems;
 
+import java.nio.file.WatchEvent;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.core.CoreCANdle;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
 import com.ctre.phoenix6.signals.RGBWColor;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,27 +31,42 @@ public class LEDLights extends SubsystemBase{
   
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
-  private final RGBWColor WHITE = new RGBWColor(255, 255, 255);
-  private final RGBWColor CLEAR = new RGBWColor(0, 0, 0);
+  private final RGBWColor CLEAR = new RGBWColor(255, 255, 255);
   private final RGBWColor RED = new RGBWColor(255, 0, 0);
   private final RGBWColor GREEN = new RGBWColor(0, 255, 0);
   private final RGBWColor BLUE = new RGBWColor(0, 0, 255);
   private final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
   private final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
+  private final RainbowAnimation rainbow = new RainbowAnimation(8, 67);
 
-  private final Supplier<XboxController> m_controller;
 
-  public LEDLights(Supplier<XboxController> controller) {
-    m_controller = controller;
+  public LEDLights() {
     m_candle.getConfigurator().apply(m_configs);
   }
 
-    public Command SetColor() {
-      return runOnce(() -> {
-          final RainbowAnimation rainbow = new RainbowAnimation(8, 67);
-          m_candle.setControl(rainbow); 
-      });
-    }
+  public Command setColor() {
+    return runOnce(() -> {
+        m_candle.setControl(rainbow); 
+    });
+  }
+
+  public Command clearColor() {
+    return runOnce(() -> {
+        SolidColor colorControl = new SolidColor(0, 25).withColor(CLEAR);
+        m_candle.setControl(colorControl); 
+    });
+  }
+
+  public Command driveLEDs(Supplier<Double> robotCentric, Supplier<Double> fieldCentric){
+    return run(() -> {
+      if(robotCentric.get() > 0 || fieldCentric.get() > 0){
+        m_candle.setControl(rainbow);
+      }
+      else {
+        applyColor(CLEAR);
+      }
+    });
+  }
 
   public void applyColor(RGBWColor color) {
           SolidColor sc = new SolidColor(0, 25).withColor(color);

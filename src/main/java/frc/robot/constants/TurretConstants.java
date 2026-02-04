@@ -7,8 +7,8 @@ import edu.wpi.first.units.measure.Angle;
 
 
 public class TurretConstants {
-    public static final Angle MIN_ANGLE = Units.Degrees.of(0);
-    public static final Angle MAX_ANGLE = Units.Degrees.of(360);
+    public static final Angle MIN_ANGLE = Units.Degrees.of(-135);
+    public static final Angle MAX_ANGLE = Units.Degrees.of(135);
 
     //Meters
     public static final Transform2d TURRET_OFFSET = new Transform2d(

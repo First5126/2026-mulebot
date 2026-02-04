@@ -62,8 +62,8 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
-        
-        m_turret.setDefaultCommand(m_turret.lookAtPose(m_drivetrain::getPose2d, m_zone::getTurretShootingPose));
+
+        m_turret.setDefaultCommand(m_turret.trackTargetPose(m_drivetrain::getPose2d, m_zone::getTurretShootingPose));
 
     }
 

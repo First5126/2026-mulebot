@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.TurretConstants;
@@ -81,24 +82,24 @@ public class Turret extends SubsystemBase {
     }
     public Command trackTargetPose(Supplier<Pose2d> robotCurrentPose, Supplier<Pose2d> targetPose) {
         return run(() -> {
+            if (robotCurrentPose != null && targetPose.get() != null) {
+                Pose2d turretPose = robotCurrentPose.get().plus(TurretConstants.TURRET_OFFSET);
 
-            Pose2d turretPose = robotCurrentPose.get().plus(TurretConstants.TURRET_OFFSET);
+                double distanceX = targetPose.get().getX() - turretPose.getX();
+                double distanceY = targetPose.get().getY() - turretPose.getY();
 
-            double distanceX = targetPose.get().getX() - turretPose.getX();
-            double distanceY = targetPose.get().getY() - turretPose.getY();
+                Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
 
-            Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
+                Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotCurrentPose.get().getRotation());
 
-            Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotCurrentPose.get().getRotation());
-
-            SmartDashboard.putNumber("Turret distanceX", distanceX);
-            SmartDashboard.putNumber("Turret distanceY", distanceY);
-            SmartDashboard.putNumber("Turret fieldRelativeAngle in Degrees", fieldRelativeAngle.getDegrees());
-            SmartDashboard.putNumber("Turret robotRelativeAngle in Degrees", robotRelativeAngle.getDegrees());
-            SmartDashboard.putString("Turret Target Poseition", "X: "  + targetPose.get().getX() + " Y: " + targetPose.get().getY());
-            SmartDashboard.putString("Turret Current Position", "X: "  + robotCurrentPose.get().getX() + " Y: " + robotCurrentPose.get().getY());
-            setPosition(robotRelativeAngle.getMeasure());
-
+                SmartDashboard.putNumber("Turret distanceX", distanceX);
+                SmartDashboard.putNumber("Turret distanceY", distanceY);
+                SmartDashboard.putNumber("Turret fieldRelativeAngle in Degrees", fieldRelativeAngle.getDegrees());
+                SmartDashboard.putNumber("Turret robotRelativeAngle in Degrees", robotRelativeAngle.getDegrees());
+                SmartDashboard.putString("Turret Target Poseition", "X: "  + targetPose.get().getX() + " Y: " + targetPose.get().getY());
+                SmartDashboard.putString("Turret Current Position", "X: "  + robotCurrentPose.get().getX() + " Y: " + robotCurrentPose.get().getY());
+                setPosition(robotRelativeAngle.getMeasure());
+            }
         });
     }
 

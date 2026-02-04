@@ -2,8 +2,13 @@ package frc.robot.controller;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -76,7 +81,11 @@ public class Driver extends CustomXboxController implements Controller{
         this.povLeft().whileTrue(commandFactory.driveCircle());
 
         // Reset the field-centric heading on left bumper press.
+        SmartDashboard.putNumber("Pose X", 0);
+        SmartDashboard.putNumber("Pose Y", 0);
+
         this.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        this.rightBumper().onTrue(drivetrain.resetPose2d(new Pose2d(SmartDashboard.getNumber("Pose X", 0), SmartDashboard.getNumber("Pose Y", 0), drivetrain.getRotation3d().toRotation2d())));
 
         return this;
     }    

@@ -333,6 +333,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
 
+    public Command resetPose2d(Pose2d pose) {
+        return runOnce( () -> {
+            resetPose(pose);
+        });
+    }
+
     /**
      * Return the pose at a given timestamp, if the buffer is not empty.
      *

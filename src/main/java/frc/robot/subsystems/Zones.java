@@ -5,8 +5,14 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.WaypointConstants;
+
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
@@ -30,8 +36,11 @@ public class Zones extends SubsystemBase{
     }
 
     private static Zone CurrentZone = Zone.ALLIANCE_ZONE;
+    private Optional<Alliance> m_team; 
 
-
+    public Zones() {
+        m_team = DriverStation.getAlliance();
+    }
 
     public void UpdateZone(Pose2d robotPose) {
         double x = robotPose.getX();
@@ -47,6 +56,22 @@ public class Zones extends SubsystemBase{
             // Outside defined zones, handle as needed
             CurrentZone = Zone.OUT_OF_BOUNDS;
         }
+    }
+
+
+    public Pose2d getTurretShootingPose() {
+        if (!m_team.isPresent()) {
+            return WaypointConstants.blueHub;
+        }
+        switch (CurrentZone) {
+            case ALLIANCE_ZONE:
+                return m_team.get() == Alliance.Blue? WaypointConstants.blueHub:WaypointConstants.redHub;
+            case NEUTRAL_ZONE:
+                return m_team.get() == Alliance.Blue? WaypointConstants.blueHub:WaypointConstants.redHub;
+            case OPPONENT_ZONE:
+                return m_team.get() == Alliance.Blue? WaypointConstants.blueHub:WaypointConstants.redHub;
+        }
+        return m_team.get() == Alliance.Blue? WaypointConstants.blueHub:WaypointConstants.redHub;
     }
 
 

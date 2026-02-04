@@ -12,12 +12,6 @@ import static frc.robot.constants.AprilTagLocalizationConstants.FIELD_LAYOUT;
 import static frc.robot.constants.AprilTagLocalizationConstants.LOCALIZATION_PERIOD;
 import static frc.robot.constants.AprilTagLocalizationConstants.MAX_TAG_DISTANCE;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.targeting.PhotonPipelineResult;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -35,6 +29,10 @@ import frc.robot.constants.AprilTagLocalizationConstants.LimelightDetails;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.vision.LimelightHelpers.PoseEstimate;
+import java.util.Optional;
+import java.util.function.Supplier;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /**
  * A class that uses the limelight to localize the robot using AprilTags. it runs in a background
@@ -150,19 +148,21 @@ public class AprilTagLocalization {
       PoseEstimate poseEstimate =
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(
               limelightDetail.name); // Get the pose from the Limelight
-      SmartDashboard.putBoolean("Valid Pose Estimation: ", poseEstimate != null
-          && poseEstimate.pose.getX() != 0.0
-          && poseEstimate.pose.getY() != 0.0);
+      SmartDashboard.putBoolean(
+          "Valid Pose Estimation: ",
+          poseEstimate != null
+              && poseEstimate.pose.getX() != 0.0
+              && poseEstimate.pose.getY() != 0.0);
       if (poseEstimate != null
           && poseEstimate.pose.getX() != 0.0
           && poseEstimate.pose.getY() != 0.0) {
         // remove the offset of the camera
         /*poseEstimate.pose =
-            poseEstimate.pose.transformBy(
-                new Transform2d(
-                    limelightDetail.inverseOffset.get(0, 0),
-                    limelightDetail.inverseOffset.get(1, 0),
-                    Rotation2d.fromDegrees(limelightDetail.inverseOffset.get(2, 0))));*/
+        poseEstimate.pose.transformBy(
+            new Transform2d(
+                limelightDetail.inverseOffset.get(0, 0),
+                limelightDetail.inverseOffset.get(1, 0),
+                Rotation2d.fromDegrees(limelightDetail.inverseOffset.get(2, 0))));*/
 
         double scale =
             poseEstimate.avgTagDist
@@ -193,42 +193,39 @@ public class AprilTagLocalization {
       }
     }
 
-
-    for (PhotonDetails photonDetail : m_PhotonVisionCameras) { 
+    for (PhotonDetails photonDetail : m_PhotonVisionCameras) {
       PhotonPipelineResult result = photonDetail.camera.getLatestResult();
-      Optional<EstimatedRobotPose> estimation = photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
+      Optional<EstimatedRobotPose> estimation =
+          photonDetail.poseEstimator.estimateCoprocMultiTagPose(result);
 
       if (estimation.isEmpty()) {
         estimation = photonDetail.poseEstimator.estimateLowestAmbiguityPose(result);
       }
-      final var finalEstimation = estimation; 
+      final var finalEstimation = estimation;
       estimation.ifPresent(
-        est -> {
-          double scale =
-            PhotonVisionHelpers.getAvrageDistanceBetweenTags(photonDetail, finalEstimation.get().estimatedPose.toPose2d())
-               / MAX_TAG_DISTANCE.in(Meters);
-          // TODO: replace with real STDV's new Matrix<N3, N1>
-          // TODO: interpolate this
-          Matrix<N3, N1> interpolated =
-              interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
-          var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
+          est -> {
+            double scale =
+                PhotonVisionHelpers.getAvrageDistanceBetweenTags(
+                        photonDetail, finalEstimation.get().estimatedPose.toPose2d())
+                    / MAX_TAG_DISTANCE.in(Meters);
+            // TODO: replace with real STDV's new Matrix<N3, N1>
+            // TODO: interpolate this
+            Matrix<N3, N1> interpolated =
+                interpolate(photonDetail.closeStdDevs, photonDetail.farStdDevs, scale);
+            var estStdDevs = VecBuilder.fill(0.05, 0.05, 999999999.9);
 
-          m_VisionConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
-        }
-      );
+            m_VisionConsumer.accept(
+                est.estimatedPose.toPose2d(), est.timestampSeconds, interpolated);
+          });
     }
   }
-
-
-  
-
 
   /**
    * Defines a function pointer to a function with a signature ( Pose2d visionRobotPoseMeters,
    * double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) to accept the vision pose
    * estimate
    */
-  @FunctionalInterface 
+  @FunctionalInterface
   public interface VisionConsumer {
     void accept(
         Pose2d visionRobotPoseMeters,

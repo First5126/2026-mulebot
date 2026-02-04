@@ -7,9 +7,6 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -22,6 +19,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 
 /** Add your docs here. */
 public class AprilTagLocalizationConstants {
@@ -34,10 +33,7 @@ public class AprilTagLocalizationConstants {
     /*
      *
      */
-    public LimelightDetails(
-        String name,
-        Matrix<N3, N1> closeStdDevs,
-        Matrix<N3, N1> farStdDevs) {
+    public LimelightDetails(String name, Matrix<N3, N1> closeStdDevs, Matrix<N3, N1> farStdDevs) {
       this.name = name;
       this.closeStdDevs = closeStdDevs;
       this.farStdDevs = farStdDevs;
@@ -74,29 +70,29 @@ public class AprilTagLocalizationConstants {
       VecBuilder.fill(0.05, 0.05, 999999999.9);
   public static final LimelightDetails LIMELIGHT_DETAILS_RIGHT =
       new LimelightDetails(
-          LIMELIGHT_NAME_RIGHT,
-          LIMELIGHT_CLOSE_STDDEV_RIGHT,
-          LIMELIGHT_FAR_STDDEV_RIGHT);
+          LIMELIGHT_NAME_RIGHT, LIMELIGHT_CLOSE_STDDEV_RIGHT, LIMELIGHT_FAR_STDDEV_RIGHT);
 
   public static final AprilTagFieldLayout FIELD_LAYOUT =
       AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
   public static final Distance MAX_TAG_DISTANCE = Meters.of(5.0);
   public static final Time LOCALIZATION_PERIOD = Seconds.of(0.02);
 
-
-  //PhotonVision Cameras
+  // PhotonVision Cameras
   private static final PhotonCamera camera1 = new PhotonCamera("Camera1");
   public static final Matrix<N3, N1> CAMERA1_CLOSE_STDDEV_RIGHT =
       VecBuilder.fill(0.01, 0.01, 999999999.9);
   public static final Matrix<N3, N1> CAMERA1_FAR_STDDEV_RIGHT =
-    VecBuilder.fill(0.05, 0.05, 999999999.9);
+      VecBuilder.fill(0.05, 0.05, 999999999.9);
   private static final Transform3d camera1RobotToCameraTransform =
-    new Transform3d(
-        //Meters
-        new Translation3d(0,-0.2794, 0.15875),
-        new Rotation3d(0.0, Units.degreesToRadians(-44), 90.0)
-    );
+      new Transform3d(
+          // Meters
+          new Translation3d(0, -0.2794, 0.15875),
+          new Rotation3d(0.0, Units.degreesToRadians(-44), 90.0));
 
-  public static final PhotonDetails camera1Details = new PhotonDetails(camera1, camera1RobotToCameraTransform, CAMERA1_CLOSE_STDDEV_RIGHT, CAMERA1_FAR_STDDEV_RIGHT);
-
+  public static final PhotonDetails camera1Details =
+      new PhotonDetails(
+          camera1,
+          camera1RobotToCameraTransform,
+          CAMERA1_CLOSE_STDDEV_RIGHT,
+          CAMERA1_FAR_STDDEV_RIGHT);
 }

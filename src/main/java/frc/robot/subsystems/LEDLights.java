@@ -8,6 +8,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
@@ -17,6 +19,7 @@ import com.ctre.phoenix6.signals.RGBWColor;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDLights extends SubsystemBase{
@@ -34,22 +37,18 @@ public class LEDLights extends SubsystemBase{
   private final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
   private final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
 
-  private final XboxController m_controller;
+  private final Supplier<XboxController> m_controller;
 
-  public LEDLights(XboxController controller) {
+  public LEDLights(Supplier<XboxController> controller) {
     m_controller = controller;
     m_candle.getConfigurator().apply(m_configs);
   }
 
-  @Override
-    public void periodic() {
-        if(m_controller.getLeftX() > 1 || m_controller.getRightX() > 1 || m_controller.getLeftY() > 1 || m_controller.getRightY() > 1){
+    public Command SetColor() {
+      return runOnce(() -> {
           final RainbowAnimation rainbow = new RainbowAnimation(8, 67);
-          m_candle.setControl(rainbow);
-        }
-        else{
-          applyColor(WHITE);
-        }
+          m_candle.setControl(rainbow); 
+      });
     }
 
   public void applyColor(RGBWColor color) {

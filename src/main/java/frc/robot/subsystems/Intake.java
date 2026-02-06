@@ -10,7 +10,7 @@ public class Intake extends SubsystemBase {
     private SparkMax m_intakeMotor;
 
     public Intake() {
-        m_intakeMotor = new SparkMax(3, MotorType.kBrushless);
+       // m_intakeMotor = new SparkMax(3, MotorType.kBrushless);
     }
 
     public Command startIntake() {

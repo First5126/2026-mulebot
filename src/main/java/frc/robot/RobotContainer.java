@@ -45,7 +45,7 @@ public class RobotContainer {
   private final Zones m_zone = new Zones();
 
   PhotonDetails[] photonDetails = {
-    // AprilTagLocalizationConstants.camera1Details
+    //AprilTagLocalizationConstants.camera1Details
   };
   public CommandFactory m_commandFactory = new CommandFactory(m_drivetrain, m_turret, m_zone);
 
@@ -56,7 +56,8 @@ public class RobotContainer {
           m_drivetrain::addVisionMeasurement,
           m_drivetrain,
           photonDetails,
-          AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
+          AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT,
+          AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHTG);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 

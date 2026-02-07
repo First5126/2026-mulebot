@@ -105,6 +105,31 @@ public class Turret extends SubsystemBase {
         });
   }
 
+  public double findTimeFromFuelShootingDistance(double distance) {
+    return 0.0;
+  }
+
+  //takes 1 pose and then finds out bassed on your current pose and you going in a cirtain
+    //dirrecton and bassed on the time it takes it will give you the calculated Pose2d
+  public Pose2d calculatePredictedPose2d(CommandSwerveDrivetrain drivetrain, double time) {
+      Pose2d pose = drivetrain.getPose2d();
+      double currentX = pose.getX();
+      double currentY = pose.getY();
+
+      double distance = time * Math.sqrt(Math.pow(drivetrain.getSpeeds().vxMetersPerSecond, 2) + Math.pow(drivetrain.getSpeeds().vyMetersPerSecond, 2));
+      double rotation = drivetrain.getPose2d().getRotation().getRadians();
+
+      double predictedX = currentX + distance * Math.cos(rotation);
+      double predictedY = currentY + distance * Math.sin(rotation);
+
+      return new Pose2d(
+          predictedX,
+          predictedY,
+          new Rotation2d(rotation)
+      );
+
+  }
+
   private void setPosition(final Angle position) {
     // Convert all angles to degrees for clamping
     double minDegrees = TurretConstants.MIN_ANGLE.in(Degrees);

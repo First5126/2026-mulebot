@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
@@ -25,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class LEDLights extends SubsystemBase{
 
   private static final int kCANdleCANbus = 0;
-  final private CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus);
+  private static final CANBus driveBaseCanivore = new CANBus("DriveBase");
+  private static CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus, driveBaseCanivore);
   
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
@@ -52,9 +54,12 @@ public class LEDLights extends SubsystemBase{
     }
 
   public void applyColor(RGBWColor color) {
-          SolidColor sc = new SolidColor(0, 25).withColor(color);
-          m_candle.setControl(sc);
+          m_candle.setControl(m_solidColorControl.withColor(color));
   }
 
+  @Override
+  public void periodic() {
+      SmartDashboard.putNumber("RobotCentric", kCANdleCANbus);
+  }
 
 }

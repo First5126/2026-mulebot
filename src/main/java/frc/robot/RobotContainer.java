@@ -45,7 +45,7 @@ public class RobotContainer {
   private final Zones m_zone = new Zones();
 
   PhotonDetails[] photonDetails = {
-    //AprilTagLocalizationConstants.camera1Details
+    // AprilTagLocalizationConstants.camera1Details
   };
   public CommandFactory m_commandFactory = new CommandFactory(m_drivetrain, m_turret, m_zone);
 
@@ -64,8 +64,7 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    m_turret.setDefaultCommand(
-        m_commandFactory.turretTrackPredictedPositionCommand());
+    m_turret.setDefaultCommand(m_commandFactory.turretTrackPredictedPositionCommand());
   }
 
   private void configureBindings() {

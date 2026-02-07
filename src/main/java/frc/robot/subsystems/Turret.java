@@ -80,7 +80,7 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle (deg)", currentAngle);
   }
 
-  public Double getTimeFromDistance(Supplier<Double> distance) {
+  public double getTimeFromDistance(Supplier<Double> distance) {
     return TurretConstants.DISTANCE_TO_TIME_INTERPOLATOR.get(distance.get());
   }
 

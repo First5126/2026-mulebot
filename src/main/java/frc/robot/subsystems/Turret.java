@@ -176,7 +176,7 @@ public class Turret extends SubsystemBase {
             Math.atan2(
                 drivetrain.getSpeeds().vyMetersPerSecond,
                 drivetrain.getSpeeds().vxMetersPerSecond));
-    rotation.plus(drivetrain.getPose2d().getRotation());
+    rotation = rotation.plus(drivetrain.getPose2d().getRotation());
 
     SmartDashboard.putNumber("Rotation Calculation Turret", rotation.getDegrees());
 

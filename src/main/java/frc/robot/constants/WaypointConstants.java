@@ -15,6 +15,6 @@ public class WaypointConstants {
   public static final Pose2d nearOutpost = new Pose2d(2.5, 2, Rotation2d.fromDegrees(116));
   public static final Pose2d nearHub = new Pose2d(3, 3.5, Rotation2d.fromDegrees(135));
 
-  public static final Pose2d blueHub = new Pose2d(4.5, 4, Rotation2d.fromDegrees(0));
-  public static final Pose2d redHub = new Pose2d(12, 4, Rotation2d.fromDegrees(0));
+  public static final Pose2d blueHub = new Pose2d(4.625, 4.025, Rotation2d.fromDegrees(0));
+  public static final Pose2d redHub = new Pose2d(11.925, 4.025, Rotation2d.fromDegrees(0));
 }

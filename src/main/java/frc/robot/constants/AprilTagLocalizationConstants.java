@@ -72,6 +72,16 @@ public class AprilTagLocalizationConstants {
       new LimelightDetails(
           LIMELIGHT_NAME_RIGHT, LIMELIGHT_CLOSE_STDDEV_RIGHT, LIMELIGHT_FAR_STDDEV_RIGHT);
 
+  public static final String LIMELIGHT_NAME_RIGHTG = "limelight-rightg";
+  public static final Matrix<N3, N1> LIMELIGHT_CLOSE_STDDEV_RIGHTG =
+      VecBuilder.fill(0.01, 0.01, 999999999.9);
+  public static final Matrix<N3, N1> LIMELIGHT_FAR_STDDEV_RIGHTG =
+      VecBuilder.fill(0.05, 0.05, 999999999.9);
+  public static final LimelightDetails LIMELIGHT_DETAILS_RIGHTG =
+      new LimelightDetails(
+          LIMELIGHT_NAME_RIGHTG, LIMELIGHT_CLOSE_STDDEV_RIGHTG, LIMELIGHT_FAR_STDDEV_RIGHTG);
+
+
   public static final AprilTagFieldLayout FIELD_LAYOUT =
       AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
   public static final Distance MAX_TAG_DISTANCE = Meters.of(5.0);

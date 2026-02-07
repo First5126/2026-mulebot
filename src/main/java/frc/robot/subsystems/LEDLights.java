@@ -11,6 +11,7 @@ package frc.robot.subsystems;
 import java.nio.file.WatchEvent;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
@@ -27,7 +28,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class LEDLights extends SubsystemBase{
 
   private static final int kCANdleCANbus = 0;
-  final private CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus);
+  private static final CANBus driveBaseCanivore = new CANBus("DriveBase");
+  private static CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus, driveBaseCanivore);
   
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
@@ -37,41 +39,40 @@ public class LEDLights extends SubsystemBase{
   private final RGBWColor BLUE = new RGBWColor(0, 0, 255);
   private final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
   private final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
-  private final RainbowAnimation rainbow = new RainbowAnimation(8, 67);
-
+  private final RainbowAnimation rainbow = new RainbowAnimation(0, 67);
+  private SolidColor m_solidColorControl = new SolidColor(0, 67);
 
   public LEDLights() {
     m_candle.getConfigurator().apply(m_configs);
   }
 
-  public Command setColor() {
-    return runOnce(() -> {
+  public void setRainbow() {
         m_candle.setControl(rainbow); 
-    });
-  }
+    };
 
-  public Command clearColor() {
-    return runOnce(() -> {
-        SolidColor colorControl = new SolidColor(0, 25).withColor(CLEAR);
-        m_candle.setControl(colorControl); 
-    });
-  }
+
+  public void clearColor() {
+        m_candle.setControl(m_solidColorControl.withColor(CLEAR)); 
+    };
 
   public Command driveLEDs(Supplier<Double> robotCentric, Supplier<Double> fieldCentric){
-    return run(() -> {
-      if(robotCentric.get() > 0 || fieldCentric.get() > 0){
-        m_candle.setControl(rainbow);
+    return runOnce(() -> {
+      if(robotCentric.get() > 0.05 || fieldCentric.get() > 0.05){
+        setRainbow();
       }
       else {
-        applyColor(CLEAR);
+        clearColor();
       }
     });
   }
 
   public void applyColor(RGBWColor color) {
-          SolidColor sc = new SolidColor(0, 25).withColor(color);
-          m_candle.setControl(sc);
+          m_candle.setControl(m_solidColorControl.withColor(color));
   }
 
+  @Override
+  public void periodic() {
+      SmartDashboard.putNumber("RobotCentric", kCANdleCANbus);
+  }
 
 }

@@ -14,12 +14,21 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.TurretConstants;
+import frc.robot.subsystems.Zones.Zone;
+
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class Turret extends SubsystemBase {
@@ -56,6 +65,8 @@ public class Turret extends SubsystemBase {
     talonFXSConfiguration.Slot0 = slotConfigs;
 
     m_turretMotor.getConfigurator().apply(talonFXSConfiguration);
+
+
   }
 
   /**
@@ -78,11 +89,15 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle (deg)", currentAngle);
   }
 
-  public Command trackTargetPose(Supplier<Pose2d> robotCurrentPose, Supplier<Pose2d> targetPose) {
+  public Double getTimeFromDistance(Supplier<Double> distance) {
+    return TurretConstants.DISTANCE_TO_TIME_INTERPOLATOR.get(distance.get());
+  }
+
+  public Command trackTargetPose(Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
     return run(
         () -> {
-          if (robotCurrentPose != null && targetPose.get() != null) {
-            Pose2d turretPose = robotCurrentPose.get().plus(TurretConstants.TURRET_OFFSET);
+          if (robotPose != null && targetPose.get() != null) {
+            Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
 
             double distanceX = targetPose.get().getX() - turretPose.getX();
             double distanceY = targetPose.get().getY() - turretPose.getY();
@@ -91,18 +106,17 @@ public class Turret extends SubsystemBase {
                 Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
 
             Rotation2d robotRelativeAngle =
-                fieldRelativeAngle.minus(robotCurrentPose.get().getRotation());
-            /*
-            SmartDashboard.putNumber("Turret distanceX", distanceX);
-            SmartDashboard.putNumber("Turret distanceY", distanceY);
-            SmartDashboard.putNumber("Turret fieldRelativeAngle in Degrees", fieldRelativeAngle.getDegrees());
-            SmartDashboard.putNumber("Turret robotRelativeAngle in Degrees", robotRelativeAngle.getDegrees());
-            SmartDashboard.putString("Turret Target Poseition", "X: "  + targetPose.get().getX() + " Y: " + targetPose.get().getY());
-            SmartDashboard.putString("Turret Current Position", "X: "  + robotCurrentPose.get().getX() + " Y: " + robotCurrentPose.get().getY());
-            */
+                fieldRelativeAngle.minus(robotPose.get().getRotation());
+
             setPosition(robotRelativeAngle.getMeasure());
           }
         });
+  }
+
+  public double getDistanceFromHub(Supplier<Pose2d> robotPose, Zones zone) {
+    Translation2d hubTranslation2d = zone.getTurretShootingPose().getTranslation();
+    Translation2d botTranslation2d = robotPose.get().getTranslation();
+    return hubTranslation2d.getDistance(botTranslation2d);
   }
 
   public double findTimeFromFuelShootingDistance(double distance) {
@@ -111,12 +125,12 @@ public class Turret extends SubsystemBase {
 
   //takes 1 pose and then finds out bassed on your current pose and you going in a cirtain
     //dirrecton and bassed on the time it takes it will give you the calculated Pose2d
-  public Pose2d calculatePredictedPose2d(CommandSwerveDrivetrain drivetrain, double time) {
+  public Pose2d calculatePredictedPose2d(CommandSwerveDrivetrain drivetrain, Supplier<Double> time) {
       Pose2d pose = drivetrain.getPose2d();
       double currentX = pose.getX();
       double currentY = pose.getY();
 
-      double distance = time * Math.sqrt(Math.pow(drivetrain.getSpeeds().vxMetersPerSecond, 2) + Math.pow(drivetrain.getSpeeds().vyMetersPerSecond, 2));
+      double distance = time.get() * Math.sqrt(Math.pow(drivetrain.getSpeeds().vxMetersPerSecond, 2) + Math.pow(drivetrain.getSpeeds().vyMetersPerSecond, 2));
       double rotation = drivetrain.getPose2d().getRotation().getRadians();
 
       double predictedX = currentX + distance * Math.cos(rotation);

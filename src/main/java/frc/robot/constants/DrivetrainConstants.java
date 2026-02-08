@@ -7,7 +7,6 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.path.PathConstraints;
-
 import edu.wpi.first.math.util.Units;
 import frc.robot.generated.TunerConstants;
 

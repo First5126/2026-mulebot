@@ -11,6 +11,7 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
@@ -53,7 +54,7 @@ public class LEDLights extends SubsystemBase{
       });
     }
 
-  public void applyColor(RGBWColor color) {
+  private void applyColor(RGBWColor color) {
           m_candle.setControl(m_solidColorControl.withColor(color));
   }
 

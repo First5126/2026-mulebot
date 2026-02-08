@@ -12,6 +12,7 @@ import java.nio.file.WatchEvent;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
@@ -41,32 +42,40 @@ public class LEDLights extends SubsystemBase{
   private final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
   private final RainbowAnimation rainbow = new RainbowAnimation(0, 67);
   private SolidColor m_solidColorControl = new SolidColor(0, 67);
+  private boolean cleared = false;
 
   public LEDLights() {
     m_candle.getConfigurator().apply(m_configs);
   }
 
-  public void setRainbow() {
+  private void setRainbow() {
         m_candle.setControl(rainbow); 
     };
+  
+  public Command setRanbow() {
+      return run(() -> m_candle.setControl(m_solidColorControl.withColor(BLUE)));
+  }
 
 
-  public void clearColor() {
-        m_candle.setControl(m_solidColorControl.withColor(CLEAR)); 
-    };
+  public Command stopRainbow() {
+      return run(() -> m_candle.setControl(m_solidColorControl.withColor(CLEAR)));
+  }
 
   public Command driveLEDs(Supplier<Double> robotCentric, Supplier<Double> fieldCentric){
     return runOnce(() -> {
       if(robotCentric.get() > 0.05 || fieldCentric.get() > 0.05){
         setRainbow();
+        cleared = false;
       }
       else {
-        clearColor();
-      }
-    });
+        if (!cleared){
+          applyColor(CLEAR);
+          cleared = true;
+        }
+    }});
   }
 
-  public void applyColor(RGBWColor color) {
+  private void applyColor(RGBWColor color) {
           m_candle.setControl(m_solidColorControl.withColor(color));
   }
 

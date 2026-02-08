@@ -73,6 +73,8 @@ public class Driver extends CustomXboxController implements Controller{
         
         this.a().onTrue(aprilTagLocalization.setTrust(true));
         this.a().onFalse(aprilTagLocalization.setTrust(false));
+        this.y().onTrue(ledLights.setRanbow());
+        this.y().onFalse(ledLights.stopRainbow());
 
         this.povUp().onTrue(turret.rotateToPosition(Degrees.of(0)));
         this.povLeft().onTrue(turret.rotateToPosition(Degrees.of(90)));
@@ -81,8 +83,6 @@ public class Driver extends CustomXboxController implements Controller{
 
         // Reset the field-centric heading on left bumper press.
         this.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-        ledLights.setDefaultCommand(ledLights.driveLEDs(this::getLeftTriggerAxis, this::getRightTriggerAxis));
 
         return this;
     }    

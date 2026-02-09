@@ -177,9 +177,7 @@ public class Turret extends SubsystemBase {
                 drivetrain.getSpeeds().vyMetersPerSecond,
                 drivetrain.getSpeeds().vxMetersPerSecond));
 
-    SmartDashboard.putNumber("Rotation before Calculation Turret", rotation.getDegrees());
     rotation = rotation.plus(drivetrain.getPose2d().getRotation());
-    SmartDashboard.putNumber("Rotation after Calculation Turret", rotation.getDegrees());
 
     double predictedX = currentX + distance * Math.cos(rotation.getRadians());
     double predictedY = currentY + distance * Math.sin(rotation.getRadians());

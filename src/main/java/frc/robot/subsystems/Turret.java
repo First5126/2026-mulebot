@@ -138,7 +138,7 @@ public class Turret extends SubsystemBase {
       SmartDashboard.putNumber(
           "Turret robotRelativeAngle in Degrees", robotRelativeAngle.getDegrees());
       SmartDashboard.putString(
-          "Turret Target Poseition",
+          "Turret Target Position",
           "X: " + targetPose.get().getX() + " Y: " + targetPose.get().getY());
       SmartDashboard.putString(
           "Turret Current Position",

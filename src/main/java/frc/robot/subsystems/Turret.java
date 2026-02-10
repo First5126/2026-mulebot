@@ -85,7 +85,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void trackTargetPose(Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
-    
+
     if (robotPose.get() != null && targetPose.get() != null) {
       Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
 
@@ -110,8 +110,8 @@ public class Turret extends SubsystemBase {
     return 0.0;
   }
 
-  // takes 1 pose and then finds out bassed on your current pose and you going in a cirtain
-  // dirrecton and bassed on the time it takes it will give you the calculated Pose2d
+  // Takes the current pose and, based on your current pose, direction of travel, and the given
+  // time, returns the calculated predicted Pose2d.
   public Pose2d calculatePredictedPose2d(
       CommandSwerveDrivetrain drivetrain, Supplier<Double> time) {
     Pose2d pose = drivetrain.getPose2d();

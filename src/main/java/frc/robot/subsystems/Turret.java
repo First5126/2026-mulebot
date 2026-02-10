@@ -84,43 +84,8 @@ public class Turret extends SubsystemBase {
     return TurretConstants.DISTANCE_TO_TIME_INTERPOLATOR.get(distance.get());
   }
 
-  public Command trackTargetPoseCommand(Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
-    return run(
-        () -> {
-          SmartDashboard.putBoolean("robotPose Valid", robotPose.get() != null);
-          SmartDashboard.putBoolean("targetPose Valid", targetPose.get() != null);
-          if (robotPose.get() != null && targetPose.get() != null) {
-            Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
-
-            double distanceX = targetPose.get().getX() - turretPose.getX();
-            double distanceY = targetPose.get().getY() - turretPose.getY();
-
-            Rotation2d fieldRelativeAngle =
-                Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
-
-            Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.get().getRotation());
-
-            SmartDashboard.putNumber("Turret distanceX", distanceX);
-            SmartDashboard.putNumber("Turret distanceY", distanceY);
-            SmartDashboard.putNumber(
-                "Turret fieldRelativeAngle in Degrees", fieldRelativeAngle.getDegrees());
-            SmartDashboard.putNumber(
-                "Turret robotRelativeAngle in Degrees", robotRelativeAngle.getDegrees());
-            SmartDashboard.putString(
-                "Turret Target Poseition",
-                "X: " + targetPose.get().getX() + " Y: " + targetPose.get().getY());
-            SmartDashboard.putString(
-                "Turret Current Position",
-                "X: " + robotPose.get().getX() + " Y: " + robotPose.get().getY());
-
-            setPosition(robotRelativeAngle.getMeasure());
-          }
-        });
-  }
-
   public void trackTargetPose(Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
-    SmartDashboard.putBoolean("robotPose Valid", robotPose.get() != null);
-    SmartDashboard.putBoolean("targetPose Valid", targetPose.get() != null);
+    
     if (robotPose.get() != null && targetPose.get() != null) {
       Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
 
@@ -130,19 +95,6 @@ public class Turret extends SubsystemBase {
       Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
 
       Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.get().getRotation());
-
-      SmartDashboard.putNumber("Turret distanceX", distanceX);
-      SmartDashboard.putNumber("Turret distanceY", distanceY);
-      SmartDashboard.putNumber(
-          "Turret fieldRelativeAngle in Degrees", fieldRelativeAngle.getDegrees());
-      SmartDashboard.putNumber(
-          "Turret robotRelativeAngle in Degrees", robotRelativeAngle.getDegrees());
-      SmartDashboard.putString(
-          "Turret Target Poseition",
-          "X: " + targetPose.get().getX() + " Y: " + targetPose.get().getY());
-      SmartDashboard.putString(
-          "Turret Current Position",
-          "X: " + robotPose.get().getX() + " Y: " + robotPose.get().getY());
 
       setPosition(robotRelativeAngle.getMeasure());
     }

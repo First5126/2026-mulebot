@@ -88,22 +88,22 @@ public class Turret extends SubsystemBase {
 
     return run(
         () -> {
-    
-            SmartDashboard.putBoolean("robotPose Valid", robotPose.get() != null);
-            SmartDashboard.putBoolean("targetPose Valid", targetPose.get() != null);
+          SmartDashboard.putBoolean("robotPose Valid", robotPose.get() != null);
+          SmartDashboard.putBoolean("targetPose Valid", targetPose.get() != null);
 
-            if (robotPose.get() != null && targetPose.get() != null) {
+          if (robotPose.get() != null && targetPose.get() != null) {
             Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
 
             double distanceX = targetPose.get().getX() - turretPose.getX();
             double distanceY = targetPose.get().getY() - turretPose.getY();
 
-            Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
+            Rotation2d fieldRelativeAngle =
+                Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
 
             Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.get().getRotation());
 
             setPosition(robotRelativeAngle.getMeasure());
-            }
+          }
         });
   }
 
@@ -114,7 +114,8 @@ public class Turret extends SubsystemBase {
   }
 
   public double findTimeFromFuelShootingDistance(double distance) {
-    throw new UnsupportedOperationException("TODO: Implement findTimeFromFuelShootingDistance(double distance) based on shooter model\"");
+    throw new UnsupportedOperationException(
+        "TODO: Implement findTimeFromFuelShootingDistance(double distance) based on shooter model\"");
   }
 
   // Takes the current pose and, based on your current pose, direction of travel, and the given

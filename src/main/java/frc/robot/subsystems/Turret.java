@@ -84,20 +84,27 @@ public class Turret extends SubsystemBase {
     return TurretConstants.DISTANCE_TO_TIME_INTERPOLATOR.get(distance.get());
   }
 
-  public void trackTargetPose(Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
+  public Command trackTargetPose(Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
 
-    if (robotPose.get() != null && targetPose.get() != null) {
-      Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
+    return run(
+        () -> {
+    
+            SmartDashboard.putBoolean("robotPose Valid", robotPose.get() != null);
+            SmartDashboard.putBoolean("targetPose Valid", targetPose.get() != null);
 
-      double distanceX = targetPose.get().getX() - turretPose.getX();
-      double distanceY = targetPose.get().getY() - turretPose.getY();
+            if (robotPose.get() != null && targetPose.get() != null) {
+            Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
 
-      Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
+            double distanceX = targetPose.get().getX() - turretPose.getX();
+            double distanceY = targetPose.get().getY() - turretPose.getY();
 
-      Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.get().getRotation());
+            Rotation2d fieldRelativeAngle = Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
 
-      setPosition(robotRelativeAngle.getMeasure());
-    }
+            Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.get().getRotation());
+
+            setPosition(robotRelativeAngle.getMeasure());
+            }
+        });
   }
 
   public double getDistanceFromHub(Supplier<Pose2d> robotPose, Zones zone) {
@@ -107,7 +114,7 @@ public class Turret extends SubsystemBase {
   }
 
   public double findTimeFromFuelShootingDistance(double distance) {
-    return 0.0;
+    throw new UnsupportedOperationException("TODO: Implement findTimeFromFuelShootingDistance(double distance) based on shooter model\"");
   }
 
   // Takes the current pose and, based on your current pose, direction of travel, and the given

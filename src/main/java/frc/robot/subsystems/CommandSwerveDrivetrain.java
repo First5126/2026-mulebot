@@ -434,7 +434,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return DrivetrainConstants.maxAngularVelocityRadiansPerSecond * percentOutput;
   }
 
-  private ChassisSpeeds getSpeeds() {
+  public ChassisSpeeds getSpeeds() {
     return getState().Speeds;
   }
 

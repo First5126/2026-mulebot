@@ -41,37 +41,48 @@ public class LEDLights extends SubsystemBase{
   private final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
   private final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
   private final RainbowAnimation rainbow = new RainbowAnimation(0, 67);
-  private SolidColor m_solidColorControl = new SolidColor(0, 67);
-  private boolean cleared = false;
+  private static SolidColor m_solidColorControl = new SolidColor(0, 67);
+  private int counter = 0;  
+      
+        public LEDLights() {
+          m_candle.getConfigurator().apply(m_configs);
+        }
+      
+        private void setRainbow() {
+              m_candle.setControl(rainbow); 
+          };
+      
+        public void setSolidColor() {
+           run(() -> m_candle.setControl(m_solidColorControl.withColor(GREEN)));
+      }
+    
 
-  public LEDLights() {
-    m_candle.getConfigurator().apply(m_configs);
+      public void stopSolidColor() {
+          run(() -> m_candle.setControl(m_solidColorControl.withColor(RED)));
   }
 
-  private void setRainbow() {
-        m_candle.setControl(rainbow); 
-    };
+
+  public Command setBlue() {
+        return run(() -> applyColor(BLUE));
+  }
+
+  public Command setRed() {
+        return run(() -> applyColor(RED));
+  }
   
-  public Command setRanbow() {
-      return run(() -> m_candle.setControl(m_solidColorControl.withColor(BLUE)));
-  }
-
-
-  public Command stopRainbow() {
-      return run(() -> m_candle.setControl(m_solidColorControl.withColor(CLEAR)));
+  public Command setGreen() {
+        return run(() -> applyColor(GREEN));
   }
 
   public Command driveLEDs(Supplier<Double> robotCentric, Supplier<Double> fieldCentric){
     return runOnce(() -> {
+      counter ++;
       if(robotCentric.get() > 0.05 || fieldCentric.get() > 0.05){
-        setRainbow();
-        cleared = false;
+        applyColor(GREEN);
       }
       else {
-        if (!cleared){
-          applyColor(CLEAR);
-          cleared = true;
-        }
+        applyColor(RED);
+        counter = 0;
     }});
   }
 

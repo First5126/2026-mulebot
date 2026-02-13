@@ -24,6 +24,7 @@ public class Driver extends CustomXboxController implements Controller {
   @Getter @Setter private CommandFactory commandFactory;
   @Getter @Setter private Intake intake = new Intake();
   @Getter @Setter private Turret turret = new Turret();
+  @Getter @Setter private LEDLights ledLights = new LEDLights();
 
   private final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt POINT = new SwerveRequest.PointWheelsAt();
@@ -51,6 +52,7 @@ public class Driver extends CustomXboxController implements Controller {
     driver.setCommandFactory(commandFactory);
     driver.setTurret(new Turret());
     driver.setIntake(new Intake());
+    driver.setLedLights(new LEDLights());
 
     return driver;
   }
@@ -69,6 +71,9 @@ public class Driver extends CustomXboxController implements Controller {
 
     this.a().onTrue(aprilTagLocalization.setTrust(true));
     this.a().onFalse(aprilTagLocalization.setTrust(false));
+
+    this.y().onTrue(ledLights.setGreen());
+    this.y().onFalse(ledLights.setRed());
 
     this.povUp().onTrue(turret.rotateToPosition(Degrees.of(0)));
     this.povLeft().onTrue(turret.rotateToPosition(Degrees.of(90)));

@@ -80,9 +80,6 @@ public class Driver extends CustomXboxController implements Controller {
     this.a().onTrue(aprilTagLocalization.setTrust(true));
     this.a().onFalse(aprilTagLocalization.setTrust(false));
 
-    this.y().onTrue(ledLights.setGreen());
-    this.y().onFalse(ledLights.setRed());
-
     this.povUp().onTrue(turret.rotateToPosition(Degrees.of(0)));
     this.povLeft().onTrue(turret.rotateToPosition(Degrees.of(90)));
     this.povRight().onTrue(turret.rotateToPosition(Degrees.of(180)));

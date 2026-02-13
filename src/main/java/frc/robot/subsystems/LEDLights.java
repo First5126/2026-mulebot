@@ -2,9 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+
 
 package frc.robot.subsystems;
 
@@ -39,15 +37,6 @@ public class LEDLights extends SubsystemBase {
 
   public LEDLights() {
     m_candle.getConfigurator().apply(m_configs);
-  }
-
-  private void setRainbow() {
-    m_candle.setControl(rainbow);
-  }
-  ;
-
-  public Command setRanbow() {
-    return run(() -> m_candle.setControl(m_solidColorControl.withColor(BLUE)));
   }
 
   public void setRed() {

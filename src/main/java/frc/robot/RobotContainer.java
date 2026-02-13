@@ -44,7 +44,6 @@ public class RobotContainer {
   // subsystems
   private final Turret m_turret = new Turret();
   private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
-  private final LEDLights m_LedLights = new LEDLights();
 
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details
@@ -59,8 +58,7 @@ public class RobotContainer {
           m_drivetrain,
           photonDetails,
           AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
-
-  private final Zones m_zones = new Zones(m_drivetrain::getPose2d);
+          
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -72,11 +70,11 @@ public class RobotContainer {
   }
 
   private void UpdateZone() {
-    m_drivetrain.run(() -> m_zones.UpdateZone(m_drivetrain.getPose2d()));
+    m_drivetrain.run(() -> m_zone.UpdateZone(m_drivetrain.getPose2d()));
   }
 
   private void configureBindings() {
-    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zones)
+    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone)
         .configureBindings();
 
     // Idle while the robot is disabled. This ensures the configured

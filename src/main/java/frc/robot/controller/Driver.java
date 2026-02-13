@@ -61,7 +61,7 @@ public class Driver extends CustomXboxController implements Controller {
 
   @Override
   public Driver configureBindings() {
-    // Use m_drivetrain here as needeed
+    // Use m_drivetrain here as needed
 
     drivetrain.setDefaultCommand(
         drivetrain.gasPedalCommand(

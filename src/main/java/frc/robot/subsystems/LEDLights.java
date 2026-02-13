@@ -9,6 +9,7 @@
 package frc.robot.subsystems;
 
 import java.nio.file.WatchEvent;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.CANBus;
@@ -56,24 +57,52 @@ public class LEDLights extends SubsystemBase{
       return run(() -> m_candle.setControl(m_solidColorControl.withColor(BLUE)));
   }
 
+  public void setRed() {
+      m_candle.setControl(m_solidColorControl.withColor(RED));
+  }
+
+  public void setGreen() {
+       m_candle.setControl(m_solidColorControl.withColor(GREEN));
+  }
+
+  public Command setBlue() {
+      return run(() -> applyColor(BLUE));
+  }
+
+  public Command setPurple() {
+      return run(() -> applyColor(PURPLE));
+  }
 
   public Command stopRainbow() {
-      return run(() -> m_candle.setControl(m_solidColorControl.withColor(CLEAR)));
+      return run(() -> m_candle.setControl(m_solidColorControl.withColor(RED)));
   }
 
-  public Command driveLEDs(Supplier<Double> robotCentric, Supplier<Double> fieldCentric){
-    return runOnce(() -> {
-      if(robotCentric.get() > 0.05 || fieldCentric.get() > 0.05){
-        setRainbow();
-        cleared = false;
-      }
-      else {
-        if (!cleared){
-          applyColor(CLEAR);
-          cleared = true;
+  public Command ledByMotion(
+    DoubleSupplier rightTrigger,
+    DoubleSupplier leftTrigger,
+    DoubleSupplier rotationX,
+    DoubleSupplier rotationY,
+    DoubleSupplier joystickY,
+    DoubleSupplier joystickX) { 
+
+      return run(() -> {
+        boolean moving =
+            rightTrigger.getAsDouble() > 0.05 ||
+            leftTrigger.getAsDouble() > 0.05 ||
+            rotationX.getAsDouble() > 0.05 ||
+            rotationY.getAsDouble() > 0.05 ||
+            joystickX.getAsDouble() > 0.05 ||
+            joystickY.getAsDouble() > 0.05;
+
+        if (moving) {
+          setGreen();
+        } else {
+          setRed();
         }
-    }});
-  }
+      });
+    }
+
+
 
   private void applyColor(RGBWColor color) {
           m_candle.setControl(m_solidColorControl.withColor(color));

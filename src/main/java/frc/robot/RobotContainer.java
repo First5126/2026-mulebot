@@ -21,6 +21,7 @@ import frc.robot.controller.Driver;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.LEDLights;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Zones;
 import frc.robot.vision.AprilTagLocalization;
@@ -44,6 +45,7 @@ public class RobotContainer {
   // subsystems
   private final Turret m_turret = new Turret();
   private final Zones m_zone = new Zones();
+  private final LEDLights m_LedLights = new LEDLights();
 
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details

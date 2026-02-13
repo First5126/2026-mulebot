@@ -55,11 +55,12 @@ public class CommandFactory {
   }
 
   public Command turretTrackPredictedPositionCommand() {
-    Supplier<Pose2d> predictPose2d = () -> {
-      double distance = m_turret.getDistanceFromHub(m_drivetrain::getPose2d, m_zone);
-      double time = m_turret.getTimeFromDistance(() -> distance);
-      return m_turret.calculatePredictedPose2d(m_drivetrain,() -> time);
-    };
+    Supplier<Pose2d> predictPose2d =
+        () -> {
+          double distance = m_turret.getDistanceFromHub(m_drivetrain::getPose2d, m_zone);
+          double time = m_turret.getTimeFromDistance(() -> distance);
+          return m_turret.calculatePredictedPose2d(m_drivetrain, () -> time);
+        };
 
     return m_turret.trackTargetPose(predictPose2d, m_zone::getTurretShootingPose);
   }

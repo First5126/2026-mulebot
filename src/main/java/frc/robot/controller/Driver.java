@@ -5,10 +5,12 @@ import static edu.wpi.first.units.Units.Degrees;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.FMS.Zones;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDLights;
 import frc.robot.subsystems.Turret;
 import frc.robot.vision.AprilTagLocalization;
 import lombok.Getter;
@@ -23,6 +25,7 @@ public class Driver extends CustomXboxController implements Controller {
   @Getter @Setter private CommandFactory commandFactory;
   @Getter @Setter private Intake intake = new Intake();
   @Getter @Setter private Turret turret = new Turret();
+  @Getter @Setter private LEDLights ledLights = new LEDLights();
 
   private final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt POINT = new SwerveRequest.PointWheelsAt();
@@ -43,13 +46,15 @@ public class Driver extends CustomXboxController implements Controller {
   public static Driver init(
       CommandSwerveDrivetrain drivetrain,
       AprilTagLocalization aprilTagLocalization,
-      CommandFactory commandFactory) {
+      CommandFactory commandFactory,
+      Zones zones) {
     Driver driver = getInstance();
     driver.setDrivetrain(drivetrain);
     driver.setAprilTagLocalization(aprilTagLocalization);
     driver.setCommandFactory(commandFactory);
     driver.setTurret(new Turret());
     driver.setIntake(new Intake());
+    driver.setLedLights(new LEDLights());
 
     return driver;
   }
@@ -63,6 +68,15 @@ public class Driver extends CustomXboxController implements Controller {
             this::getRightTriggerAxis,
             this::getLeftTriggerAxis,
             this::getRightX,
+            this::getLeftY,
+            this::getLeftX));
+
+    ledLights.setDefaultCommand(
+        ledLights.ledByMotion(
+            this::getRightTriggerAxis,
+            this::getLeftTriggerAxis,
+            this::getRightX,
+            this::getRightY,
             this::getLeftY,
             this::getLeftX));
 

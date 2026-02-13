@@ -62,7 +62,7 @@ public class Driver extends CustomXboxController implements Controller {
   @Override
   public Driver configureBindings() {
     // Use m_drivetrain here as needeed
-    
+
     drivetrain.setDefaultCommand(
         drivetrain.gasPedalCommand(
             this::getRightTriggerAxis,
@@ -101,9 +101,6 @@ public class Driver extends CustomXboxController implements Controller {
                     SmartDashboard.getNumber("Pose Y", 0),
                     drivetrain.getRotation3d().toRotation2d())));
 
-
-  
-            
     return this;
   }
 }

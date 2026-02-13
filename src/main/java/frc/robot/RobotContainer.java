@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.Idle;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,7 +59,7 @@ public class RobotContainer {
           m_drivetrain,
           photonDetails,
           AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
-  
+
   private final Zones m_zones = new Zones(m_drivetrain::getPose2d);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -72,14 +71,13 @@ public class RobotContainer {
     m_turret.setDefaultCommand(m_commandFactory.turretTrackPredictedPositionCommand());
   }
 
-
-  private void UpdateZone(){
+  private void UpdateZone() {
     m_drivetrain.run(() -> m_zones.UpdateZone(m_drivetrain.getPose2d()));
   }
 
-
   private void configureBindings() {
-    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zones).configureBindings();
+    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zones)
+        .configureBindings();
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.

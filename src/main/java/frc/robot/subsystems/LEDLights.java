@@ -8,31 +8,23 @@
 
 package frc.robot.subsystems;
 
-import java.nio.file.WatchEvent;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.core.CoreCANdle;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
 import com.ctre.phoenix6.signals.RGBWColor;
-
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 
-public class LEDLights extends SubsystemBase{
+public class LEDLights extends SubsystemBase {
 
   private static final int kCANdleCANbus = 0;
   private static final CANBus driveBaseCanivore = new CANBus("DriveBase");
   private static CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus, driveBaseCanivore);
-  
+
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
   private final RGBWColor CLEAR = new RGBWColor(255, 255, 255);
@@ -50,67 +42,66 @@ public class LEDLights extends SubsystemBase{
   }
 
   private void setRainbow() {
-        m_candle.setControl(rainbow); 
-    };
-  
+    m_candle.setControl(rainbow);
+  }
+  ;
+
   public Command setRanbow() {
-      return run(() -> m_candle.setControl(m_solidColorControl.withColor(BLUE)));
+    return run(() -> m_candle.setControl(m_solidColorControl.withColor(BLUE)));
   }
 
   public void setRed() {
-      m_candle.setControl(m_solidColorControl.withColor(RED));
+    m_candle.setControl(m_solidColorControl.withColor(RED));
   }
 
   public void setGreen() {
-       m_candle.setControl(m_solidColorControl.withColor(GREEN));
+    m_candle.setControl(m_solidColorControl.withColor(GREEN));
   }
 
   public Command setBlue() {
-      return run(() -> applyColor(BLUE));
+    return run(() -> applyColor(BLUE));
   }
 
   public Command setPurple() {
-      return run(() -> applyColor(PURPLE));
+    return run(() -> applyColor(PURPLE));
   }
 
   public Command stopRainbow() {
-      return run(() -> m_candle.setControl(m_solidColorControl.withColor(RED)));
+    return run(() -> m_candle.setControl(m_solidColorControl.withColor(RED)));
   }
 
   public Command ledByMotion(
-    DoubleSupplier rightTrigger,
-    DoubleSupplier leftTrigger,
-    DoubleSupplier rotationX,
-    DoubleSupplier rotationY,
-    DoubleSupplier joystickY,
-    DoubleSupplier joystickX) { 
+      DoubleSupplier rightTrigger,
+      DoubleSupplier leftTrigger,
+      DoubleSupplier rotationX,
+      DoubleSupplier rotationY,
+      DoubleSupplier joystickY,
+      DoubleSupplier joystickX) {
 
-      return run(() -> {
-        boolean moving =
-            rightTrigger.getAsDouble() > 0.05 ||
-            leftTrigger.getAsDouble() > 0.05 ||
-            rotationX.getAsDouble() > 0.05 ||
-            rotationY.getAsDouble() > 0.05 ||
-            joystickX.getAsDouble() > 0.05 ||
-            joystickY.getAsDouble() > 0.05;
+    return run(
+        () -> {
+          boolean moving =
+              rightTrigger.getAsDouble() > 0.05
+                  || leftTrigger.getAsDouble() > 0.05
+                  || rotationX.getAsDouble() > 0.05
+                  || rotationY.getAsDouble() > 0.05
+                  || joystickX.getAsDouble() > 0.05
+                  || joystickY.getAsDouble() > 0.05;
 
-        if (moving) {
-          setGreen();
-        } else {
-          setRed();
-        }
-      });
-    }
-
-
+          if (moving) {
+            setGreen();
+          } else {
+            setRed();
+          }
+        });
+  }
 
   private void applyColor(RGBWColor color) {
-          m_candle.setControl(m_solidColorControl.withColor(color));
+    m_candle.setControl(m_solidColorControl.withColor(color));
   }
 
   @Override
   public void periodic() {
-      SmartDashboard.putNumber("RobotCentric", kCANdleCANbus);
+    SmartDashboard.putNumber("RobotCentric", kCANdleCANbus);
   }
-
 }

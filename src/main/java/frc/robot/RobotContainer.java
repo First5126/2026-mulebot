@@ -21,7 +21,6 @@ import frc.robot.controller.Driver;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.LEDLights;
 import frc.robot.subsystems.Turret;
 import frc.robot.vision.AprilTagLocalization;
 
@@ -58,7 +57,6 @@ public class RobotContainer {
           m_drivetrain,
           photonDetails,
           AprilTagLocalizationConstants.LIMELIGHT_DETAILS_RIGHT);
-          
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -74,8 +72,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone)
-        .configureBindings();
+    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone).configureBindings();
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.

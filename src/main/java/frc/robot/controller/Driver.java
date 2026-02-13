@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.FMS.Zones;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -45,7 +46,8 @@ public class Driver extends CustomXboxController implements Controller {
   public static Driver init(
       CommandSwerveDrivetrain drivetrain,
       AprilTagLocalization aprilTagLocalization,
-      CommandFactory commandFactory) {
+      CommandFactory commandFactory,
+      Zones zones) {
     Driver driver = getInstance();
     driver.setDrivetrain(drivetrain);
     driver.setAprilTagLocalization(aprilTagLocalization);

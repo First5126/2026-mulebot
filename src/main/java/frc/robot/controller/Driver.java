@@ -23,6 +23,7 @@ public class Driver extends CustomXboxController implements Controller {
   @Getter @Setter private CommandFactory commandFactory;
   @Getter @Setter private Intake intake = new Intake();
   @Getter @Setter private Turret turret = new Turret();
+  @Getter @Setter private LEDLights ledLights = new LEDLights();
 
   private final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt POINT = new SwerveRequest.PointWheelsAt();
@@ -50,19 +51,29 @@ public class Driver extends CustomXboxController implements Controller {
     driver.setCommandFactory(commandFactory);
     driver.setTurret(new Turret());
     driver.setIntake(new Intake());
+    driver.setLedLights(new LEDLights());
 
     return driver;
   }
 
   @Override
   public Driver configureBindings() {
-    // Use m_drivetrain here as needed
-
+    // Use m_drivetrain here as needeed
+    
     drivetrain.setDefaultCommand(
         drivetrain.gasPedalCommand(
             this::getRightTriggerAxis,
             this::getLeftTriggerAxis,
             this::getRightX,
+            this::getLeftY,
+            this::getLeftX));
+
+    ledLights.setDefaultCommand(
+        ledLights.ledByMotion(
+            this::getRightTriggerAxis,
+            this::getLeftTriggerAxis,
+            this::getRightX,
+            this::getRightY,
             this::getLeftY,
             this::getLeftX));
 
@@ -87,6 +98,9 @@ public class Driver extends CustomXboxController implements Controller {
                     SmartDashboard.getNumber("Pose Y", 0),
                     drivetrain.getRotation3d().toRotation2d())));
 
+
+  
+            
     return this;
   }
 }

@@ -2,19 +2,20 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.FMS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.WaypointConstants;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Add your docs here. */
-public class Zones extends SubsystemBase {
+public class Zones {
 
   public enum Zone {
     ALLIANCE_ZONE(new Pose2d(0.0, 0.0, null)),
@@ -36,7 +37,7 @@ public class Zones extends SubsystemBase {
   private static Zone CurrentZone = Zone.ALLIANCE_ZONE;
   private Optional<Alliance> m_team;
 
-  public Zones() {
+  public Zones(Supplier<Pose2d> robotPoseSupplier) {
     m_team = DriverStation.getAlliance();
   }
 
@@ -44,16 +45,19 @@ public class Zones extends SubsystemBase {
     double x = robotPose.getX();
     double y = robotPose.getY();
 
-    if (isWithin(x, y, new Translation2d(0.0, 0.0), new Translation2d(4.0, 3.0))) {
-      CurrentZone = Zone.ALLIANCE_ZONE;
-    } else if (isWithin(x, y, new Translation2d(4.0, 0.0), new Translation2d(7.0, 3.0))) {
-      CurrentZone = Zone.NEUTRAL_ZONE;
-    } else if (isWithin(x, y, new Translation2d(7.0, 0.0), new Translation2d(10.0, 3.0))) {
-      CurrentZone = Zone.OPPONENT_ZONE;
-    } else {
-      // Outside defined zones, handle as needed
-      CurrentZone = Zone.OUT_OF_BOUNDS;
-    }
+    Commands.run(
+        () -> {
+          if (isWithin(x, y, new Translation2d(0.0, 0.0), new Translation2d(4.0, 3.0))) {
+            CurrentZone = Zone.ALLIANCE_ZONE;
+          } else if (isWithin(x, y, new Translation2d(4.0, 0.0), new Translation2d(7.0, 3.0))) {
+            CurrentZone = Zone.NEUTRAL_ZONE;
+          } else if (isWithin(x, y, new Translation2d(7.0, 0.0), new Translation2d(10.0, 3.0))) {
+            CurrentZone = Zone.OPPONENT_ZONE;
+          } else {
+            // Outside defined zones, handle as needed
+            CurrentZone = Zone.OUT_OF_BOUNDS;
+          }
+        });
   }
 
   public Pose2d getTurretShootingPose() {
@@ -67,6 +71,8 @@ public class Zones extends SubsystemBase {
         return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
       case OPPONENT_ZONE:
         return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+      default:
+        break;
     }
     return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
   }

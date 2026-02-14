@@ -26,6 +26,7 @@ public class Driver extends CustomXboxController implements Controller {
   @Getter @Setter private Intake intake = new Intake();
   @Getter @Setter private Turret turret = new Turret();
   @Getter @Setter private LEDLights ledLights = new LEDLights();
+  @Getter @Setter private Zones zones;
 
   private final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt POINT = new SwerveRequest.PointWheelsAt();
@@ -56,6 +57,8 @@ public class Driver extends CustomXboxController implements Controller {
     driver.setIntake(new Intake());
     driver.setLedLights(new LEDLights());
 
+    driver.setZones(zones);
+
     return driver;
   }
 
@@ -72,13 +75,7 @@ public class Driver extends CustomXboxController implements Controller {
             this::getLeftX));
 
     ledLights.setDefaultCommand(
-        ledLights.ledByMotion(
-            this::getRightTriggerAxis,
-            this::getLeftTriggerAxis,
-            this::getRightX,
-            this::getRightY,
-            this::getLeftY,
-            this::getLeftX));
+        ledLights.ledOnZoneCommand(zones));
 
     this.a().onTrue(aprilTagLocalization.setTrust(true));
     this.a().onFalse(aprilTagLocalization.setTrust(false));

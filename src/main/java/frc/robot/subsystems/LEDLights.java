@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FMS.Zones;
+import frc.robot.constants.ZonesConstants.Zone;
 
 public class LEDLights extends SubsystemBase{
 
@@ -52,10 +54,6 @@ public class LEDLights extends SubsystemBase{
   private void setRainbow() {
         m_candle.setControl(rainbow); 
     };
-  
-  public Command setRanbow() {
-      return run(() -> m_candle.setControl(m_solidColorControl.withColor(BLUE)));
-  }
 
   public void setRed() {
       m_candle.setControl(m_solidColorControl.withColor(RED));
@@ -75,6 +73,29 @@ public class LEDLights extends SubsystemBase{
 
   public Command stopRainbow() {
       return run(() -> m_candle.setControl(m_solidColorControl.withColor(RED)));
+  }
+
+  public void setClear() {
+    
+  }
+
+  public Command ledOnZoneCommand(Zones zone) {
+    return run(() -> {
+      switch (zone.getZone()) {
+        case ALLIANCE_ZONE:
+          applyColor(BLUE);
+          break;
+        case NEUTRAL_ZONE:
+          applyColor(PURPLE);
+          break;
+        case OPPONENT_ZONE:
+          applyColor(RED);
+          break;
+        default:
+          applyColor(GREEN);
+          break;
+      }
+    });
   }
 
   public Command ledByMotion(

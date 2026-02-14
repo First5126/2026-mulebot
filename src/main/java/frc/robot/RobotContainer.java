@@ -44,7 +44,7 @@ public class RobotContainer {
 
   // subsystems
   private final Turret m_turret = new Turret();
-  private final Zones m_zone = new Zones();
+  private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
   private final LEDLights m_LedLights = new LEDLights();
 
   PhotonDetails[] photonDetails = {
@@ -65,13 +65,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
-    UpdateZone();
 
     m_turret.setDefaultCommand(m_commandFactory.turretTrackPredictedPositionCommand());
-  }
-
-  private void UpdateZone() {
-    m_drivetrain.run(() -> m_zone.UpdateZone(m_drivetrain.getPose2d()));
   }
 
   private void configureBindings() {

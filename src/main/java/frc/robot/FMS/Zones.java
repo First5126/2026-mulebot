@@ -11,53 +11,39 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.WaypointConstants;
+import frc.robot.constants.ZonesConstants.Zone;
+
 import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Add your docs here. */
 public class Zones {
-
-  public enum Zone {
-    ALLIANCE_ZONE(new Pose2d(0.0, 0.0, null)),
-    NEUTRAL_ZONE(new Pose2d(4.0, 2.0, null)),
-    OPPONENT_ZONE(new Pose2d(7.0, 3.0, null)),
-    OUT_OF_BOUNDS(null);
-
-    private final Pose2d pose;
-
-    Zone(Pose2d pose) {
-      this.pose = pose;
-    }
-
-    public Pose2d getPose() {
-      return pose;
-    }
-  }
+  private static Supplier<Pose2d> m_pose;
 
   private static Zone CurrentZone = Zone.ALLIANCE_ZONE;
   private Optional<Alliance> m_team;
 
   public Zones(Supplier<Pose2d> robotPoseSupplier) {
     m_team = DriverStation.getAlliance();
+    m_pose = robotPoseSupplier;
   }
 
-  public void UpdateZone(Pose2d robotPose) {
-    double x = robotPose.getX();
-    double y = robotPose.getY();
+  public void UpdateZone() {
+    double x = m_pose.get().getX();
+    double y = m_pose.get().getY();
 
-    Commands.run(
-        () -> {
-          if (isWithin(x, y, new Translation2d(0.0, 0.0), new Translation2d(4.0, 3.0))) {
-            CurrentZone = Zone.ALLIANCE_ZONE;
-          } else if (isWithin(x, y, new Translation2d(4.0, 0.0), new Translation2d(7.0, 3.0))) {
-            CurrentZone = Zone.NEUTRAL_ZONE;
-          } else if (isWithin(x, y, new Translation2d(7.0, 0.0), new Translation2d(10.0, 3.0))) {
-            CurrentZone = Zone.OPPONENT_ZONE;
-          } else {
-            // Outside defined zones, handle as needed
-            CurrentZone = Zone.OUT_OF_BOUNDS;
-          }
-        });
+    SmartDashboard.putString("CurrentZone", CurrentZone.name());
+
+    if (isWithin(x, y, new Translation2d(0.0, 0.0), new Translation2d(4.0, 3.0))) {
+      CurrentZone = Zone.ALLIANCE_ZONE;
+    } else if (isWithin(x, y, new Translation2d(4.0, 0.0), new Translation2d(7.0, 3.0))) {
+      CurrentZone = Zone.NEUTRAL_ZONE;
+    } else if (isWithin(x, y, new Translation2d(7.0, 0.0), new Translation2d(10.0, 3.0))) {
+      CurrentZone = Zone.OPPONENT_ZONE;
+    } else {
+      // Outside defined zones, handle as needed
+      CurrentZone = Zone.OUT_OF_BOUNDS;
+    }
   }
 
   public Pose2d getTurretShootingPose() {
@@ -86,7 +72,7 @@ public class Zones {
     return (x >= minX && x <= maxX) && (y >= minY && y <= maxY);
   }
 
-  public void periodic() {
-    SmartDashboard.putString("CurrentZone", CurrentZone.name());
+  public Zone getZone() {
+    return CurrentZone;
   }
 }

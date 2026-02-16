@@ -58,14 +58,4 @@ public class CommandFactory {
             Set.of(m_drivetrain))
         .repeatedly();
   }
-
-  public Command updateShooterCommand() {
-    return Commands.defer(() -> {
-      ShootingSolution shootingSolution = m_shootingMechanism.geShootingSolution(m_drivetrain::getPose2d,
-       m_drivetrain::getSpeeds, m_zone::getTurretShootingPose);
-
-       // TODO: add the hood rotation too
-       return m_turret.rotateToPosition(shootingSolution.predictedTurretAngle);
-    }, Set.of(m_shootingMechanism));
-  }
 }

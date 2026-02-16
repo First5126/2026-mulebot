@@ -49,7 +49,7 @@ public class RobotContainer {
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details
   };
-  public ShootingMechanism m_shootingMechanism = new ShootingMechanism();
+  public ShootingMechanism m_shootingMechanism = new ShootingMechanism(m_turret,m_drivetrain,m_zone);
   public CommandFactory m_commandFactory = new CommandFactory(m_drivetrain, m_turret, m_zone, m_shootingMechanism);
 
   private AprilTagLocalization m_aprilTagLocalization =
@@ -67,7 +67,8 @@ public class RobotContainer {
     configureBindings();
     UpdateZone();
 
-    m_shootingMechanism.setDefaultCommand(m_commandFactory.updateShooterCommand());
+    //m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
+    // TODO: add hood default command
   }
 
   private void UpdateZone() {

@@ -9,11 +9,15 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.FMS.Zones;
 import frc.robot.constants.HoodConstants;
+import frc.robot.constants.ShootingMechanismConstants;
 import frc.robot.constants.TurretConstants;
 
 public class ShootingMechanism extends SubsystemBase {
@@ -27,7 +31,29 @@ public class ShootingMechanism extends SubsystemBase {
         }
     }
 
-    public ShootingMechanism() {}
+    private final Trigger canShoot;
+    private Turret m_turret;
+    private Hood m_hood;
+    private ShootingSolution m_currentShootingSolution;
+    private CommandSwerveDrivetrain m_drivetrain;
+    private Zones m_zone;
+            
+    public ShootingMechanism(Turret m_turret, CommandSwerveDrivetrain m_drivetrain, Zones m_zone) {
+        this.m_turret = m_turret;
+        this.m_drivetrain = m_drivetrain;
+        this.m_zone = m_zone;
+        // TODO: get the hood too
+
+        canShoot = new Trigger(this::canShootFuel);
+    }
+
+    public Trigger getCanShoot() {
+        return canShoot;
+    }
+
+    public ShootingSolution getShootingSolution() {
+        return m_currentShootingSolution;
+    }
 
     /**
      * @param robotPoseSupplier The current pose of the robot
@@ -36,7 +62,7 @@ public class ShootingMechanism extends SubsystemBase {
      * @param targetPoseSupplier The pose of the target
      * @return A shooting soltuion {@link frc.robot.subsystems.ShootingMechanism.ShootingSolution} that contains the predicted angle for the hood and turret
      */
-    public ShootingSolution geShootingSolution(Supplier<Pose2d> robotPoseSupplier, 
+    private ShootingSolution geShootingSolution(Supplier<Pose2d> robotPoseSupplier, 
     Supplier<ChassisSpeeds> speed, Supplier<Pose2d> targetPoseSupplier) {
 
         // check to see if our suppliers are valid
@@ -77,7 +103,7 @@ public class ShootingMechanism extends SubsystemBase {
                 Rotation2d.fromRadians(Math.atan2(targetDistanceY, targetDistanceX));
 
             // find the robot realtive angle of the turret
-            Angle robotRelativeAngle = fieldRelativeAngle.minus(robotPose.getRotation()).getMeasure();
+            Angle robotRelativeAngle = fieldRelativeAngle.minus(robotPose.getRotation().plus(new Rotation2d(robotSpeeds.omegaRadiansPerSecond*0.02))).getMeasure();
 
             // find the angle of the hood from the predicted pose
             Angle hoodAngle = Rotations.of(HoodConstants.DISTANCE_TO_ANGLE_INTERPOLATOR.get(Math.hypot(targetDistanceX, targetDistanceY)));
@@ -88,5 +114,18 @@ public class ShootingMechanism extends SubsystemBase {
             SmartDashboard.putBoolean("Valid Shooting Solution", false);
             return new ShootingSolution(Degrees.of(0),Degrees.of(0));
         } 
+    }
+
+    @Override
+    public void periodic() {
+        m_currentShootingSolution = geShootingSolution(m_drivetrain::getPose2d, m_drivetrain::getSpeeds, m_zone::getTurretShootingPose);
+
+        SmartDashboard.putBoolean("Can Shoot", canShoot.getAsBoolean());
+    }
+
+    private boolean canShootFuel() {
+        // TODO: add hood
+        SmartDashboard.putNumber("Turret Deviation Deg", m_turret.getPosition().minus(m_currentShootingSolution.predictedTurretAngle).in(Degrees));
+        return m_turret.getPosition().isNear(m_currentShootingSolution.predictedTurretAngle, ShootingMechanismConstants.turretMaximumError);
     }
 }

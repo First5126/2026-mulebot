@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotation;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -19,12 +20,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.subsystems.ShootingMechanism.ShootingSolution;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class Turret extends SubsystemBase {
@@ -56,7 +60,9 @@ public class Turret extends SubsystemBase {
     // talonFXSConfiguration.ExternalFeedback.FeedbackRemoteSensorID = CANConstants.turretEncoder;
 
     Slot0Configs slotConfigs = new Slot0Configs();
-    slotConfigs.kP = 48;
+    slotConfigs.kP = TurretConstants.kP;
+    slotConfigs.kI = TurretConstants.kI;
+    slotConfigs.kD = TurretConstants.kD;
 
     talonFXSConfiguration.Slot0 = slotConfigs;
 
@@ -76,6 +82,17 @@ public class Turret extends SubsystemBase {
         });
   }
 
+  public Command rotateToPosition(Supplier<ShootingSolution> shootingSolution) {
+    return Commands.defer(() -> {
+
+      if (shootingSolution.get() != null) {
+        return rotateToPosition(shootingSolution.get().predictedTurretAngle);
+      }
+      else return rotateToPosition(Rotation.of(0));
+      
+    }, Set.of(this));
+  }
+
   @Override
   public void periodic() {
     double currentAngle = m_turretMotor.getPosition().getValueAsDouble() * 360.0;
@@ -89,6 +106,10 @@ public class Turret extends SubsystemBase {
   public double findTimeFromFuelShootingDistance(double distance) {
     throw new UnsupportedOperationException(
         "TODO: Implement findTimeFromFuelShootingDistance(double distance) based on shooter model\"");
+  }
+
+  public Angle getPosition() {
+    return m_turretMotor.getPosition().getValue();
   }
 
 

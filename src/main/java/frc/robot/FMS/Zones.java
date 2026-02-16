@@ -34,11 +34,11 @@ public class Zones {
 
     SmartDashboard.putString("CurrentZone", CurrentZone.name());
 
-    if (isWithin(x, y, new Translation2d(0.0, 0.0), new Translation2d(4.0, 3.0))) {
+    if (isWithin(x, y, Zone.ALLIANCE_ZONE.getTopLeftTranslation(), Zone.ALLIANCE_ZONE.getBottomRightTranslation())) {
       CurrentZone = Zone.ALLIANCE_ZONE;
-    } else if (isWithin(x, y, new Translation2d(4.0, 0.0), new Translation2d(7.0, 3.0))) {
+    } else if (isWithin(x, y, Zone.NEUTRAL_ZONE.getTopLeftTranslation(), Zone.NEUTRAL_ZONE.getBottomRightTranslation())) {
       CurrentZone = Zone.NEUTRAL_ZONE;
-    } else if (isWithin(x, y, new Translation2d(7.0, 0.0), new Translation2d(10.0, 3.0))) {
+    } else if (isWithin(x, y, Zone.OPPONENT_ZONE.getTopLeftTranslation(), Zone.OPPONENT_ZONE.getBottomRightTranslation())) {
       CurrentZone = Zone.OPPONENT_ZONE;
     } else {
       // Outside defined zones, handle as needed

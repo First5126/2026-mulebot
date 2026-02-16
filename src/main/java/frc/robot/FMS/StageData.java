@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
 
-public class StageData extends SubsystemBase {
+public class StageData {
   private static char m_firstInactiveAlliance;
   private static char m_alliance;
 
@@ -17,8 +17,7 @@ public class StageData extends SubsystemBase {
     m_alliance = ' ';
   }
 
-  @Override
-  public void periodic() {
+  public void update() {
     if (m_alliance == ' ') {
       Optional<DriverStation.Alliance> our_alliance = DriverStation.getAlliance();
       if (our_alliance.isPresent()) {
@@ -57,10 +56,18 @@ public class StageData extends SubsystemBase {
     else return GameStage.TransitionShift;
   }
 
+  public static double getTimeLeftTilStageChange() {
+    boolean auto = DriverStation.isAutonomous();
+    if (auto) return -1;
+
+    double gameTime = DriverStation.getMatchTime();
+    return (gameTime - 5) % 25;
+  }
+
   public static boolean canScore() {
     GameStage stage = getStage();
 
-    if (stage == GameStage.Auto || stage == GameStage.Endgame) return true;
+    if (stage == GameStage.Auto || stage == GameStage.Endgame || stage == GameStage.TransitionShift) return true;
     else if (stage == GameStage.ShiftOne || stage == GameStage.ShiftThree) {
       if (m_alliance == m_firstInactiveAlliance) return false;
       else return true;

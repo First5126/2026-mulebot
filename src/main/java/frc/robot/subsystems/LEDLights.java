@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FMS.StageData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.ZonesConstants.Zone;
 
@@ -34,6 +35,7 @@ public class LEDLights extends SubsystemBase{
   private static final int kCANdleCANbus = 0;
   private static final CANBus driveBaseCanivore = new CANBus("DriveBase");
   private static CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus, driveBaseCanivore);
+  private StageData m_stageData;
   
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
@@ -43,11 +45,15 @@ public class LEDLights extends SubsystemBase{
   private final RGBWColor BLUE = new RGBWColor(0, 0, 255);
   private final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
   private final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
-  private final RainbowAnimation rainbow = new RainbowAnimation(0, 67);
-  private SolidColor m_solidColorControl = new SolidColor(0, 67);
+  private final RGBWColor BLACK = new RGBWColor(0, 0, 0);
+  private final int END_INDEX = 67;
+  private  final int START_INDEX = 0;
+  private final RainbowAnimation rainbow = new RainbowAnimation(START_INDEX, END_INDEX);
+  private SolidColor m_solidColorControl = new SolidColor(START_INDEX, END_INDEX);
   private boolean cleared = false;
 
-  public LEDLights() {
+  public LEDLights(StageData stageData) {
+    m_stageData = stageData;
     m_candle.getConfigurator().apply(m_configs);
   }
 
@@ -98,6 +104,33 @@ public class LEDLights extends SubsystemBase{
     });
   }
 
+  public Command ledByShifts() {
+    return run(() -> {
+      Supplier<Double> timeLeft = ()  -> StageData.getTimeLeftTilStageChange();
+      RGBWColor color = PURPLE;
+      if (StageData.canScore()) {
+        color = GREEN;
+      } else {
+        color = RED;
+      }
+      SmartDashboard.putBoolean("Time Left Condition Statment", timeLeft.get() < 5);
+      SmartDashboard.putNumber("Time Left til Change", timeLeft.get());
+      if (timeLeft.get() < 5 && timeLeft.get() > 0) {
+        int ammount = (int)(-(((END_INDEX*((timeLeft.get()-5) / 5)))/2));
+        SmartDashboard.putNumber("Ammount of leds", ammount);
+        int endIndex = END_INDEX - ammount;
+        int startIndex = START_INDEX + ammount;
+        applyColorWithIndex(BLACK, START_INDEX, startIndex);
+        applyColorWithIndex(BLACK, endIndex, END_INDEX);
+        //m_configs.LED.BrightnessScalar = ((int)((timeLeft.get() % 5) * 5))/5;
+        //m_candle.getConfigurator().apply(m_configs);
+      } else {
+        applyColorWithIndex(color, START_INDEX, END_INDEX);
+      }
+      
+    });
+  }
+
   public Command ledByMotion(
     DoubleSupplier rightTrigger,
     DoubleSupplier leftTrigger,
@@ -126,7 +159,11 @@ public class LEDLights extends SubsystemBase{
 
 
   private void applyColor(RGBWColor color) {
-          m_candle.setControl(m_solidColorControl.withColor(color));
+    m_candle.setControl(m_solidColorControl.withColor(color));
+  }
+
+  private void applyColorWithIndex(RGBWColor color, int start, int end) {
+    m_candle.setControl(m_solidColorControl.withColor(color).withLEDStartIndex(start).withLEDEndIndex(end));
   }
 
   @Override

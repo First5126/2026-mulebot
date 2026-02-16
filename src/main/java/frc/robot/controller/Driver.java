@@ -25,7 +25,7 @@ public class Driver extends CustomXboxController implements Controller {
   @Getter @Setter private CommandFactory commandFactory;
   @Getter @Setter private Intake intake = new Intake();
   @Getter @Setter private Turret turret = new Turret();
-  @Getter @Setter private LEDLights ledLights = new LEDLights();
+  @Getter @Setter private LEDLights ledLights;
   @Getter @Setter private Zones zones;
 
   private final SwerveRequest.SwerveDriveBrake BRAKE = new SwerveRequest.SwerveDriveBrake();
@@ -48,14 +48,15 @@ public class Driver extends CustomXboxController implements Controller {
       CommandSwerveDrivetrain drivetrain,
       AprilTagLocalization aprilTagLocalization,
       CommandFactory commandFactory,
-      Zones zones) {
+      Zones zones,
+      LEDLights ledLights) {
     Driver driver = getInstance();
     driver.setDrivetrain(drivetrain);
     driver.setAprilTagLocalization(aprilTagLocalization);
     driver.setCommandFactory(commandFactory);
     driver.setTurret(new Turret());
     driver.setIntake(new Intake());
-    driver.setLedLights(new LEDLights());
+    driver.setLedLights(ledLights);
 
     driver.setZones(zones);
 
@@ -75,7 +76,7 @@ public class Driver extends CustomXboxController implements Controller {
             this::getLeftX));
 
     ledLights.setDefaultCommand(
-        ledLights.ledOnZoneCommand(zones));
+        ledLights.ledByShifts());
 
     this.a().onTrue(aprilTagLocalization.setTrust(true));
     this.a().onFalse(aprilTagLocalization.setTrust(false));

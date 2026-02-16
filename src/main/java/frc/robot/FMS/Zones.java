@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.GoalPoseConstants;
 import frc.robot.constants.WaypointConstants;
+import frc.robot.constants.GoalPoseConstants.GoalPose;
+
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -61,20 +64,24 @@ public class Zones {
   }
 
   public Pose2d getTurretShootingPose() {
+    return getGoalPose().pose;
+  }
+
+  public GoalPose getGoalPose() {
     if (!m_team.isPresent()) {
-      return WaypointConstants.blueHub;
+      return GoalPoseConstants.BLUE_HUB;
     }
     switch (CurrentZone) {
       case ALLIANCE_ZONE:
-        return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
       case NEUTRAL_ZONE:
-        return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
       case OPPONENT_ZONE:
-        return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
       default:
         break;
     }
-    return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+    return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
   }
 
   private boolean isWithin(double x, double y, Translation2d corner1, Translation2d corner2) {
@@ -88,5 +95,9 @@ public class Zones {
 
   public void periodic() {
     SmartDashboard.putString("CurrentZone", CurrentZone.name());
+  }
+
+  public Zone getCurrentZone() {
+    return CurrentZone;
   }
 }

@@ -15,10 +15,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.FMS.StageData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.HoodConstants;
 import frc.robot.constants.ShootingMechanismConstants;
 import frc.robot.constants.TurretConstants;
+import frc.robot.constants.GoalPoseConstants.GoalPose;
 
 public class ShootingMechanism extends SubsystemBase {
     public static class ShootingSolution {
@@ -124,8 +126,14 @@ public class ShootingMechanism extends SubsystemBase {
     }
 
     private boolean canShootFuel() {
+
+        GoalPose goalPose = m_zone.getGoalPose();
+
+        boolean check = m_turret.getPosition().isNear(m_currentShootingSolution.predictedTurretAngle, ShootingMechanismConstants.turretMaximumError) &&
+            goalPose.canShootInZone(m_zone.getCurrentZone()) && (!goalPose.requiresShift || StageData.canScore() == true);
+
         // TODO: add hood
         SmartDashboard.putNumber("Turret Deviation Deg", m_turret.getPosition().minus(m_currentShootingSolution.predictedTurretAngle).in(Degrees));
-        return m_turret.getPosition().isNear(m_currentShootingSolution.predictedTurretAngle, ShootingMechanismConstants.turretMaximumError);
+        return check;
     }
 }

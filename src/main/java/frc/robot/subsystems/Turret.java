@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.TurretConstants;
+import frc.robot.subsystems.ShootingMechanism.ShootingSolution;
+
 import java.util.function.Supplier;
 
 public class Turret extends SubsystemBase {
@@ -71,7 +73,6 @@ public class Turret extends SubsystemBase {
     return runOnce(
         () -> {
           setPosition(position);
-          ;
         });
   }
 
@@ -85,72 +86,11 @@ public class Turret extends SubsystemBase {
     return TurretConstants.DISTANCE_TO_TIME_INTERPOLATOR.get(distance.get());
   }
 
-  public Command trackTargetPose(Supplier<Pose2d> robotPose, Supplier<Pose2d> targetPose) {
-
-    return run(
-        () -> {
-          SmartDashboard.putBoolean("robotPose Valid", robotPose.get() != null);
-          SmartDashboard.putBoolean("targetPose Valid", targetPose.get() != null);
-
-          if (robotPose.get() != null && targetPose.get() != null) {
-            Pose2d turretPose = robotPose.get().plus(TurretConstants.TURRET_OFFSET);
-
-            double distanceX = targetPose.get().getX() - turretPose.getX();
-            double distanceY = targetPose.get().getY() - turretPose.getY();
-
-            Rotation2d fieldRelativeAngle =
-                Rotation2d.fromRadians(Math.atan2(distanceY, distanceX));
-
-            Rotation2d robotRelativeAngle = fieldRelativeAngle.minus(robotPose.get().getRotation());
-
-            setPosition(robotRelativeAngle.getMeasure());
-          }
-        });
-  }
-
-  public double getDistanceFromHub(Supplier<Pose2d> robotPose, Zones zone) {
-    Translation2d hubTranslation2d = zone.getTurretShootingPose().getTranslation();
-    Translation2d botTranslation2d = robotPose.get().getTranslation();
-    return hubTranslation2d.getDistance(botTranslation2d);
-  }
-
   public double findTimeFromFuelShootingDistance(double distance) {
     throw new UnsupportedOperationException(
         "TODO: Implement findTimeFromFuelShootingDistance(double distance) based on shooter model\"");
   }
 
-  // Takes the current pose and, based on your current pose, direction of travel, and the given
-  // time, returns the calculated predicted Pose2d.
-  public Pose2d calculatePredictedPose2d(
-      CommandSwerveDrivetrain drivetrain, Supplier<Double> time) {
-    Pose2d pose = drivetrain.getPose2d();
-    double currentX = pose.getX();
-    double currentY = pose.getY();
-
-    double distance =
-        time.get()
-            * Math.sqrt(
-                Math.pow(drivetrain.getSpeeds().vxMetersPerSecond, 2)
-                    + Math.pow(drivetrain.getSpeeds().vyMetersPerSecond, 2));
-    Rotation2d rotation =
-        new Rotation2d(
-            Math.atan2(
-                drivetrain.getSpeeds().vyMetersPerSecond,
-                drivetrain.getSpeeds().vxMetersPerSecond));
-
-    rotation = rotation.plus(drivetrain.getPose2d().getRotation());
-
-    double predictedX = currentX + distance * Math.cos(rotation.getRadians());
-    double predictedY = currentY + distance * Math.sin(rotation.getRadians());
-
-    Pose2d predictedPose2d =
-        new Pose2d(
-            predictedX,
-            predictedY,
-            new Rotation2d(Radians.of(drivetrain.getPose2d().getRotation().getRadians())));
-
-    return predictedPose2d;
-  }
 
   private void setPosition(final Angle position) {
     // Convert all angles to degrees for clamping

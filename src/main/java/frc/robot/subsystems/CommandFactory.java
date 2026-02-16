@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.WaypointConstants;
+import frc.robot.subsystems.ShootingMechanism.ShootingSolution;
+
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -14,11 +16,13 @@ public class CommandFactory {
   private int m_side = 1;
   private Turret m_turret;
   private Zones m_zone;
-
-  public CommandFactory(CommandSwerveDrivetrain drivetrain, Turret turret, Zones zone) {
-    this.m_drivetrain = drivetrain;
-    this.m_turret = turret;
-    this.m_zone = zone;
+  private ShootingMechanism m_shootingMechanism;
+  
+    public CommandFactory(CommandSwerveDrivetrain drivetrain, Turret turret, Zones zone, ShootingMechanism m_shootingMechanism) {
+      this.m_drivetrain = drivetrain;
+      this.m_turret = turret;
+      this.m_zone = zone;
+      this.m_shootingMechanism = m_shootingMechanism;
   }
 
   public Command driveCircle() {
@@ -55,14 +59,13 @@ public class CommandFactory {
         .repeatedly();
   }
 
-  public Command turretTrackPredictedPositionCommand() {
-    Supplier<Pose2d> predictPose2d =
-        () -> {
-          double distance = m_turret.getDistanceFromHub(m_drivetrain::getPose2d, m_zone);
-          double time = m_turret.getTimeFromDistance(() -> distance);
-          return m_turret.calculatePredictedPose2d(m_drivetrain, () -> time);
-        };
+  public Command updateShooterCommand() {
+    return Commands.defer(() -> {
+      ShootingSolution shootingSolution = m_shootingMechanism.geShootingSolution(m_drivetrain::getPose2d,
+       m_drivetrain::getSpeeds, m_zone::getTurretShootingPose);
 
-    return m_turret.trackTargetPose(predictPose2d, m_zone::getTurretShootingPose);
+       // TODO: add the hood rotation too
+       return m_turret.rotateToPosition(shootingSolution.predictedTurretAngle);
+    }, Set.of(m_shootingMechanism));
   }
 }

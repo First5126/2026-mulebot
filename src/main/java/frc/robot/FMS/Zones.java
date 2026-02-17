@@ -28,7 +28,7 @@ public class Zones {
     m_pose = robotPoseSupplier;
   }
 
-  public void UpdateZone() {
+  public void updateZone() {
     double x = m_pose.get().getX();
     double y = m_pose.get().getY();
 

@@ -129,8 +129,8 @@ public class ShootingMechanism extends SubsystemBase {
 
         GoalPose goalPose = m_zone.getGoalPose();
 
-        boolean check = m_turret.getPosition().isNear(m_currentShootingSolution.predictedTurretAngle, ShootingMechanismConstants.turretMaximumError) &&
-            goalPose.canShootInZone(m_zone.getCurrentZone()) && (!goalPose.requiresShift || StageData.canScore() == true);
+        boolean check = m_turret.getPosition().isNear(m_currentShootingSolution.predictedTurretAngle, ShootingMechanismConstants.turretMaximumError)
+        && (!goalPose.requiresShift || StageData.canScore() == true);
 
         // TODO: add hood
         SmartDashboard.putNumber("Turret Deviation Deg", m_turret.getPosition().minus(m_currentShootingSolution.predictedTurretAngle).in(Degrees));

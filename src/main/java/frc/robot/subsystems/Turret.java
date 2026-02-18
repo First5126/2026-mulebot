@@ -76,13 +76,7 @@ public class Turret extends SubsystemBase {
   }
 
   public Command rotateToPosition(Supplier<ShootingSolution> shootingSolution) {
-    return Commands.defer(
-        () -> {
-          if (shootingSolution.get() != null) {
-            return rotateToPosition(shootingSolution.get().predictedTurretAngle);
-          } else return rotateToPosition(Rotation.of(0));
-        },
-        Set.of(this));
+    return rotateToPosition(shootingSolution.get().predictedTurretAngle);
   }
 
   @Override

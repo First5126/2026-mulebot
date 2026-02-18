@@ -32,7 +32,7 @@ public class ShootingMechanism extends SubsystemBase {
   private final Trigger canShoot;
   private Turret m_turret;
   private Hood m_hood;
-  private ShootingSolution m_currentShootingSolution;
+  private ShootingSolution m_currentShootingSolution = new ShootingSolution(Degrees.of(0), Degrees.of(0));
   private CommandSwerveDrivetrain m_drivetrain;
   private Zones m_zone;
 
@@ -61,7 +61,7 @@ public class ShootingMechanism extends SubsystemBase {
    * @return A shooting soltuion {@link frc.robot.subsystems.ShootingMechanism.ShootingSolution}
    *     that contains the predicted angle for the hood and turret
    */
-  private ShootingSolution geShootingSolution(
+  private ShootingSolution getShootingSolution(
       Supplier<Pose2d> robotPoseSupplier,
       Supplier<ChassisSpeeds> speed,
       Supplier<Pose2d> targetPoseSupplier) {
@@ -133,7 +133,7 @@ public class ShootingMechanism extends SubsystemBase {
   @Override
   public void periodic() {
     m_currentShootingSolution =
-        geShootingSolution(
+        getShootingSolution(
             m_drivetrain::getPose2d, m_drivetrain::getSpeeds, m_zone::getTurretShootingPose);
 
     SmartDashboard.putBoolean("Can Shoot", canShoot.getAsBoolean());

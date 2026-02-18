@@ -83,7 +83,7 @@ public class StageData {
   /**
    * @return int remaining seconds for the current stage
    */
-  public int getRemainingSecondsInStage() {
+  public static int getRemainingSecondsInStage() {
     if (Timer.getMatchTime() == -1.0) {
       return 0;
     } else {
@@ -93,10 +93,9 @@ public class StageData {
 
   /**
    * Returns if the robot can currently score on the hub. This takes into account who is the first
-   * active alliance and determing if you can store on 1/3 shifts or 2/4 shifts.
+   * active alliance and determining if you can score on 1/3 shifts or 2/4 shifts.
    *
-   * @return {@boolean} returns {true} if the robot can score on the hub; otherwise, {false} is
-   *     returned
+   * @return boolean returns true if the robot can score on the hub; otherwise, false is returned
    */
   public boolean canScore() {
     GameStage stage = getStage();
@@ -105,7 +104,7 @@ public class StageData {
       return true;
 
     // if my current alliance is the first to be active, I can shoot in shift 1 and 3
-    if (getCurentAlliance() == StageData.getFirstActiveAlliance()) {
+    if (getCurrentAlliance() == StageData.getFirstActiveAlliance()) {
       switch (stage) {
         case ShiftOne:
         case ShiftThree:
@@ -127,7 +126,7 @@ public class StageData {
   }
 
   // helper for getting the current alliance
-  private DriverStation.Alliance getCurentAlliance() {
+  private DriverStation.Alliance getCurrentAlliance() {
     return DriverStation.getAlliance().orElse(null);
   }
 

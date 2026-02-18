@@ -62,13 +62,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
-    UpdateZone();
 
     m_turret.setDefaultCommand(m_commandFactory.turretTrackPredictedPositionCommand());
-  }
-
-  private void UpdateZone() {
-    m_drivetrain.run(() -> m_zone.UpdateZone(m_drivetrain.getPose2d()));
   }
 
   private void configureBindings() {

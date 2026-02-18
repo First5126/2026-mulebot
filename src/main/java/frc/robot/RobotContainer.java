@@ -65,14 +65,9 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
-    UpdateZone();
 
     m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
     // TODO: add hood default command
-  }
-
-  private void UpdateZone() {
-    m_drivetrain.run(() -> m_zone.UpdateZone(m_drivetrain.getPose2d()));
   }
 
   private void configureBindings() {

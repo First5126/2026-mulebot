@@ -9,10 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.WaypointConstants;
 import frc.robot.constants.ZonesConstants.Zone;
-
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -34,11 +32,23 @@ public class Zones {
 
     SmartDashboard.putString("CurrentZone", CurrentZone.name());
 
-    if (isWithin(x, y, Zone.ALLIANCE_ZONE.getTopLeftTranslation(), Zone.ALLIANCE_ZONE.getBottomRightTranslation())) {
+    if (isWithin(
+        x,
+        y,
+        Zone.ALLIANCE_ZONE.getTopLeftTranslation(),
+        Zone.ALLIANCE_ZONE.getBottomRightTranslation())) {
       CurrentZone = Zone.ALLIANCE_ZONE;
-    } else if (isWithin(x, y, Zone.NEUTRAL_ZONE.getTopLeftTranslation(), Zone.NEUTRAL_ZONE.getBottomRightTranslation())) {
+    } else if (isWithin(
+        x,
+        y,
+        Zone.NEUTRAL_ZONE.getTopLeftTranslation(),
+        Zone.NEUTRAL_ZONE.getBottomRightTranslation())) {
       CurrentZone = Zone.NEUTRAL_ZONE;
-    } else if (isWithin(x, y, Zone.OPPONENT_ZONE.getTopLeftTranslation(), Zone.OPPONENT_ZONE.getBottomRightTranslation())) {
+    } else if (isWithin(
+        x,
+        y,
+        Zone.OPPONENT_ZONE.getTopLeftTranslation(),
+        Zone.OPPONENT_ZONE.getBottomRightTranslation())) {
       CurrentZone = Zone.OPPONENT_ZONE;
     } else {
       // Outside defined zones, handle as needed

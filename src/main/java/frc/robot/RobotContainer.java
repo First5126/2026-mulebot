@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.Idle;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,9 +42,6 @@ public class RobotContainer {
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 
-
-
-
   // subsystems
   private final Turret m_turret = new Turret();
   private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
@@ -75,7 +71,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone, m_ledLights).configureBindings();
+    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone, m_ledLights)
+        .configureBindings();
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.

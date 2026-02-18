@@ -1,8 +1,7 @@
 package frc.robot.constants;
 
-import java.util.Map;
-
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import java.util.Map;
 
 public class HoodConstants {
   public static double kP = 0.0;

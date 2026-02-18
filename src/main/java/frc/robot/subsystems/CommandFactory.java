@@ -1,14 +1,10 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.WaypointConstants;
-import frc.robot.subsystems.ShootingMechanism.ShootingSolution;
-
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class CommandFactory {
 
@@ -17,12 +13,16 @@ public class CommandFactory {
   private Turret m_turret;
   private Zones m_zone;
   private ShootingMechanism m_shootingMechanism;
-  
-    public CommandFactory(CommandSwerveDrivetrain drivetrain, Turret turret, Zones zone, ShootingMechanism m_shootingMechanism) {
-      this.m_drivetrain = drivetrain;
-      this.m_turret = turret;
-      this.m_zone = zone;
-      this.m_shootingMechanism = m_shootingMechanism;
+
+  public CommandFactory(
+      CommandSwerveDrivetrain drivetrain,
+      Turret turret,
+      Zones zone,
+      ShootingMechanism m_shootingMechanism) {
+    this.m_drivetrain = drivetrain;
+    this.m_turret = turret;
+    this.m_zone = zone;
+    this.m_shootingMechanism = m_shootingMechanism;
   }
 
   public Command driveCircle() {

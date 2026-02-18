@@ -14,7 +14,7 @@ public class TurretConstants {
   public static final double kP = 96;
   public static final double kI = 0;
   public static final double kD = 0;
-  
+
   // Meters
   public static final Transform2d TURRET_OFFSET = new Transform2d(0, 0, new Rotation2d());
 

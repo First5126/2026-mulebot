@@ -9,19 +9,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.GoalPoseConstants;
-import frc.robot.constants.WaypointConstants;
-import frc.robot.constants.ZonesConstants.Zone;
 import frc.robot.constants.GoalPoseConstants.GoalPose;
-
+import frc.robot.constants.ZonesConstants.Zone;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Add your docs here. */
 public class Zones {
   private static Supplier<Pose2d> m_pose;
-  
+
   private Optional<Alliance> m_team;
 
   public Zones(Supplier<Pose2d> robotPoseSupplier) {
@@ -71,11 +68,17 @@ public class Zones {
     }
     switch (getZone()) {
       case ALLIANCE_ZONE:
-        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
+        return m_team.get() == Alliance.Blue
+            ? GoalPoseConstants.BLUE_HUB
+            : GoalPoseConstants.RED_HUB;
       case NEUTRAL_ZONE:
-        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
+        return m_team.get() == Alliance.Blue
+            ? GoalPoseConstants.BLUE_HUB
+            : GoalPoseConstants.RED_HUB;
       case OPPONENT_ZONE:
-        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
+        return m_team.get() == Alliance.Blue
+            ? GoalPoseConstants.BLUE_HUB
+            : GoalPoseConstants.RED_HUB;
       default:
         break;
     }

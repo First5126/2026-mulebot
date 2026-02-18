@@ -23,7 +23,6 @@ import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShootingMechanism;
 import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.ShootingMechanism.ShootingSolution;
 import frc.robot.vision.AprilTagLocalization;
 
 public class RobotContainer {
@@ -49,8 +48,10 @@ public class RobotContainer {
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details
   };
-  public ShootingMechanism m_shootingMechanism = new ShootingMechanism(m_turret,m_drivetrain,m_zone);
-  public CommandFactory m_commandFactory = new CommandFactory(m_drivetrain, m_turret, m_zone, m_shootingMechanism);
+  public ShootingMechanism m_shootingMechanism =
+      new ShootingMechanism(m_turret, m_drivetrain, m_zone);
+  public CommandFactory m_commandFactory =
+      new CommandFactory(m_drivetrain, m_turret, m_zone, m_shootingMechanism);
 
   private AprilTagLocalization m_aprilTagLocalization =
       new AprilTagLocalization(

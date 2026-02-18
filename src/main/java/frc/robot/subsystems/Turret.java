@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotation;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -14,20 +13,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FMS.Zones;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.subsystems.ShootingMechanism.ShootingSolution;
-
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -83,14 +76,13 @@ public class Turret extends SubsystemBase {
   }
 
   public Command rotateToPosition(Supplier<ShootingSolution> shootingSolution) {
-    return Commands.defer(() -> {
-
-      if (shootingSolution.get() != null) {
-        return rotateToPosition(shootingSolution.get().predictedTurretAngle);
-      }
-      else return rotateToPosition(Rotation.of(0));
-      
-    }, Set.of(this));
+    return Commands.defer(
+        () -> {
+          if (shootingSolution.get() != null) {
+            return rotateToPosition(shootingSolution.get().predictedTurretAngle);
+          } else return rotateToPosition(Rotation.of(0));
+        },
+        Set.of(this));
   }
 
   @Override
@@ -111,7 +103,6 @@ public class Turret extends SubsystemBase {
   public Angle getPosition() {
     return m_turretMotor.getPosition().getValue();
   }
-
 
   private void setPosition(final Angle position) {
     // Convert all angles to degrees for clamping

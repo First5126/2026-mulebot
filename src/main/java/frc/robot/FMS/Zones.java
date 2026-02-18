@@ -26,7 +26,7 @@ public class Zones {
     m_pose = robotPoseSupplier;
   }
 
-  public void updateZone() {
+  private void updateZone() {
     double x = m_pose.get().getX();
     double y = m_pose.get().getY();
 
@@ -41,9 +41,15 @@ public class Zones {
     } else if (isWithin(
         x,
         y,
-        Zone.NEUTRAL_ZONE.getTopLeftTranslation(),
-        Zone.NEUTRAL_ZONE.getBottomRightTranslation())) {
-      CurrentZone = Zone.NEUTRAL_ZONE;
+        Zone.NEUTRAL_ZONE_RIGHT.getTopLeftTranslation(),
+        Zone.NEUTRAL_ZONE_RIGHT.getBottomRightTranslation())) {
+      CurrentZone = Zone.NEUTRAL_ZONE_RIGHT;
+    } else if (isWithin(
+        x,
+        y,
+        Zone.NEUTRAL_ZONE_LEFT.getTopLeftTranslation(),
+        Zone.NEUTRAL_ZONE_LEFT.getBottomRightTranslation())) {
+      CurrentZone = Zone.NEUTRAL_ZONE_LEFT;
     } else if (isWithin(
         x,
         y,
@@ -57,14 +63,21 @@ public class Zones {
   }
 
   public Pose2d getTurretShootingPose() {
+    updateZone();
     if (!m_team.isPresent()) {
       return WaypointConstants.blueHub;
     }
     switch (CurrentZone) {
       case ALLIANCE_ZONE:
         return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
-      case NEUTRAL_ZONE:
-        return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+      case NEUTRAL_ZONE_LEFT:
+        return m_team.get() == Alliance.Blue
+            ? WaypointConstants.blueLeftSide
+            : WaypointConstants.blueRightSide;
+      case NEUTRAL_ZONE_RIGHT:
+        return m_team.get() == Alliance.Blue
+            ? WaypointConstants.blueRightSide
+            : WaypointConstants.redRightSide;
       case OPPONENT_ZONE:
         return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
       default:

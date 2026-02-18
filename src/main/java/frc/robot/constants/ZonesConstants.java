@@ -5,7 +5,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class ZonesConstants {
   public static enum Zone {
     ALLIANCE_ZONE(new Translation2d(0.0, 0.0), new Translation2d(4.0, 8.0)),
-    NEUTRAL_ZONE(new Translation2d(4.0, 0.0), new Translation2d(12.0, 8.0)),
+    NEUTRAL_ZONE_RIGHT(new Translation2d(4.0, 0.0), new Translation2d(12.0, 4.0)),
+    NEUTRAL_ZONE_LEFT(new Translation2d(4.0, 4.0), new Translation2d(12.0, 8.0)),
     OPPONENT_ZONE(new Translation2d(12.5, 0.0), new Translation2d(16.5, 8.0)),
     OUT_OF_BOUNDS(null, null);
 

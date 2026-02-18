@@ -1,7 +1,6 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.FMS.Zones.Zone;
 
 public class GoalPoseConstants {
     public static class GoalPose {

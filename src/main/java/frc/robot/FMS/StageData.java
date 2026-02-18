@@ -43,10 +43,18 @@ public class StageData {
       throw new IllegalStateException("Stage not found: " + current);
     }
 
+    public static int getTotalMatchSeconds() {
+      int total = 0;
+      for (GameStage s : GameStage.values()) {
+        total += s.m_secondsInStage;
+      }
+      return total;
+    }
+
     /**
      * Get the seconds that are in the current stage
      *
-     * @return {@int} an integer value representing the seconds that exist for the stage
+     * @return int an integer value representing the seconds that exist for the stage
      */
     public int getSecondsInStage() {
       return m_secondsInStage;
@@ -55,7 +63,7 @@ public class StageData {
     /**
      * Get the seconds at which the stage will be over
      *
-     * @return {@int} an integer indicating at what seconds into the match will the stage be over
+     * @return int an integer indicating at what seconds into the match will the stage be over
      */
     public int getStageOverAtSeconds() {
       return m_stageOverAtSeconds;
@@ -65,7 +73,7 @@ public class StageData {
   /**
    * Get the current stage in the match.
    *
-   * @return {@GameStage} stage related to the current gameplay
+   * @return GameStage stage related to the current gameplay
    */
   public static GameStage getStage() {
     boolean auto = DriverStation.isAutonomous();
@@ -87,7 +95,7 @@ public class StageData {
     if (Timer.getMatchTime() == -1.0) {
       return 0;
     } else {
-      return StageData.getStage().getStageOverAtSeconds() - (150 - (int) Timer.getMatchTime());
+      return StageData.getStage().getStageOverAtSeconds() - (int) StageData.getMatchElapsedTime();
     }
   }
 
@@ -125,9 +133,18 @@ public class StageData {
     }
   }
 
-  // helper for getting the current alliance
-  private DriverStation.Alliance getCurrentAlliance() {
-    return DriverStation.getAlliance().orElse(null);
+  // counts up from 0 to 160 seconds as match progresses and returns 0 if not running
+  private static double getMatchElapsedTime(){
+    double matchTime = DriverStation.getMatchTime();
+    if (matchTime > 0) {
+      if (DriverStation.isAutonomous()) {
+        return GameStage.Auto.getSecondsInStage() - matchTime;
+      } else if (DriverStation.isTeleop()) {
+        return GameStage.getTotalMatchSeconds() - matchTime;
+      }
+    }
+
+    return 0;
   }
 
   // return who is the first active alliance based on the game data.  if no game data is present
@@ -147,5 +164,10 @@ public class StageData {
     return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
         ? Alliance.Red
         : Alliance.Blue;
+  }
+
+  // helper for getting the current alliance
+  private DriverStation.Alliance getCurrentAlliance() {
+    return DriverStation.getAlliance().orElse(null);
   }
 }

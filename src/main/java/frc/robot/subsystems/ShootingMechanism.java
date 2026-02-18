@@ -32,7 +32,8 @@ public class ShootingMechanism extends SubsystemBase {
   private final Trigger canShoot;
   private Turret m_turret;
   private Hood m_hood;
-  private ShootingSolution m_currentShootingSolution = new ShootingSolution(Degrees.of(0), Degrees.of(0));
+  private ShootingSolution m_currentShootingSolution =
+      new ShootingSolution(Degrees.of(0), Degrees.of(0));
   private CommandSwerveDrivetrain m_drivetrain;
   private Zones m_zone;
 
@@ -56,7 +57,6 @@ public class ShootingMechanism extends SubsystemBase {
   /**
    * @param robotPoseSupplier The current pose of the robot
    * @param speed The chassis speeds of the drivetrain
-   * @param airTimeSupplier The time it takes for a ball to land at the target from our current pose
    * @param targetPoseSupplier The pose of the target
    * @return A shooting soltuion {@link frc.robot.subsystems.ShootingMechanism.ShootingSolution}
    *     that contains the predicted angle for the hood and turret

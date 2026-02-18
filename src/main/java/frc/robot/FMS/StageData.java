@@ -105,7 +105,7 @@ public class StageData {
    *
    * @return boolean returns true if the robot can score on the hub; otherwise, false is returned
    */
-  public boolean canScore() {
+  public static boolean canScore() {
     GameStage stage = getStage();
 
     if (stage == GameStage.Auto
@@ -176,7 +176,7 @@ public class StageData {
   }
 
   // helper for getting the current alliance
-  private DriverStation.Alliance getCurrentAlliance() {
+  private static DriverStation.Alliance getCurrentAlliance() {
     return DriverStation.getAlliance().orElse(null);
   }
 }

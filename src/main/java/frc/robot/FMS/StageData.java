@@ -108,11 +108,20 @@ public class StageData {
   public boolean canScore() {
     GameStage stage = getStage();
 
-    if (stage == GameStage.Auto || stage == GameStage.Endgame || stage == GameStage.TransitionShift)
+    if (stage == GameStage.Auto
+        || stage == GameStage.Endgame
+        || stage == GameStage.TransitionShift) {
       return true;
+    }
+
+    Alliance currentAlliance = getCurrentAlliance();
+    // if an alliance is not present, make sure to handle and say cannot score
+    if (currentAlliance == null) {
+      return false;
+    }
 
     // if my current alliance is the first to be active, I can shoot in shift 1 and 3
-    if (getCurrentAlliance() == StageData.getFirstActiveAlliance()) {
+    if (currentAlliance == StageData.getFirstActiveAlliance()) {
       switch (stage) {
         case ShiftOne:
         case ShiftThree:

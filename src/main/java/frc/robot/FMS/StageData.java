@@ -134,7 +134,7 @@ public class StageData {
   }
 
   // counts up from 0 to 160 seconds as match progresses and returns 0 if not running
-  private static double getMatchElapsedTime(){
+  private static double getMatchElapsedTime() {
     double matchTime = DriverStation.getMatchTime();
     if (matchTime > 0) {
       if (DriverStation.isAutonomous()) {
@@ -148,7 +148,7 @@ public class StageData {
   }
 
   // return who is the first active alliance based on the game data.  if no game data is present
-  // the first aliance is determined by the current aliance selected in driverstation.  until
+  // the first alliance is determined by the current alliance selected in driverstation.  until
   // logic is further vetted, the default may reverse but until utilized, we'll wait to see.
   private static Alliance getFirstActiveAlliance() {
     String message = DriverStation.getGameSpecificMessage();

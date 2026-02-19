@@ -38,7 +38,7 @@ public class ShiftData {
         case 'B':
           m_firstActiveAlliance = DriverStation.Alliance.Red;
           break;
-        // If it somehow gets here, then somehow we recived invalid data, so don't modify the value. 
+        // If it somehow gets here, then somehow we recived invalid data, so don't modify the value.
         default:
           m_firstActiveAlliance = null;
           break;
@@ -69,7 +69,6 @@ public class ShiftData {
       this.shiftDuration = shiftDuration;
       this.startTime = startTime;
     }
-
 
     /**
      * Get the duration of the stage.
@@ -126,9 +125,8 @@ public class ShiftData {
     getFMSData();
 
     // Make sure the FMS data is availible before comparing values.
-    if (m_ourAlliance == null || m_firstActiveAlliance == null)
-      return false;
-    
+    if (m_ourAlliance == null || m_firstActiveAlliance == null) return false;
+
     // Since we are already getting the first active alliance, we can compare it to ours
     // to check if we're the first active
     return m_ourAlliance == m_firstActiveAlliance;
@@ -157,7 +155,7 @@ public class ShiftData {
 
       case ShiftFour:
         return !firstActive;
-      
+
       default:
         return false;
     }
@@ -165,6 +163,7 @@ public class ShiftData {
 
   /**
    * Calculates the time remaining in the current shift.
+   *
    * @return double representing the seconds remaining in the shift.
    */
   public static double getTimeRemainingInShift() {
@@ -173,6 +172,7 @@ public class ShiftData {
 
     // Get the time elapsed in the current shift, and subtract it from the shift duration
     // to get the time remaining in the shift.
-    return Math.max(currentShift.shiftDuration - (currentShift.getShiftStartTime() - currentTime), 0);
+    return Math.max(
+        currentShift.shiftDuration - (currentShift.getShiftStartTime() - currentTime), 0);
   }
 }

@@ -82,7 +82,6 @@ public class ShootingMechanism extends SubsystemBase {
     return ShootingMechanismConstants.minimumHoodAngle.in(Degrees) <= angle.in(Degrees) &&
     angle.in(Degrees) < ShootingMechanismConstants.maximumHoodAngle.in(Degrees);
   }
-
   /**
    * @param robotPoseSupplier The current pose of the robot
    * @param speed The chassis speeds of the drivetrain

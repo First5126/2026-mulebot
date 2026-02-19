@@ -18,9 +18,9 @@ public class ShiftData {
   private static void getFMSData() {
     if (m_ourAlliance == null) {
       // Gets the alliance from driver's station, and assigns it to m_ourAlliance.
-      Optional<DriverStation.Alliance> our_alliance = DriverStation.getAlliance();
-      if (our_alliance.isPresent()) {
-        m_ourAlliance = our_alliance.get();
+      Optional<DriverStation.Alliance> ourAlliance = DriverStation.getAlliance();
+      if (ourAlliance.isPresent()) {
+        m_ourAlliance = ourAlliance.get();
       }
     }
 
@@ -33,9 +33,15 @@ public class ShiftData {
         // If 'R', Blue has the first shift.
         case 'R':
           m_firstActiveAlliance = DriverStation.Alliance.Blue;
+          break;
         // If 'B', Red has the first shift.
         case 'B':
           m_firstActiveAlliance = DriverStation.Alliance.Red;
+          break;
+        // If it somehow gets here, then somehow we recived invalid data, so don't modify the value. 
+        default:
+          m_firstActiveAlliance = null;
+          break;
       }
     }
   }
@@ -118,6 +124,10 @@ public class ShiftData {
    */
   public static boolean getFirstActiveAlliance() {
     getFMSData();
+
+    // Make sure the FMS data is availible before comparing values.
+    if (m_ourAlliance == null || m_firstActiveAlliance == null)
+      return false;
     
     // Since we are already getting the first active alliance, we can compare it to ours
     // to check if we're the first active
@@ -163,6 +173,6 @@ public class ShiftData {
 
     // Get the time elapsed in the current shift, and subtract it from the shift duration
     // to get the time remaining in the shift.
-    return currentShift.shiftDuration - (currentShift.getShiftStartTime() - currentTime);
+    return Math.max(currentShift.shiftDuration - (currentShift.getShiftStartTime() - currentTime), 0);
   }
 }

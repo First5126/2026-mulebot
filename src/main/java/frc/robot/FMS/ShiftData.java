@@ -5,11 +5,16 @@
 package frc.robot.FMS;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+
 import java.util.Optional;
 
 public class ShiftData {
   private static DriverStation.Alliance m_firstActiveAlliance;
   private static DriverStation.Alliance m_ourAlliance;
+
+
+  private static Zones m_zones;
 
   /**
    * Assigns the values for our alliance and the first active alliance. Should be called every time
@@ -174,5 +179,14 @@ public class ShiftData {
     // to get the time remaining in the shift.
     return Math.max(
         currentShift.shiftDuration - (currentShift.getShiftStartTime() - currentTime), 0);
+  }
+
+
+  public int getRemainingSecondsInStage() {
+    if (Timer.getMatchTime() == -1.0) {
+      return 0;
+    } else {
+      return getShift().getShiftDuration() - (150 - (int) Timer.getMatchTime());
+    }
   }
 }

@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.FMS.StageData;
+import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
@@ -46,8 +46,8 @@ public class RobotContainer {
   // subsystems
   private final Turret m_turret = new Turret();
   private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
-  private final StageData m_stageData = new StageData();
-  private final LEDLights m_ledLights = new LEDLights(m_stageData);
+  private final ShiftData m_shiftData = new ShiftData();
+  private final LEDLights m_ledLights = new LEDLights(m_shiftData);
 
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details

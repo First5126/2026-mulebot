@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 
 /** Add your docs here. */
 public class Zones {
-  private static Supplier<Pose2d> m_pose;
 
   private static Zone CurrentZone = Zone.ALLIANCE_ZONE;
   private static Supplier<Pose2d> m_pose;
@@ -58,39 +57,8 @@ public class Zones {
       CurrentZone = Zone.OPPONENT_ZONE;
     } else {
       // Outside defined zones, handle as needed
-      CurrentZone = Zone.OUT_OF_BOUNDS;
+      CurrentZone = Zone.OUT_OF_BOUNDS;}
     }
-  public Zone getZone() {
-    double x = m_pose.get().getX();
-    double y = m_pose.get().getY();
-
-    if (isWithin(
-        x,
-        y,
-        Zone.ALLIANCE_ZONE.getTopLeftTranslation(),
-        Zone.ALLIANCE_ZONE.getBottomRightTranslation())) {
-      SmartDashboard.putString("CurrentZone", Zone.ALLIANCE_ZONE.name());
-      return Zone.ALLIANCE_ZONE;
-    } else if (isWithin(
-        x,
-        y,
-        Zone.NEUTRAL_ZONE.getTopLeftTranslation(),
-        Zone.NEUTRAL_ZONE.getBottomRightTranslation())) {
-      SmartDashboard.putString("CurrentZone", Zone.NEUTRAL_ZONE.name());
-      return Zone.NEUTRAL_ZONE;
-    } else if (isWithin(
-        x,
-        y,
-        Zone.OPPONENT_ZONE.getTopLeftTranslation(),
-        Zone.OPPONENT_ZONE.getBottomRightTranslation())) {
-      SmartDashboard.putString("CurrentZone", Zone.OPPONENT_ZONE.name());
-      return Zone.OPPONENT_ZONE;
-    } else {
-      // Outside defined zones, handle as needed
-      SmartDashboard.putString("CurrentZone", Zone.OUT_OF_BOUNDS.name());
-      return Zone.OUT_OF_BOUNDS;
-    }
-  }
 
   public Pose2d getTurretShootingPose() {
     return getGoalPose().pose;

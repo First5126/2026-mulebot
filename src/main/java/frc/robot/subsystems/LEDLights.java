@@ -17,7 +17,8 @@ import com.ctre.phoenix6.signals.RGBWColor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.FMS.StageData;
+import frc.robot.FMS.ShiftData;
+import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -27,7 +28,7 @@ public class LEDLights extends SubsystemBase {
   private static final int kCANdleCANbus = 0;
   private static final CANBus driveBaseCanivore = new CANBus("DriveBase");
   private static CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus, driveBaseCanivore);
-  private StageData m_stageData;
+  private ShiftData m_shiftData;
 
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
@@ -47,8 +48,8 @@ public class LEDLights extends SubsystemBase {
   private final int COUNTDOWN_LED_START_INDEX = 0;
   private final int COUNTDOWN_LED_END_INDEX = 26;
 
-  public LEDLights(StageData stageData) {
-    m_stageData = stageData;
+  public LEDLights(ShiftData shiftData) {
+    m_shiftData = shiftData;
     m_candle.getConfigurator().apply(m_configs);
   }
 
@@ -102,9 +103,9 @@ public class LEDLights extends SubsystemBase {
   public Command ledByShifts() {
     return run(
         () -> {
-          Supplier<Integer> timeLeft = () -> m_stageData.getRemainingSecondsInStage();
+          Supplier<Integer> timeLeft = () -> m_shiftData.getRemainingSecondsInStage();
           RGBWColor color = PURPLE;
-          if (m_stageData.canScore()) {
+          if (m_shiftData.canScore()) {
             color = GREEN;
           } else {
             color = RED;
@@ -113,12 +114,12 @@ public class LEDLights extends SubsystemBase {
           SmartDashboard.putNumber("Time Left til Change", timeLeft.get());
 
           // must initialize the leds on when starting the stage
-          if (m_stageData.getRemainingSecondsInStage()
-              == StageData.getStage().getSecondsInStage()) {
+          if (m_shiftData.getRemainingSecondsInStage()
+              == m_shiftData.getShift().getShiftDuration()) {
             applyColorWithIndex(color, COUNTDOWN_LED_START_INDEX, COUNTDOWN_LED_END_INDEX);
           } else {
             // start removing colors from the led
-            int ledCount = m_stageData.getRemainingSecondsInStage();
+            int ledCount = m_shiftData.getRemainingSecondsInStage();
             SmartDashboard.putNumber("Ammount of leds", ledCount);
             int endIndex = (int) (COUNTDOWN_LED_END_INDEX - Math.ceil((double) ledCount / 2));
             int startIndex = (int) (COUNTDOWN_LED_START_INDEX + Math.floor((double) ledCount / 2));

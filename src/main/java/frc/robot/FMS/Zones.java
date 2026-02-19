@@ -83,6 +83,7 @@ public class Zones {
   }
 
   public Zone getZone() {
+    updateZone();
     return CurrentZone;
   }
 }

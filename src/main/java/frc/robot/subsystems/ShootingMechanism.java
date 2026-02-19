@@ -10,7 +10,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.FMS.StageData;
+import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.GoalPoseConstants.GoalPose;
 import frc.robot.constants.HoodConstants;
@@ -149,7 +149,7 @@ public class ShootingMechanism extends SubsystemBase {
                 .isNear(
                     m_currentShootingSolution.predictedTurretAngle,
                     ShootingMechanismConstants.turretMaximumError)
-            && (!goalPose.requiresShift || StageData.canScore() == true);
+            && (!goalPose.requiresShift || ShiftData.canScore() == true);
 
     // TODO: add hood
     SmartDashboard.putNumber(

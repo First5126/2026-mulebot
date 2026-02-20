@@ -408,9 +408,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 double absX = Math.abs(x); 
                 double absY = Math.abs(y); 
                 if (absX > 0.6 || absY > 0.6) {
-                    double larger_axis = Math.max(absX, absY);
+                    double largerAxis = Math.max(absX, absY);
 
-                    double speedMultiplier = 0.6 / larger_axis;
+                    double speedMultiplier = 0.6 / largerAxis;
 
                     x = x * speedMultiplier;
                     y = y * speedMultiplier;

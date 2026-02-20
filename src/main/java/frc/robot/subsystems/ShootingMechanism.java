@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -62,10 +63,13 @@ public class ShootingMechanism extends SubsystemBase {
   }
 
   private Angle getHoodAngle(Distance distance) {
-    return Radians.of(
-       Math.asin((distance.in(Meters) * ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond))/
-      ShootingMechanismConstants.ballVelocity.in(MetersPerSecond)*ShootingMechanismConstants.ballVelocity.in(MetersPerSecond)) / 2
-    );
+
+    double arcSin = Math.asin((distance.in(Meters) * ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond))/
+      ShootingMechanismConstants.ballVelocity.in(MetersPerSecond)*ShootingMechanismConstants.ballVelocity.in(MetersPerSecond));
+
+    SmartDashboard.putBoolean("Shot Possible", Double.isNaN(arcSin));
+    if (Double.isNaN(arcSin)) return Degrees.of(50); // Return a mean angle of the limits
+    else return Radians.of(arcSin / 2); // Return final conversion of the angle
   }
 
   private Time getAirTime(Angle angle, Distance distance) {
@@ -175,8 +179,12 @@ public class ShootingMechanism extends SubsystemBase {
         m_hood.getPosition()
         .isNear(m_currentShootingSolution.predictedHoodAngle,
         ShootingMechanismConstants.hoodMaximumError)
-            && (!goalPose.requiresShift || StageData.canScore() == true);
+            && (!goalPose.requiresShift || StageData.canScore() == true)
+        && SmartDashboard.getBoolean("Shot Possible", false);
 
+    SmartDashboard.putNumber("Calculated Turret Angle (Deg)", m_currentShootingSolution.predictedTurretAngle.in(Degrees));
+    SmartDashboard.putNumber("Calculated Hood Angle (Deg)", m_currentShootingSolution.predictedHoodAngle.in(Degrees));
+    
     // TODO: add hood
     SmartDashboard.putNumber(
         "Turret Deviation Deg",

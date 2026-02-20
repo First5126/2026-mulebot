@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.GoalPoseConstants;
 import frc.robot.constants.GoalPoseConstants.GoalPose;
+import frc.robot.constants.ZonesConstants.Bump;
 import frc.robot.constants.ZonesConstants.Zone;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -63,6 +64,19 @@ public class Zones {
       SmartDashboard.putString("CurrentZone", Zone.OUT_OF_BOUNDS.name());
       return Zone.OUT_OF_BOUNDS;
     }
+  }
+
+  public boolean onBump() {
+    double x = m_pose.get().getX();
+    double y = m_pose.get().getY();
+
+    for (Bump bump : Bump.values()) {
+      if (isWithin(x, y, bump.getTopLeftTranslation(), bump.getBottomRightTranslation())) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public Pose2d getTurretShootingPose() {

@@ -404,8 +404,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             }
 
             // Apply max speed when on bump
-            SmartDashboard.putBoolean("On Bump", zones.onBump());
-            if (zones.onBump()) {
+            boolean onBump = zones.onBump();
+            SmartDashboard.putBoolean("On Bump", onBump);
+            if (onBump) {
                 double absX = Math.abs(x); 
                 double absY = Math.abs(y); 
                 if (absX > 0.6 || absY > 0.6) {

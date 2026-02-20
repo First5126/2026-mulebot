@@ -62,30 +62,15 @@ public class Zones {
   public boolean onBump() {
     double x = m_pose.get().getX();
     double y = m_pose.get().getY();
-    if (isWithin(
-        x,
-        y,
-        Bump.BLUE_DEPOT_SIDE.getTopLeftTranslation(),
-        Bump.BLUE_DEPOT_SIDE.getBottomRightTranslation())) {
-      return true;
-    } else if (isWithin(
-        x,
-        y,
-        Bump.BLUE_OUTPOST_SIDE.getTopLeftTranslation(),
-        Bump.BLUE_OUTPOST_SIDE.getBottomRightTranslation())) {
-      return true;
-    } else if (isWithin(
-        x,
-        y,
-        Bump.RED_DEPOT_SIDE.getTopLeftTranslation(),
-        Bump.RED_DEPOT_SIDE.getBottomRightTranslation())) {
-      return true;
-    } else if (isWithin(
-        x,
-        y,
-        Bump.RED_OUTPOST_SIDE.getTopLeftTranslation(),
-        Bump.RED_OUTPOST_SIDE.getBottomRightTranslation())) {
-      return true;
+
+    for (Bump bump : Bump.values()) {
+      if (isWithin(
+          x,
+          y,
+          bump.getTopLeftTranslation(),
+          bump.getBottomRightTranslation())) {
+        return true;
+      }
     }
 
     return false;

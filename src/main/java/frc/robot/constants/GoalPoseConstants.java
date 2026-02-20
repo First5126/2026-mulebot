@@ -17,6 +17,7 @@ public class GoalPoseConstants {
   public static final GoalPose RED_HUB = new GoalPose(WaypointConstants.redHub, true);
   public static final GoalPose RED_RIGHT_SIDE = new GoalPose(WaypointConstants.redRightSide, false);
   public static final GoalPose RED_LEFT_SIDE = new GoalPose(WaypointConstants.redLeftSide, false);
-  public static final GoalPose BLUE_RIGHT_SIDE = new GoalPose(WaypointConstants.blueRightSide, false);
+  public static final GoalPose BLUE_RIGHT_SIDE =
+      new GoalPose(WaypointConstants.blueRightSide, false);
   public static final GoalPose BLUE_LEFT_SIDE = new GoalPose(WaypointConstants.blueLeftSide, false);
 }

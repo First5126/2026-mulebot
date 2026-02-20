@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.GoalPoseConstants;
 import frc.robot.constants.GoalPoseConstants.GoalPose;
-import frc.robot.constants.WaypointConstants;
 import frc.robot.constants.ZonesConstants.Zone;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -74,7 +73,9 @@ public class Zones {
     }
     switch (getZone()) {
       case ALLIANCE_ZONE:
-        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
+        return m_team.get() == Alliance.Blue
+            ? GoalPoseConstants.BLUE_HUB
+            : GoalPoseConstants.RED_HUB;
       case NEUTRAL_ZONE_LEFT:
         return m_team.get() == Alliance.Blue
             ? GoalPoseConstants.BLUE_LEFT_SIDE

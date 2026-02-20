@@ -1,8 +1,10 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -12,4 +14,8 @@ public class ShootingMechanismConstants {
   public static final Angle turretMaximumError = Degree.of(5);
   public static final LinearVelocity ballVelocity = MetersPerSecond.of(10);
   public static final LinearAcceleration gravity = MetersPerSecondPerSecond.of(9.8);
+
+  // TODO: get real angle readings
+  public static final Angle minimumHoodAngle = Degrees.of(60);
+  public static final Angle maximumHoodAngle = Degrees.of(80);
 }

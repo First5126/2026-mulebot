@@ -6,12 +6,14 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -61,8 +63,14 @@ public class ShootingMechanism extends SubsystemBase {
 
   private Angle getHoodAngle(Distance distance) {
     return Radians.of(
-      2 * Math.asin((distance.in(Meters) * ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond))/
-      ShootingMechanismConstants.ballVelocity.in(MetersPerSecond))
+       Math.asin((distance.in(Meters) * ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond))/
+      ShootingMechanismConstants.ballVelocity.in(MetersPerSecond)*ShootingMechanismConstants.ballVelocity.in(MetersPerSecond)) / 2
+    );
+  }
+
+  private Time getAirTime(Angle angle, Distance distance) {
+    return Seconds.of(
+      2 * (ShootingMechanismConstants.ballVelocity.in(MetersPerSecond)*Math.sin(angle.in(Radians))) / ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
     );
   }
 
@@ -91,11 +99,14 @@ public class ShootingMechanism extends SubsystemBase {
 
       // find air time from distance
       double distanceToTarget = robotPose.getTranslation().getDistance(targetPose.getTranslation());
-      double airTime = TurretConstants.DISTANCE_TO_TIME_INTERPOLATOR.get(distanceToTarget);
+
+      // inital hood angle
+      Angle hoodAngle = getHoodAngle(Meters.of(distanceToTarget));
+      Time airTime = getAirTime(hoodAngle, Meters.of(distanceToTarget));
 
       // find how far we travel by the time the ball will reach the target
       double predicatedDistance =
-          airTime * Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+          airTime.in(Seconds) * Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
 
       // find the angle of the the speeds that are currently in robotcentric
       Rotation2d rotation =
@@ -116,6 +127,8 @@ public class ShootingMechanism extends SubsystemBase {
       double targetDistanceX = targetPose.getX() - turretPose.getX();
       double targetDistanceY = targetPose.getY() - turretPose.getY();
 
+      Distance totalDistance = Meters.of(Math.hypot(targetDistanceX, targetDistanceY));
+
       // find the field relative angle from the distance
       Rotation2d fieldRelativeAngle =
           Rotation2d.fromRadians(Math.atan2(targetDistanceY, targetDistanceX));
@@ -130,12 +143,9 @@ public class ShootingMechanism extends SubsystemBase {
               .getMeasure();
 
       // find the angle of the hood from the predicted pose
-      Angle hoodAngle =
-          Rotations.of(
-              HoodConstants.DISTANCE_TO_ANGLE_INTERPOLATOR.get(
-                  Math.hypot(targetDistanceX, targetDistanceY)));
+      Angle estimatedHoodAngle = getHoodAngle(totalDistance);
 
-      return new ShootingSolution(hoodAngle, robotRelativeAngle);
+      return new ShootingSolution(estimatedHoodAngle, robotRelativeAngle);
     } else {
       SmartDashboard.putBoolean("Valid Shooting Solution", false);
       return new ShootingSolution(Degrees.of(0), Degrees.of(0));

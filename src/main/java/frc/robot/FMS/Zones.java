@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.GoalPoseConstants;
+import frc.robot.constants.GoalPoseConstants.GoalPose;
 import frc.robot.constants.WaypointConstants;
 import frc.robot.constants.ZonesConstants.Zone;
 import java.util.Optional;
@@ -18,7 +20,6 @@ import java.util.function.Supplier;
 public class Zones {
   private static Supplier<Pose2d> m_pose;
 
-  private static Zone CurrentZone = Zone.ALLIANCE_ZONE;
   private Optional<Alliance> m_team;
 
   public Zones(Supplier<Pose2d> robotPoseSupplier) {
@@ -26,64 +27,70 @@ public class Zones {
     m_pose = robotPoseSupplier;
   }
 
-  private void updateZone() {
+  public Zone getZone() {
     double x = m_pose.get().getX();
     double y = m_pose.get().getY();
-
-    SmartDashboard.putString("CurrentZone", CurrentZone.name());
 
     if (isWithin(
         x,
         y,
         Zone.ALLIANCE_ZONE.getTopLeftTranslation(),
         Zone.ALLIANCE_ZONE.getBottomRightTranslation())) {
-      CurrentZone = Zone.ALLIANCE_ZONE;
+      SmartDashboard.putString("CurrentZone", Zone.ALLIANCE_ZONE.name());
+      return Zone.ALLIANCE_ZONE;
     } else if (isWithin(
         x,
         y,
         Zone.NEUTRAL_ZONE_RIGHT.getTopLeftTranslation(),
         Zone.NEUTRAL_ZONE_RIGHT.getBottomRightTranslation())) {
-      CurrentZone = Zone.NEUTRAL_ZONE_RIGHT;
+      return Zone.NEUTRAL_ZONE_RIGHT;
     } else if (isWithin(
         x,
         y,
         Zone.NEUTRAL_ZONE_LEFT.getTopLeftTranslation(),
         Zone.NEUTRAL_ZONE_LEFT.getBottomRightTranslation())) {
-      CurrentZone = Zone.NEUTRAL_ZONE_LEFT;
+      return Zone.NEUTRAL_ZONE_LEFT;
     } else if (isWithin(
         x,
         y,
         Zone.OPPONENT_ZONE.getTopLeftTranslation(),
         Zone.OPPONENT_ZONE.getBottomRightTranslation())) {
-      CurrentZone = Zone.OPPONENT_ZONE;
+      SmartDashboard.putString("CurrentZone", Zone.OPPONENT_ZONE.name());
+      return Zone.OPPONENT_ZONE;
     } else {
       // Outside defined zones, handle as needed
-      CurrentZone = Zone.OUT_OF_BOUNDS;
+      SmartDashboard.putString("CurrentZone", Zone.OUT_OF_BOUNDS.name());
+      return Zone.OUT_OF_BOUNDS;
     }
   }
 
   public Pose2d getTurretShootingPose() {
-    updateZone();
+    return getGoalPose().pose;
+  }
+
+  public GoalPose getGoalPose() {
     if (!m_team.isPresent()) {
-      return WaypointConstants.blueHub;
+      return GoalPoseConstants.BLUE_HUB;
     }
-    switch (CurrentZone) {
+    switch (getZone()) {
       case ALLIANCE_ZONE:
-        return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+        return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
       case NEUTRAL_ZONE_LEFT:
         return m_team.get() == Alliance.Blue
-            ? WaypointConstants.blueLeftSide
-            : WaypointConstants.blueRightSide;
+            ? GoalPoseConstants.BLUE_LEFT_SIDE
+            : GoalPoseConstants.RED_LEFT_SIDE;
       case NEUTRAL_ZONE_RIGHT:
         return m_team.get() == Alliance.Blue
-            ? WaypointConstants.blueRightSide
-            : WaypointConstants.redRightSide;
+            ? GoalPoseConstants.BLUE_RIGHT_SIDE
+            : GoalPoseConstants.RED_RIGHT_SIDE;
       case OPPONENT_ZONE:
-        return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+        return m_team.get() == Alliance.Blue
+            ? GoalPoseConstants.BLUE_HUB
+            : GoalPoseConstants.RED_HUB;
       default:
         break;
     }
-    return m_team.get() == Alliance.Blue ? WaypointConstants.blueHub : WaypointConstants.redHub;
+    return m_team.get() == Alliance.Blue ? GoalPoseConstants.BLUE_HUB : GoalPoseConstants.RED_HUB;
   }
 
   private boolean isWithin(double x, double y, Translation2d corner1, Translation2d corner2) {
@@ -93,10 +100,5 @@ public class Zones {
     double maxY = Math.max(corner1.getY(), corner2.getY());
 
     return (x >= minX && x <= maxX) && (y >= minY && y <= maxY);
-  }
-
-  public Zone getZone() {
-    updateZone();
-    return CurrentZone;
   }
 }

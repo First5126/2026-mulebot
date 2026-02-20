@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
+import frc.robot.FMS.Zones;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.controller.CustomXboxController;
@@ -359,71 +360,86 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Supplier<Double> robotCentricthrottleSupplier,
       Supplier<Double> rotationSupplier,
       Supplier<Double> xSupplier,
-      Supplier<Double> ySupplier 
+      Supplier<Double> ySupplier,
+      Zones zones
       ) {
     return run(
         () -> {
+            double fieldCentricthrottle =
+                (CustomXboxController.modifyAxisWithCustomDeadband(
+                    fieldCentricthrottleSupplier.get(), 0.08, 1));
+            double robotCentricThrottle =
+                (CustomXboxController.modifyAxisWithCustomDeadband(
+                        robotCentricthrottleSupplier.get(), 0.08, 2)
+                    / 2);
+            CustomXboxController.modifyAxis(xSupplier.get());
+            CustomXboxController.modifyAxis(ySupplier.get());
+            double rotation =
+                CustomXboxController.modifyAxisWithCustomDeadband(rotationSupplier.get(), 0.05, 1) / 2;
+            double x = CustomXboxController.modifyAxis(xSupplier.get());
+            double y = CustomXboxController.modifyAxis(ySupplier.get());
+            double activeThrottle;
 
-          double fieldCentricthrottle =
-              (CustomXboxController.modifyAxisWithCustomDeadband(
-                  fieldCentricthrottleSupplier.get(), 0.08, 1));
-          double robotCentricThrottle =
-              (CustomXboxController.modifyAxisWithCustomDeadband(
-                      robotCentricthrottleSupplier.get(), 0.08, 2)
-                  / 2);
-          CustomXboxController.modifyAxis(xSupplier.get());
-          CustomXboxController.modifyAxis(ySupplier.get());
-          double rotation =
-              CustomXboxController.modifyAxisWithCustomDeadband(rotationSupplier.get(), 0.05, 1) / 2;
-          double x = CustomXboxController.modifyAxis(xSupplier.get());
-          double y = CustomXboxController.modifyAxis(ySupplier.get());
-          double activeThrottle;
-
-          if (fieldCentricthrottle != 0) {
-            activeThrottle = fieldCentricthrottle;
-          } else {
-            activeThrottle = robotCentricThrottle;
-          }
-
-          boolean isBraking = false;
-
-          if (!(x == 0 && y == 0)) {
-            double angle = Math.atan2(x, y) + Math.PI / 2;
-            x = Math.cos(angle) * activeThrottle;
-            y = Math.sin(angle) * activeThrottle;
-          } else if (x == 0 && y == 0 && rotation == 0) {
-            // robot is not receiving input
-            ChassisSpeeds speeds = getSpeeds();
-
-            // are we near stop within a tolarance
-            //if (MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01) && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01) && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, 0.01)) {
-              //isBraking = true;
-              //brake();
-            //}
-          }
-
-          if (!isBraking) {
-            if (activeThrottle == robotCentricThrottle) {
-              setControl(
-                  m_RobotCentricdrive
-                      .withVelocityX(percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
-                      .withDeadband(0.05)
-                      .withVelocityY(-percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
-                      .withDeadband(0.05)
-                      .withRotationalRate(
-                          -percentOutputToRadiansPerSecond(m_rotationLimiter.calculate(rotation))));
+            if (fieldCentricthrottle != 0) {
+                activeThrottle = fieldCentricthrottle;
             } else {
-              setControl(
-                  m_FieldCentricdrive
-                      .withVelocityX(percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
-                      .withDeadband(0.05)
-                      .withVelocityY(-percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
-                      .withDeadband(0.05)
-                      .withRotationalRate(
-                          -percentOutputToRadiansPerSecond(m_rotationLimiter.calculate(rotation))));
+                activeThrottle = robotCentricThrottle;
             }
-          }
-        });
+
+            boolean isBraking = false;
+
+            if (!(x == 0 && y == 0)) {
+                double angle = Math.atan2(x, y) + Math.PI / 2;
+                x = Math.cos(angle) * activeThrottle;
+                y = Math.sin(angle) * activeThrottle;
+            } else if (x == 0 && y == 0 && rotation == 0) {
+                // robot is not receiving input
+                ChassisSpeeds speeds = getSpeeds();
+
+                // are we near stop within a tolarance
+                //if (MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01) && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01) && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, 0.01)) {
+                //isBraking = true;
+                //brake();
+                //}
+            }
+
+            // Apply max speed when on bump
+            SmartDashboard.putBoolean("On Bump", zones.onBump());
+            if (zones.onBump()) {
+                double absX = Math.abs(x); 
+                double absY = Math.abs(y); 
+                if (absX > 0.6 || absY > 0.6) {
+                    double larger_axis = Math.max(absX, absY);
+
+                    double speedMultiplier = 0.6 / larger_axis;
+
+                    x = x * speedMultiplier;
+                    y = y * speedMultiplier;
+                }
+            }
+
+            if (!isBraking) {
+                if (activeThrottle == robotCentricThrottle) {
+                setControl(
+                    m_RobotCentricdrive
+                        .withVelocityX(percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
+                        .withDeadband(0.05)
+                        .withVelocityY(-percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
+                        .withDeadband(0.05)
+                        .withRotationalRate(
+                            -percentOutputToRadiansPerSecond(m_rotationLimiter.calculate(rotation))));
+                } else {
+                setControl(
+                    m_FieldCentricdrive
+                        .withVelocityX(percentOutputToMetersPerSecond(m_xLimiter.calculate(x)))
+                        .withDeadband(0.05)
+                        .withVelocityY(-percentOutputToMetersPerSecond(m_yLimiter.calculate(y)))
+                        .withDeadband(0.05)
+                        .withRotationalRate(
+                            -percentOutputToRadiansPerSecond(m_rotationLimiter.calculate(rotation))));
+                }
+            }
+            });
   }
 
   public double percentOutputToMetersPerSecond(double percentOutput) {

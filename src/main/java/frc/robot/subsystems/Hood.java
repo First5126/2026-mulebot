@@ -40,4 +40,8 @@ public class Hood extends SubsystemBase {
           m_hoodMotor.setControl(m_positionVoltageRequest.withPosition(angle));
         });
   }
+
+  public Angle getPosition() {
+    return m_hoodMotor.getPosition().getValue();
+  }
 }

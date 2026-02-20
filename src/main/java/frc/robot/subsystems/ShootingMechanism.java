@@ -171,6 +171,11 @@ public class ShootingMechanism extends SubsystemBase {
                     m_currentShootingSolution.predictedTurretAngle,
                     ShootingMechanismConstants.turretMaximumError)
             && (!goalPose.requiresShift || ShiftData.canScore() == true);
+        &&
+        m_hood.getPosition()
+        .isNear(m_currentShootingSolution.predictedHoodAngle,
+        ShootingMechanismConstants.hoodMaximumError)
+            && (!goalPose.requiresShift || StageData.canScore() == true);
 
     // TODO: add hood
     SmartDashboard.putNumber(

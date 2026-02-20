@@ -42,12 +42,14 @@ public class Zones {
         y,
         Zone.NEUTRAL_ZONE_RIGHT.getTopLeftTranslation(),
         Zone.NEUTRAL_ZONE_RIGHT.getBottomRightTranslation())) {
+      SmartDashboard.putString("CurrentZone", Zone.NEUTRAL_ZONE_RIGHT.name());
       return Zone.NEUTRAL_ZONE_RIGHT;
     } else if (isWithin(
         x,
         y,
         Zone.NEUTRAL_ZONE_LEFT.getTopLeftTranslation(),
         Zone.NEUTRAL_ZONE_LEFT.getBottomRightTranslation())) {
+      SmartDashboard.putString("CurrentZone", Zone.NEUTRAL_ZONE_LEFT.name());
       return Zone.NEUTRAL_ZONE_LEFT;
     } else if (isWithin(
         x,

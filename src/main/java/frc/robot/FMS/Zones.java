@@ -64,11 +64,7 @@ public class Zones {
     double y = m_pose.get().getY();
 
     for (Bump bump : Bump.values()) {
-      if (isWithin(
-          x,
-          y,
-          bump.getTopLeftTranslation(),
-          bump.getBottomRightTranslation())) {
+      if (isWithin(x, y, bump.getTopLeftTranslation(), bump.getBottomRightTranslation())) {
         return true;
       }
     }

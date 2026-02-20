@@ -372,8 +372,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 (CustomXboxController.modifyAxisWithCustomDeadband(
                         robotCentricthrottleSupplier.get(), 0.08, 2)
                     / 2);
-            CustomXboxController.modifyAxis(xSupplier.get());
-            CustomXboxController.modifyAxis(ySupplier.get());
             double rotation =
                 CustomXboxController.modifyAxisWithCustomDeadband(rotationSupplier.get(), 0.05, 1) / 2;
             double x = CustomXboxController.modifyAxis(xSupplier.get());

@@ -40,10 +40,17 @@ public class Zones {
     } else if (isWithin(
         x,
         y,
-        Zone.NEUTRAL_ZONE.getTopLeftTranslation(),
-        Zone.NEUTRAL_ZONE.getBottomRightTranslation())) {
-      SmartDashboard.putString("CurrentZone", Zone.NEUTRAL_ZONE.name());
-      return Zone.NEUTRAL_ZONE;
+        Zone.NEUTRAL_ZONE_RIGHT.getTopLeftTranslation(),
+        Zone.NEUTRAL_ZONE_RIGHT.getBottomRightTranslation())) {
+      SmartDashboard.putString("CurrentZone", Zone.NEUTRAL_ZONE_RIGHT.name());
+      return Zone.NEUTRAL_ZONE_RIGHT;
+    } else if (isWithin(
+        x,
+        y,
+        Zone.NEUTRAL_ZONE_LEFT.getTopLeftTranslation(),
+        Zone.NEUTRAL_ZONE_LEFT.getBottomRightTranslation())) {
+      SmartDashboard.putString("CurrentZone", Zone.NEUTRAL_ZONE_LEFT.name());
+      return Zone.NEUTRAL_ZONE_LEFT;
     } else if (isWithin(
         x,
         y,
@@ -71,10 +78,14 @@ public class Zones {
         return m_team.get() == Alliance.Blue
             ? GoalPoseConstants.BLUE_HUB
             : GoalPoseConstants.RED_HUB;
-      case NEUTRAL_ZONE:
+      case NEUTRAL_ZONE_LEFT:
         return m_team.get() == Alliance.Blue
-            ? GoalPoseConstants.BLUE_HUB
-            : GoalPoseConstants.RED_HUB;
+            ? GoalPoseConstants.BLUE_LEFT_SIDE
+            : GoalPoseConstants.RED_LEFT_SIDE;
+      case NEUTRAL_ZONE_RIGHT:
+        return m_team.get() == Alliance.Blue
+            ? GoalPoseConstants.BLUE_RIGHT_SIDE
+            : GoalPoseConstants.RED_RIGHT_SIDE;
       case OPPONENT_ZONE:
         return m_team.get() == Alliance.Blue
             ? GoalPoseConstants.BLUE_HUB

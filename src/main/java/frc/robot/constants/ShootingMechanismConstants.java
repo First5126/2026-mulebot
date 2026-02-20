@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ShootingMechanismConstants {
   public static final Angle turretMaximumError = Degree.of(5);
-  
+
   public static final Angle hoodMaximumError = Degree.of(1);
   public static final LinearVelocity ballVelocity = MetersPerSecond.of(10);
   public static final LinearAcceleration gravity = MetersPerSecondPerSecond.of(9.8);

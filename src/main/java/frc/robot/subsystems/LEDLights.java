@@ -46,10 +46,10 @@ public class LEDLights extends SubsystemBase {
   private SolidColor m_solidColorControl = new SolidColor(START_INDEX, END_INDEX);
   private boolean cleared = false;
   private final LarsonAnimation knightRiderAnimation =
-              new LarsonAnimation(START_INDEX, END_INDEX)
-                  .withBounceMode(LarsonBounceValue.Front)
-                  .withSize(8)
-                  .withColor(KNIGHT_RIDER);
+      new LarsonAnimation(START_INDEX, END_INDEX)
+          .withBounceMode(LarsonBounceValue.Front)
+          .withSize(8)
+          .withColor(KNIGHT_RIDER);
 
   private final int COUNTDOWN_LED_START_INDEX = 0;
   private final int COUNTDOWN_LED_END_INDEX = 26;

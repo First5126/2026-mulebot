@@ -25,6 +25,7 @@ import frc.robot.controller.Driver;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.ShootingMechanism;
 import frc.robot.subsystems.Turret;
 import frc.robot.vision.AprilTagLocalization;
 
@@ -53,7 +54,10 @@ public class RobotContainer {
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details
   };
-  public CommandFactory m_commandFactory = new CommandFactory(m_drivetrain, m_turret, m_zone);
+  public ShootingMechanism m_shootingMechanism =
+      new ShootingMechanism(m_turret, m_drivetrain, m_zone);
+  public CommandFactory m_commandFactory =
+      new CommandFactory(m_drivetrain, m_turret, m_zone, m_shootingMechanism);
 
   private AprilTagLocalization m_aprilTagLocalization =
       new AprilTagLocalization(
@@ -71,13 +75,9 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     configureBindings();
-    UpdateZone();
 
-    m_turret.setDefaultCommand(m_commandFactory.turretTrackPredictedPositionCommand());
-  }
-
-  private void UpdateZone() {
-    m_drivetrain.run(() -> m_zone.UpdateZone(m_drivetrain.getPose2d()));
+    m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
+    // TODO: add hood default command
   }
 
   private void configureBindings() {

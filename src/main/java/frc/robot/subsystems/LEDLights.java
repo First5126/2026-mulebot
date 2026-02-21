@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FMS.ShiftData;
-import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -87,7 +86,8 @@ public class LEDLights extends SubsystemBase {
             case ALLIANCE_ZONE:
               applyColor(BLUE);
               break;
-            case NEUTRAL_ZONE:
+            case NEUTRAL_ZONE_LEFT:
+            case NEUTRAL_ZONE_RIGHT:
               applyColor(PURPLE);
               break;
             case OPPONENT_ZONE:
@@ -115,31 +115,30 @@ public class LEDLights extends SubsystemBase {
   public Command ledByShifts() {
     return run(
         () -> {
-          Supplier<Integer> timeLeft = () -> m_shiftData.getRemainingSecondsInStage();
-          RGBWColor color = GREEN;
+          Supplier<Double> timeLeft = () -> ShiftData.getTimeRemainingInShift();
+          RGBWColor color = PURPLE;
           if (ShiftData.canScore() == true) {
-            applyColor(GREEN);
+            color = GREEN;
           } 
-          else if (ShiftData.canScore() == false) {
-            applyColor(RED);
+          else {
+            color = RED;
           }
           SmartDashboard.putNumber("timeLeft", timeLeft.get());
-          SmartDashboard.putBoolean("Time Left Condition Statment", timeLeft.get() < 5);
-          SmartDashboard.putNumber("Time Left til Change", timeLeft.get());
+          SmartDashboard.putNumber("Shift duration", ShiftData.getShift().getDuration() );
 
           // must initialize the leds on when starting the stage
-          if (m_shiftData.getRemainingSecondsInStage()
-              == ShiftData.getShift().getShiftDuration()) {
-            applyColorWithIndex(BLUE, COUNTDOWN_LED_START_INDEX, COUNTDOWN_LED_END_INDEX);
-          } else {
-            // start removing colors from the led
-            int ledCount = m_shiftData.getRemainingSecondsInStage();
-            SmartDashboard.putNumber("Ammount of leds", ledCount);
-            int endIndex = (int) (COUNTDOWN_LED_END_INDEX - Math.ceil((double) ledCount / 2));
-            int startIndex = (int) (COUNTDOWN_LED_START_INDEX + Math.floor((double) ledCount / 2));
-            applyColorWithIndex(BLACK, COUNTDOWN_LED_START_INDEX, startIndex);
-            applyColorWithIndex(BLACK, endIndex, END_INDEX);
-            applyColorWithIndex(RED, COUNTDOWN_LED_START_INDEX, COUNTDOWN_LED_END_INDEX);
+          // start removing colors from the led
+          int ledCount = (int) Math.round(timeLeft.get());
+          int ammountLightingUp = COUNTDOWN_LED_END_INDEX - COUNTDOWN_LED_START_INDEX;
+          SmartDashboard.putNumber("Ammount of leds", ledCount);
+          int endIndex = (int) (COUNTDOWN_LED_END_INDEX - Math.ceil((double) (ammountLightingUp - ledCount) / 2));
+          int startIndex = (int) (COUNTDOWN_LED_START_INDEX + Math.floor((double) (ammountLightingUp - ledCount) / 2));
+          applyColorWithIndex(BLACK, COUNTDOWN_LED_START_INDEX, startIndex);
+          applyColorWithIndex(BLACK, endIndex, COUNTDOWN_LED_END_INDEX);
+          if ((int) Math.round(timeLeft.get())
+            == (int) ShiftData.getShift().getDuration()) {
+          applyColorWithIndex(color, startIndex, endIndex);
+          //System.out.println("The same timeleft and duration");
           }
         });
   }

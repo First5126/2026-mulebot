@@ -73,7 +73,6 @@ public class RobotContainer {
     configureBindings();
 
     m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
-    m_ledLights.setDefaultCommand(m_ledLights.canScore());
     // TODO: add hood default command
   }
 

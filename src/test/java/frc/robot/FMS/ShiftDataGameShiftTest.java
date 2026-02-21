@@ -124,6 +124,20 @@ class ShiftDataGameShiftTest {
     assertEquals(0.0, ShiftData.getRemainingShiftPercentage());
   }
 
+  @Test
+  void getRemainingShiftPercentageIsClampedToUpperBound() {
+    // Auto duration is 20; this would be 1.25 without clamping.
+    setMatchState(true, 25.0);
+    assertEquals(1.0, ShiftData.getRemainingShiftPercentage());
+  }
+
+  @Test
+  void getRemainingShiftPercentageIsClampedToLowerBound() {
+    // Negative match time should never produce a negative percentage.
+    setMatchState(false, -5.0);
+    assertEquals(0.0, ShiftData.getRemainingShiftPercentage());
+  }
+
   private void setMatchState(boolean autonomous, double matchTimeSeconds) {
     DriverStationSim.setDsAttached(true);
     DriverStationSim.setEnabled(true);

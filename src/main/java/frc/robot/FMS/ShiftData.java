@@ -156,7 +156,8 @@ public class ShiftData {
    */
   public static double getRemainingShiftPercentage() {
     GameShift currenShift = getShift();
-    return ShiftData.getTimeRemainingInShift() / currenShift.shiftDuration;
+    double percentage = ShiftData.getTimeRemainingInShift() / currenShift.shiftDuration;
+    return Math.max(0.0, Math.min(1.0, percentage));
   }
 
   /**

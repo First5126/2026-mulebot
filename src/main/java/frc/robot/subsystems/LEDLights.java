@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.LEDConstants;
-import frc.robot.constants.LEDConstants;
 import java.util.function.Supplier;
 
 public class LEDLights extends SubsystemBase {

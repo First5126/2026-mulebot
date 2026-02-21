@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
@@ -21,6 +22,7 @@ import frc.robot.controller.Driver;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.LEDLights;
 import frc.robot.subsystems.ShootingMechanism;
 import frc.robot.subsystems.Turret;
 import frc.robot.vision.AprilTagLocalization;
@@ -44,6 +46,8 @@ public class RobotContainer {
   // subsystems
   private final Turret m_turret = new Turret();
   private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
+  private final ShiftData m_shiftData = new ShiftData();
+  private final LEDLights m_ledLights = new LEDLights(m_shiftData);
 
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details
@@ -72,7 +76,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone).configureBindings();
+    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone, m_ledLights)
+        .configureBindings();
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
@@ -90,7 +95,7 @@ public class RobotContainer {
         // Reset our field centric heading to match the robot
         // facing away from our alliance station wall (0 deg).
         m_drivetrain.runOnce(() -> m_drivetrain.seedFieldCentric(Rotation2d.kZero)),
-        // Then slowly drive forward (away from us) for 5 seconds.
+        // Then slowly drive forward (away from us) for 5 seconds.s
         // Finally idle for the rest of auton
         m_drivetrain.applyRequest(() -> idle));
   }

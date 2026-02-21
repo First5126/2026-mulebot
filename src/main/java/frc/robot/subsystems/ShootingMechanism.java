@@ -29,7 +29,7 @@ public class ShootingMechanism extends SubsystemBase {
     }
   }
 
-  private final Trigger canShoot;
+  public final Trigger canShoot;
   private Turret m_turret;
   private Hood m_hood;
   private ShootingSolution m_currentShootingSolution =
@@ -142,7 +142,6 @@ public class ShootingMechanism extends SubsystemBase {
   private boolean canShootFuel() {
 
     GoalPose goalPose = m_zone.getGoalPose();
-
     boolean check =
         m_turret
                 .getPosition()

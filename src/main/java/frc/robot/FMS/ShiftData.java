@@ -5,7 +5,6 @@
 package frc.robot.FMS;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import java.util.Optional;
 
 public class ShiftData {
   private static DriverStation.Alliance m_firstActiveAlliance;

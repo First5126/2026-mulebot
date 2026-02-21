@@ -45,6 +45,11 @@ public class LEDLights extends SubsystemBase {
   private final RainbowAnimation rainbow = new RainbowAnimation(START_INDEX, END_INDEX);
   private SolidColor m_solidColorControl = new SolidColor(START_INDEX, END_INDEX);
   private boolean cleared = false;
+  private final LarsonAnimation knightRiderAnimation =
+              new LarsonAnimation(START_INDEX, END_INDEX)
+                  .withBounceMode(LarsonBounceValue.Front)
+                  .withSize(8)
+                  .withColor(KNIGHT_RIDER);
 
   private final int COUNTDOWN_LED_START_INDEX = 0;
   private final int COUNTDOWN_LED_END_INDEX = 26;
@@ -150,10 +155,10 @@ public class LEDLights extends SubsystemBase {
   }
 
   public Command knightRiderCommand() {
-    return run(() -> {
-      LarsonAnimation knightRiderAnimation = new LarsonAnimation(COUNTDOWN_LED_START_INDEX, COUNTDOWN_LED_END_INDEX).withBounceMode(LarsonBounceValue.Front).withSize(8).withColor(KNIGHT_RIDER);
-      m_candle.setControl(knightRiderAnimation);
-    });
+    return run(
+        () -> {
+          m_candle.setControl(knightRiderAnimation);
+        });
   }
 
   private void applyColor(RGBWColor color) {

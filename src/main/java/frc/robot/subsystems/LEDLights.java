@@ -33,10 +33,8 @@ public class LEDLights extends SubsystemBase {
 
   private final LarsonAnimation knightRiderAnimation =
       new LarsonAnimation(LEDConstants.START_INDEX, LEDConstants.END_INDEX)
-      new LarsonAnimation(LEDConstants.START_INDEX, LEDConstants.END_INDEX)
           .withBounceMode(LarsonBounceValue.Front)
           .withSize(8)
-          .withColor(LEDConstants.KNIGHT_RIDER);
           .withColor(LEDConstants.KNIGHT_RIDER);
 
   public LEDLights(ShiftData shiftData) {
@@ -54,14 +52,11 @@ public class LEDLights extends SubsystemBase {
             case NEUTRAL_ZONE_LEFT:
             case NEUTRAL_ZONE_RIGHT:
               applyColor(LEDConstants.PURPLE);
-              applyColor(LEDConstants.PURPLE);
               break;
             case OPPONENT_ZONE:
               applyColor(LEDConstants.RED);
-              applyColor(LEDConstants.RED);
               break;
             default:
-              applyColor(LEDConstants.GREEN);
               applyColor(LEDConstants.GREEN);
               break;
           }
@@ -74,9 +69,7 @@ public class LEDLights extends SubsystemBase {
         () -> {
           if (canScore == true) {
             applyColor(LEDConstants.GREEN);
-            applyColor(LEDConstants.GREEN);
           } else if (canScore == false) {
-            applyColor(LEDConstants.RED);
             applyColor(LEDConstants.RED);
           }
         });
@@ -87,12 +80,9 @@ public class LEDLights extends SubsystemBase {
         () -> {
           Supplier<Double> timeLeft = () -> ShiftData.getTimeRemainingInShift();
           RGBWColor color = LEDConstants.PURPLE;
-          RGBWColor color = LEDConstants.PURPLE;
           if (ShiftData.canScore() == true) {
             color = LEDConstants.GREEN;
-            color = LEDConstants.GREEN;
           } else {
-            color = LEDConstants.RED;
             color = LEDConstants.RED;
           }
           SmartDashboard.putNumber("timeLeft", timeLeft.get());
@@ -103,20 +93,15 @@ public class LEDLights extends SubsystemBase {
           int ledCount = (int) Math.round(timeLeft.get());
           int ammountLightingUp =
               LEDConstants.COUNTDOWN_LED_END_INDEX - LEDConstants.COUNTDOWN_LED_START_INDEX;
-          SmartDashboard.putNumber("Amount of leds", ledCount);
+          SmartDashboard.putNumber("Ammount of leds", ledCount);
           int endIndex =
               (int)
-                  (LEDConstants.COUNTDOWN_LED_END_INDEX
                   (LEDConstants.COUNTDOWN_LED_END_INDEX
                       - Math.ceil((double) (ammountLightingUp - ledCount) / 2));
           int startIndex =
               (int)
                   (LEDConstants.COUNTDOWN_LED_START_INDEX
-                  (LEDConstants.COUNTDOWN_LED_START_INDEX
                       + Math.floor((double) (ammountLightingUp - ledCount) / 2));
-          applyColorWithIndex(
-              LEDConstants.BLACK, LEDConstants.COUNTDOWN_LED_START_INDEX, startIndex);
-          applyColorWithIndex(LEDConstants.BLACK, endIndex, LEDConstants.COUNTDOWN_LED_END_INDEX);
           applyColorWithIndex(
               LEDConstants.BLACK, LEDConstants.COUNTDOWN_LED_START_INDEX, startIndex);
           applyColorWithIndex(LEDConstants.BLACK, endIndex, LEDConstants.COUNTDOWN_LED_END_INDEX);
@@ -136,15 +121,10 @@ public class LEDLights extends SubsystemBase {
 
   private void applyColor(RGBWColor color) {
     m_candle.setControl(LEDConstants.m_solidColorControl.withColor(color));
-    m_candle.setControl(LEDConstants.m_solidColorControl.withColor(color));
   }
 
   private void applyColorWithIndex(RGBWColor color, int start, int end) {
     m_candle.setControl(
-        LEDConstants.m_solidColorControl
-            .withColor(color)
-            .withLEDStartIndex(start)
-            .withLEDEndIndex(end));
         LEDConstants.m_solidColorControl
             .withColor(color)
             .withLEDStartIndex(start)

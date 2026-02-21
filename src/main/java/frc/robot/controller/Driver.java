@@ -75,7 +75,7 @@ public class Driver extends CustomXboxController implements Controller {
             this::getLeftY,
             this::getLeftX,
             zones));
-      
+
     ledLights.setDefaultCommand(ledLights.ledByShifts());
 
     this.a().onTrue(aprilTagLocalization.setTrust(true));

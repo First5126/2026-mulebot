@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class LEDLights extends SubsystemBase {
@@ -100,7 +99,7 @@ public class LEDLights extends SubsystemBase {
         });
   }
 
-  public Command canScore () {
+  public Command canScore() {
     boolean canScore = ShiftData.canScore();
     return run(
         () -> {
@@ -119,31 +118,33 @@ public class LEDLights extends SubsystemBase {
           RGBWColor color = PURPLE;
           if (ShiftData.canScore() == true) {
             color = GREEN;
-          } 
-          else {
+          } else {
             color = RED;
           }
           SmartDashboard.putNumber("timeLeft", timeLeft.get());
-          SmartDashboard.putNumber("Shift duration", ShiftData.getShift().getDuration() );
+          SmartDashboard.putNumber("Shift duration", ShiftData.getShift().getDuration());
 
           // must initialize the leds on when starting the stage
           // start removing colors from the led
           int ledCount = (int) Math.round(timeLeft.get());
           int ammountLightingUp = COUNTDOWN_LED_END_INDEX - COUNTDOWN_LED_START_INDEX;
           SmartDashboard.putNumber("Ammount of leds", ledCount);
-          int endIndex = (int) (COUNTDOWN_LED_END_INDEX - Math.ceil((double) (ammountLightingUp - ledCount) / 2));
-          int startIndex = (int) (COUNTDOWN_LED_START_INDEX + Math.floor((double) (ammountLightingUp - ledCount) / 2));
+          int endIndex =
+              (int)
+                  (COUNTDOWN_LED_END_INDEX
+                      - Math.ceil((double) (ammountLightingUp - ledCount) / 2));
+          int startIndex =
+              (int)
+                  (COUNTDOWN_LED_START_INDEX
+                      + Math.floor((double) (ammountLightingUp - ledCount) / 2));
           applyColorWithIndex(BLACK, COUNTDOWN_LED_START_INDEX, startIndex);
           applyColorWithIndex(BLACK, endIndex, COUNTDOWN_LED_END_INDEX);
-          if ((int) Math.round(timeLeft.get())
-            == (int) ShiftData.getShift().getDuration()) {
-          applyColorWithIndex(color, startIndex, endIndex);
-          //System.out.println("The same timeleft and duration");
+          if ((int) Math.round(timeLeft.get()) == (int) ShiftData.getShift().getDuration()) {
+            applyColorWithIndex(color, startIndex, endIndex);
+            // System.out.println("The same timeleft and duration");
           }
         });
   }
-
-
 
   private void applyColor(RGBWColor color) {
     m_candle.setControl(m_solidColorControl.withColor(color));

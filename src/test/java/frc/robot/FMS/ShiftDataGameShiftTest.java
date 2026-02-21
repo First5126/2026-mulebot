@@ -20,6 +20,7 @@ class ShiftDataGameShiftTest {
 
   @AfterEach
   void resetDriverStation() {
+    ShiftData.resetAllianceCacheForTesting();
     DriverStationSim.resetData();
     DriverStationSim.notifyNewData();
   }

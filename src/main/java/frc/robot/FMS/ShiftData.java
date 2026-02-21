@@ -96,15 +96,20 @@ public class ShiftData {
    * @return boolean representing if our alliance has the first enabled hub.
    */
   public static boolean getFirstActiveAlliance() {
-    DriverStation.Alliance ourAlliance = DriverStation.getAlliance().orElse(null);
-    DriverStation.Alliance firstActiveAlliance = getFirstActiveAllianceFromFmsData();
+    if (m_ourAlliance == null) {
+      m_ourAlliance = DriverStation.getAlliance().orElse(null);
+    }
+
+    if (m_firstActiveAlliance == null) {
+      m_firstActiveAlliance = getFirstActiveAllianceFromFmsData();
+    }
 
     // Make sure the FMS data is available before comparing values.
-    if (ourAlliance == null || firstActiveAlliance == null) return false;
+    if (m_ourAlliance == null || m_firstActiveAlliance == null) return false;
 
     // Since we are already getting the first active alliance, we can compare it to ours
     // to check if we're the first active
-    return ourAlliance == firstActiveAlliance;
+    return m_ourAlliance == m_firstActiveAlliance;
   }
 
   public static boolean canScore() {
@@ -187,5 +192,10 @@ public class ShiftData {
   private static double sanitizeMatchTime(double matchTimeSeconds) {
     if (!Double.isFinite(matchTimeSeconds)) return GameShift.TransitionShift.getStartTime();
     return Math.max(0.0, matchTimeSeconds);
+  }
+
+  static void resetAllianceCacheForTesting() {
+    m_firstActiveAlliance = null;
+    m_ourAlliance = null;
   }
 }

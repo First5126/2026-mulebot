@@ -18,6 +18,7 @@ import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.AprilTagLocalizationConstants;
 import frc.robot.constants.AprilTagLocalizationConstants.PhotonDetails;
+import frc.robot.constants.ZonesConstants.Zone;
 import frc.robot.controller.Driver;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandFactory;
@@ -72,6 +73,7 @@ public class RobotContainer {
     configureBindings();
 
     m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
+    m_ledLights.setDefaultCommand(m_ledLights.canScore());
     // TODO: add hood default command
   }
 

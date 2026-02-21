@@ -28,7 +28,7 @@ public class LEDLights extends SubsystemBase {
   private static final int kCANdleCANbus = 0;
   private static final CANBus driveBaseCanivore = new CANBus("DriveBase");
   private static CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus, driveBaseCanivore);
-  private ShiftData m_shiftData;
+  private static ShiftData m_shiftData;
 
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
@@ -100,23 +100,37 @@ public class LEDLights extends SubsystemBase {
         });
   }
 
+  public Command canScore () {
+    boolean canScore = ShiftData.canScore();
+    return run(
+        () -> {
+          if (canScore == true) {
+            applyColor(GREEN);
+          } else if (canScore == false) {
+            applyColor(RED);
+          }
+        });
+  }
+
   public Command ledByShifts() {
     return run(
         () -> {
           Supplier<Integer> timeLeft = () -> m_shiftData.getRemainingSecondsInStage();
-          RGBWColor color = PURPLE;
-          if (m_shiftData.canScore()) {
-            color = GREEN;
-          } else {
-            color = RED;
+          RGBWColor color = GREEN;
+          if (ShiftData.canScore() == true) {
+            applyColor(GREEN);
+          } 
+          else if (ShiftData.canScore() == false) {
+            applyColor(RED);
           }
+          SmartDashboard.putNumber("timeLeft", timeLeft.get());
           SmartDashboard.putBoolean("Time Left Condition Statment", timeLeft.get() < 5);
           SmartDashboard.putNumber("Time Left til Change", timeLeft.get());
 
           // must initialize the leds on when starting the stage
           if (m_shiftData.getRemainingSecondsInStage()
-              == m_shiftData.getShift().getShiftDuration()) {
-            applyColorWithIndex(color, COUNTDOWN_LED_START_INDEX, COUNTDOWN_LED_END_INDEX);
+              == ShiftData.getShift().getShiftDuration()) {
+            applyColorWithIndex(BLUE, COUNTDOWN_LED_START_INDEX, COUNTDOWN_LED_END_INDEX);
           } else {
             // start removing colors from the led
             int ledCount = m_shiftData.getRemainingSecondsInStage();
@@ -125,35 +139,12 @@ public class LEDLights extends SubsystemBase {
             int startIndex = (int) (COUNTDOWN_LED_START_INDEX + Math.floor((double) ledCount / 2));
             applyColorWithIndex(BLACK, COUNTDOWN_LED_START_INDEX, startIndex);
             applyColorWithIndex(BLACK, endIndex, END_INDEX);
+            applyColorWithIndex(RED, COUNTDOWN_LED_START_INDEX, COUNTDOWN_LED_END_INDEX);
           }
         });
   }
 
-  public Command ledByMotion(
-      DoubleSupplier rightTrigger,
-      DoubleSupplier leftTrigger,
-      DoubleSupplier rotationX,
-      DoubleSupplier rotationY,
-      DoubleSupplier joystickY,
-      DoubleSupplier joystickX) {
 
-    return run(
-        () -> {
-          boolean moving =
-              rightTrigger.getAsDouble() > 0.05
-                  || leftTrigger.getAsDouble() > 0.05
-                  || rotationX.getAsDouble() > 0.05
-                  || rotationY.getAsDouble() > 0.05
-                  || joystickX.getAsDouble() > 0.05
-                  || joystickY.getAsDouble() > 0.05;
-
-          if (moving) {
-            setGreen();
-          } else {
-            setRed();
-          }
-        });
-  }
 
   private void applyColor(RGBWColor color) {
     m_candle.setControl(m_solidColorControl.withColor(color));
@@ -166,6 +157,6 @@ public class LEDLights extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("RobotCentric", kCANdleCANbus);
+    SmartDashboard.putBoolean("Can Score", ShiftData.canScore());
   }
 }

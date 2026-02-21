@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj.Timer;
 
 import java.util.Optional;
 
+import javax.lang.model.util.ElementScanner14;
+
 public class ShiftData {
   private static DriverStation.Alliance m_firstActiveAlliance;
   private static DriverStation.Alliance m_ourAlliance;
-
-
-  private static Zones m_zones;
+  
 
   /**
    * Assigns the values for our alliance and the first active alliance. Should be called every time
@@ -146,7 +146,7 @@ public class ShiftData {
         || stage == GameShift.TransitionShift) {
       return true;
     }
-
+    
     boolean firstActive = getFirstActiveAlliance();
     switch (stage) {
       case ShiftOne:
@@ -188,5 +188,6 @@ public class ShiftData {
     } else {
       return getShift().getShiftDuration() - (150 - (int) Timer.getMatchTime());
     }
+
   }
 }

@@ -7,7 +7,6 @@ package frc.robot.constants;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.signals.RGBWColor;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FMS.ShiftData;
 
 public class LEDConstants {
@@ -26,10 +25,11 @@ public class LEDConstants {
   public static final RainbowAnimation rainbow = new RainbowAnimation(START_INDEX, END_INDEX);
   public static final SolidColor m_solidColorControl = new SolidColor(START_INDEX, END_INDEX);
   private static ShiftData m_shiftData;
-  
+
   public static ShiftData getShiftData() {
     return m_shiftData;
   }
+
   public static void setShiftData(ShiftData shiftData) {
     m_shiftData = shiftData;
   }

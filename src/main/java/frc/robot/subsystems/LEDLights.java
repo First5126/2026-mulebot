@@ -10,9 +10,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
+import com.ctre.phoenix6.controls.LarsonAnimation;
 import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.core.CoreCANdle;
+import com.ctre.phoenix6.signals.LarsonBounceValue;
 import com.ctre.phoenix6.signals.RGBWColor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,6 +34,7 @@ public class LEDLights extends SubsystemBase {
 
   private final RGBWColor CLEAR = new RGBWColor(255, 255, 255);
   private final RGBWColor RED = new RGBWColor(255, 0, 0);
+  private final RGBWColor KNIGHT_RIDER = new RGBWColor(128, 0, 0);
   private final RGBWColor GREEN = new RGBWColor(0, 255, 0);
   private final RGBWColor BLUE = new RGBWColor(0, 0, 255);
   private final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
@@ -42,6 +45,11 @@ public class LEDLights extends SubsystemBase {
   private final RainbowAnimation rainbow = new RainbowAnimation(START_INDEX, END_INDEX);
   private SolidColor m_solidColorControl = new SolidColor(START_INDEX, END_INDEX);
   private boolean cleared = false;
+  private final LarsonAnimation knightRiderAnimation =
+      new LarsonAnimation(START_INDEX, END_INDEX)
+          .withBounceMode(LarsonBounceValue.Front)
+          .withSize(8)
+          .withColor(KNIGHT_RIDER);
 
   private final int COUNTDOWN_LED_START_INDEX = 0;
   private final int COUNTDOWN_LED_END_INDEX = 26;
@@ -143,6 +151,13 @@ public class LEDLights extends SubsystemBase {
             applyColorWithIndex(color, startIndex, endIndex);
             // System.out.println("The same timeleft and duration");
           }
+        });
+  }
+
+  public Command knightRiderCommand() {
+    return run(
+        () -> {
+          m_candle.setControl(knightRiderAnimation);
         });
   }
 

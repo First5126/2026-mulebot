@@ -29,34 +29,17 @@ public class LEDLights extends SubsystemBase {
   private static final int kCANdleCANbus = 0;
   private static final CANBus driveBaseCanivore = new CANBus("DriveBase");
   private static CoreCANdle m_candle = new CoreCANdle(kCANdleCANbus, driveBaseCanivore);
-  private static ShiftData m_shiftData;
 
   private CANdleConfiguration m_configs = new CANdleConfiguration();
 
-  private final RGBWColor CLEAR = new RGBWColor(255, 255, 255);
-  private final RGBWColor RED = new RGBWColor(255, 0, 0);
-  private final RGBWColor KNIGHT_RIDER = new RGBWColor(128, 0, 0);
-  private final RGBWColor GREEN = new RGBWColor(0, 255, 0);
-  private final RGBWColor BLUE = new RGBWColor(0, 0, 255);
-  private final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
-  private final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
-  private final RGBWColor BLACK = new RGBWColor(0, 0, 0);
-  private final int END_INDEX = 67;
-  private final int START_INDEX = 0;
-  private final RainbowAnimation rainbow = new RainbowAnimation(START_INDEX, END_INDEX);
-  private SolidColor m_solidColorControl = new SolidColor(START_INDEX, END_INDEX);
-  private boolean cleared = false;
   private final LarsonAnimation knightRiderAnimation =
-      new LarsonAnimation(START_INDEX, END_INDEX)
+      new LarsonAnimation(LEDConstants.START_INDEX, LEDConstants.END_INDEX)
           .withBounceMode(LarsonBounceValue.Front)
           .withSize(8)
-          .withColor(KNIGHT_RIDER);
-
-  private final int COUNTDOWN_LED_START_INDEX = 0;
-  private final int COUNTDOWN_LED_END_INDEX = 26;
+          .withColor(LEDConstants.KNIGHT_RIDER);
 
   public LEDLights(ShiftData shiftData) {
-    m_shiftData = shiftData;
+    LEDConstants.m_shiftData = shiftData;
     m_candle.getConfigurator().apply(m_configs);
   }
 

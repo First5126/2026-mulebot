@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.signals.RGBWColor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FMS.ShiftData;
 
 public class LEDConstants extends SubsystemBase {
   public static final RGBWColor CLEAR = new RGBWColor(255, 255, 255);
@@ -21,10 +22,12 @@ public class LEDConstants extends SubsystemBase {
   public static final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
   public static final RGBWColor PURPLE = new RGBWColor(151, 0, 180);
   public static final RGBWColor BLACK = new RGBWColor(0, 0, 0);
+  public static final RGBWColor KNIGHT_RIDER = new RGBWColor(128, 0, 0);
   public static final int END_INDEX = 67;
   public static final int START_INDEX = 0;
   public static final int COUNTDOWN_LED_START_INDEX = 0;
   public static final int COUNTDOWN_LED_END_INDEX = 26;
   public static final RainbowAnimation rainbow = new RainbowAnimation(START_INDEX, END_INDEX);
   public static final SolidColor m_solidColorControl = new SolidColor(START_INDEX, END_INDEX);
+  public static ShiftData m_shiftData;
 }

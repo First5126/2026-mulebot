@@ -183,9 +183,7 @@ public class ShiftData {
     return closestShift;
   }
 
-  /**
-   * Clears match-time calibration and returns to raw DriverStation timing.
-   */
+  /** Clears match-time calibration and returns to raw DriverStation timing. */
   public static void resetMatchTimeCalibration() {
     m_matchTimeOffsetSeconds = 0.0;
   }

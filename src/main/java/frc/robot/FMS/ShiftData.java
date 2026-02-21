@@ -5,46 +5,10 @@
 package frc.robot.FMS;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import java.util.Optional;
 
 public class ShiftData {
   private static DriverStation.Alliance m_firstActiveAlliance;
   private static DriverStation.Alliance m_ourAlliance;
-
-  /**
-   * Assigns the values for our alliance and the first active alliance. Should be called every time
-   * getFirstActiveAlliance is called, at least until the data is found.
-   */
-  private static void getFMSData() {
-    if (m_ourAlliance == null) {
-      // Gets the alliance from driver's station, and assigns it to m_ourAlliance.
-      Optional<DriverStation.Alliance> ourAlliance = DriverStation.getAlliance();
-      if (ourAlliance.isPresent()) {
-        m_ourAlliance = ourAlliance.get();
-      }
-    }
-
-    if (m_firstActiveAlliance == null) {
-      // Gets the alliance which has the second shift.
-      String gameData = DriverStation.getGameSpecificMessage();
-      if (gameData.length() < 1) return;
-
-      switch (gameData.charAt(0)) {
-        // If 'R', Blue has the first shift.
-        case 'R':
-          m_firstActiveAlliance = DriverStation.Alliance.Blue;
-          break;
-        // If 'B', Red has the first shift.
-        case 'B':
-          m_firstActiveAlliance = DriverStation.Alliance.Red;
-          break;
-        // If it somehow gets here, then somehow we recived invalid data, so don't modify the value.
-        default:
-          m_firstActiveAlliance = null;
-          break;
-      }
-    }
-  }
 
   /**
    * Enumeration to keep track of the shifts including the time in each shift. Shift duration is the
@@ -75,7 +39,7 @@ public class ShiftData {
      *
      * @return int an integer value representing the duration of the stage.
      */
-    public int getShiftDuration() {
+    public int getDuration() {
       return shiftDuration;
     }
 
@@ -84,8 +48,17 @@ public class ShiftData {
      *
      * @return int an integer value representing the start time of the stage.
      */
-    public int getShiftStartTime() {
+    public int getStartTime() {
       return startTime;
+    }
+
+    /**
+     * Get the end time for the stage.
+     *
+     * @return in an integer value representing the end time of the stage.
+     */
+    public int getEndTime() {
+      return startTime - shiftDuration;
     }
   }
 
@@ -100,16 +73,17 @@ public class ShiftData {
     if (auto) return GameShift.Auto;
 
     // We aren't in auto, so compare the current match time to each shift's start time.
-    double currentTime = DriverStation.getMatchTime();
-    if (currentTime < GameShift.Endgame.getShiftStartTime()) return GameShift.Endgame;
+    double currentTime = sanitizeMatchTime(DriverStation.getMatchTime());
 
-    if (currentTime < GameShift.ShiftFour.getShiftStartTime()) return GameShift.ShiftFour;
+    if (currentTime <= GameShift.Endgame.getStartTime()) return GameShift.Endgame;
 
-    if (currentTime < GameShift.ShiftThree.getShiftStartTime()) return GameShift.ShiftThree;
+    if (currentTime <= GameShift.ShiftFour.getStartTime()) return GameShift.ShiftFour;
 
-    if (currentTime < GameShift.ShiftTwo.getShiftStartTime()) return GameShift.ShiftTwo;
+    if (currentTime <= GameShift.ShiftThree.getStartTime()) return GameShift.ShiftThree;
 
-    if (currentTime < GameShift.ShiftOne.getShiftStartTime()) return GameShift.ShiftOne;
+    if (currentTime <= GameShift.ShiftTwo.getStartTime()) return GameShift.ShiftTwo;
+
+    if (currentTime <= GameShift.ShiftOne.getStartTime()) return GameShift.ShiftOne;
 
     // If we made it here, it either has to be the transition shift, or we're running the bot in
     // normal teleop.
@@ -122,9 +96,15 @@ public class ShiftData {
    * @return boolean representing if our alliance has the first enabled hub.
    */
   public static boolean getFirstActiveAlliance() {
-    getFMSData();
+    if (m_ourAlliance == null) {
+      m_ourAlliance = DriverStation.getAlliance().orElse(null);
+    }
 
-    // Make sure the FMS data is availible before comparing values.
+    if (m_firstActiveAlliance == null) {
+      m_firstActiveAlliance = getFirstActiveAllianceFromFmsData();
+    }
+
+    // Make sure the FMS data is available before comparing values.
     if (m_ourAlliance == null || m_firstActiveAlliance == null) return false;
 
     // Since we are already getting the first active alliance, we can compare it to ours
@@ -168,11 +148,54 @@ public class ShiftData {
    */
   public static double getTimeRemainingInShift() {
     GameShift currentShift = getShift();
-    double currentTime = DriverStation.getMatchTime();
+    double currentTime = sanitizeMatchTime(DriverStation.getMatchTime());
 
     // Get the time elapsed in the current shift, and subtract it from the shift duration
     // to get the time remaining in the shift.
-    return Math.max(
-        currentShift.shiftDuration - (currentShift.getShiftStartTime() - currentTime), 0);
+    return Math.max(currentTime - currentShift.getEndTime(), 0);
+  }
+
+  /**
+   * Calculates the remaing shift percentage remaining in the current shift.
+   *
+   * @return double representing the percentage remaining in the shift. ex: 0.0 to 1.0
+   */
+  public static double getRemainingShiftPercentage() {
+    GameShift currentShift = getShift();
+    double percentage = ShiftData.getTimeRemainingInShift() / currentShift.shiftDuration;
+    return Math.max(0.0, Math.min(1.0, percentage));
+  }
+
+  /**
+   * Converts the current game data into the first active alliance.
+   *
+   * @return alliance with the first enabled hub, or null when unavailable/invalid.
+   */
+  private static DriverStation.Alliance getFirstActiveAllianceFromFmsData() {
+    // Gets the alliance which has the second shift.
+    String gameData = DriverStation.getGameSpecificMessage();
+    if (gameData.length() < 1) return null;
+
+    switch (gameData.charAt(0)) {
+      // If 'R', Blue has the first shift.
+      case 'R':
+        return DriverStation.Alliance.Blue;
+      // If 'B', Red has the first shift.
+      case 'B':
+        return DriverStation.Alliance.Red;
+      // If it somehow gets here, we received invalid data.
+      default:
+        return null;
+    }
+  }
+
+  private static double sanitizeMatchTime(double matchTimeSeconds) {
+    if (!Double.isFinite(matchTimeSeconds)) return GameShift.TransitionShift.getStartTime();
+    return Math.max(0.0, matchTimeSeconds);
+  }
+
+  static void resetAllianceCacheForTesting() {
+    m_firstActiveAlliance = null;
+    m_ourAlliance = null;
   }
 }

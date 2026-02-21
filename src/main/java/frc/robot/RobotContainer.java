@@ -91,9 +91,6 @@ public class RobotContainer {
         // facing away from our alliance station wall (0 deg).
         m_drivetrain.runOnce(() -> m_drivetrain.seedFieldCentric(Rotation2d.kZero)),
         // Then slowly drive forward (away from us) for 5 seconds.
-        m_drivetrain
-            .applyRequest(() -> drive.withVelocityX(0.5).withVelocityY(0).withRotationalRate(0))
-            .withTimeout(5.0),
         // Finally idle for the rest of auton
         m_drivetrain.applyRequest(() -> idle));
   }

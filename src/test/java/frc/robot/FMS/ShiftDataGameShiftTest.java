@@ -8,7 +8,6 @@ import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.FMS.ShiftData.GameShift;
-import java.lang.reflect.Field;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ class ShiftDataGameShiftTest {
 
   @AfterEach
   void resetDriverStation() {
-    resetShiftDataAllianceCache();
     DriverStationSim.resetData();
     DriverStationSim.notifyNewData();
   }
@@ -220,7 +218,6 @@ class ShiftDataGameShiftTest {
   }
 
   private void configureFirstActiveAlliance(boolean isFirstActiveAlliance) {
-    resetShiftDataAllianceCache();
     DriverStationSim.setDsAttached(true);
     DriverStationSim.setEnabled(true);
     DriverStationSim.setAllianceStationId(
@@ -228,18 +225,5 @@ class ShiftDataGameShiftTest {
     // 'R' means Blue is first active for this game.
     DriverStationSim.setGameSpecificMessage("R");
     DriverStationSim.notifyNewData();
-  }
-
-  private void resetShiftDataAllianceCache() {
-    try {
-      Field ourAlliance = ShiftData.class.getDeclaredField("m_ourAlliance");
-      Field firstActiveAlliance = ShiftData.class.getDeclaredField("m_firstActiveAlliance");
-      ourAlliance.setAccessible(true);
-      firstActiveAlliance.setAccessible(true);
-      ourAlliance.set(null, null);
-      firstActiveAlliance.set(null, null);
-    } catch (ReflectiveOperationException e) {
-      throw new RuntimeException(e);
-    }
   }
 }

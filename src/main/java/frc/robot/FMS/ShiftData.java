@@ -73,7 +73,7 @@ public class ShiftData {
     if (auto) return GameShift.Auto;
 
     // We aren't in auto, so compare the current match time to each shift's start time.
-    double currentTime = DriverStation.getMatchTime();
+    double currentTime = sanitizeMatchTime(DriverStation.getMatchTime());
 
     if (currentTime <= GameShift.Endgame.getStartTime()) return GameShift.Endgame;
 
@@ -96,14 +96,15 @@ public class ShiftData {
    * @return boolean representing if our alliance has the first enabled hub.
    */
   public static boolean getFirstActiveAlliance() {
-    getFMSData();
+    DriverStation.Alliance ourAlliance = DriverStation.getAlliance().orElse(null);
+    DriverStation.Alliance firstActiveAlliance = getFirstActiveAllianceFromFmsData();
 
-    // Make sure the FMS data is availible before comparing values.
-    if (m_ourAlliance == null || m_firstActiveAlliance == null) return false;
+    // Make sure the FMS data is available before comparing values.
+    if (ourAlliance == null || firstActiveAlliance == null) return false;
 
     // Since we are already getting the first active alliance, we can compare it to ours
     // to check if we're the first active
-    return m_ourAlliance == m_firstActiveAlliance;
+    return ourAlliance == firstActiveAlliance;
   }
 
   public static boolean canScore() {
@@ -142,7 +143,7 @@ public class ShiftData {
    */
   public static double getTimeRemainingInShift() {
     GameShift currentShift = getShift();
-    double currentTime = DriverStation.getMatchTime();
+    double currentTime = sanitizeMatchTime(DriverStation.getMatchTime());
 
     // Get the time elapsed in the current shift, and subtract it from the shift duration
     // to get the time remaining in the shift.
@@ -155,39 +156,36 @@ public class ShiftData {
    * @return double representing the percentage remaining in the shift. ex: 0.0 to 1.0
    */
   public static double getRemainingShiftPercentage() {
-    GameShift currenShift = getShift();
-    double percentage = ShiftData.getTimeRemainingInShift() / currenShift.shiftDuration;
+    GameShift currentShift = getShift();
+    double percentage = ShiftData.getTimeRemainingInShift() / currentShift.shiftDuration;
     return Math.max(0.0, Math.min(1.0, percentage));
   }
 
   /**
-   * Assigns the values for our alliance and the first active alliance. Should be called every time
-   * getFirstActiveAlliance is called, at least until the data is found.
+   * Converts the current game data into the first active alliance.
+   *
+   * @return alliance with the first enabled hub, or null when unavailable/invalid.
    */
-  private static void getFMSData() {
-    if (m_ourAlliance == null) {
-      m_ourAlliance = DriverStation.getAlliance().orElse(null);
-    }
+  private static DriverStation.Alliance getFirstActiveAllianceFromFmsData() {
+    // Gets the alliance which has the second shift.
+    String gameData = DriverStation.getGameSpecificMessage();
+    if (gameData.length() < 1) return null;
 
-    if (m_firstActiveAlliance == null) {
-      // Gets the alliance which has the second shift.
-      String gameData = DriverStation.getGameSpecificMessage();
-      if (gameData.length() < 1) return;
-
-      switch (gameData.charAt(0)) {
-        // If 'R', Blue has the first shift.
-        case 'R':
-          m_firstActiveAlliance = DriverStation.Alliance.Blue;
-          break;
-        // If 'B', Red has the first shift.
-        case 'B':
-          m_firstActiveAlliance = DriverStation.Alliance.Red;
-          break;
-        // If it somehow gets here, then somehow we recived invalid data, so don't modify the value.
-        default:
-          m_firstActiveAlliance = null;
-          break;
-      }
+    switch (gameData.charAt(0)) {
+      // If 'R', Blue has the first shift.
+      case 'R':
+        return DriverStation.Alliance.Blue;
+      // If 'B', Red has the first shift.
+      case 'B':
+        return DriverStation.Alliance.Red;
+      // If it somehow gets here, we received invalid data.
+      default:
+        return null;
     }
+  }
+
+  private static double sanitizeMatchTime(double matchTimeSeconds) {
+    if (!Double.isFinite(matchTimeSeconds)) return GameShift.TransitionShift.getStartTime();
+    return Math.max(0.0, matchTimeSeconds);
   }
 }

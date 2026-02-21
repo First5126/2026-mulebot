@@ -1,10 +1,14 @@
 package frc.robot.FMS;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.FMS.ShiftData.GameShift;
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,6 +21,7 @@ class ShiftDataGameShiftTest {
 
   @AfterEach
   void resetDriverStation() {
+    resetShiftDataAllianceCache();
     DriverStationSim.resetData();
     DriverStationSim.notifyNewData();
   }
@@ -138,11 +143,103 @@ class ShiftDataGameShiftTest {
     assertEquals(0.0, ShiftData.getRemainingShiftPercentage());
   }
 
+  @Test
+  void canScoreAcrossAllStagesWhenFirstActiveAllianceIsTrue() {
+    configureFirstActiveAlliance(true);
+    assertTrue(ShiftData.getFirstActiveAlliance());
+
+    // Auto
+    setMatchState(true, 15.0);
+    assertTrue(ShiftData.canScore());
+
+    // TransitionShift
+    setMatchState(false, 135.0);
+    assertTrue(ShiftData.canScore());
+
+    // ShiftOne
+    setMatchState(false, 130.0);
+    assertTrue(ShiftData.canScore());
+
+    // ShiftTwo
+    setMatchState(false, 100.0);
+    assertFalse(ShiftData.canScore());
+
+    // ShiftThree
+    setMatchState(false, 70.0);
+    assertTrue(ShiftData.canScore());
+
+    // ShiftFour
+    setMatchState(false, 50.0);
+    assertFalse(ShiftData.canScore());
+
+    // Endgame
+    setMatchState(false, 30.0);
+    assertTrue(ShiftData.canScore());
+  }
+
+  @Test
+  void canScoreAcrossAllStagesWhenFirstActiveAllianceIsFalse() {
+    configureFirstActiveAlliance(false);
+    assertFalse(ShiftData.getFirstActiveAlliance());
+
+    // Auto
+    setMatchState(true, 15.0);
+    assertTrue(ShiftData.canScore());
+
+    // TransitionShift
+    setMatchState(false, 135.0);
+    assertTrue(ShiftData.canScore());
+
+    // ShiftOne
+    setMatchState(false, 130.0);
+    assertFalse(ShiftData.canScore());
+
+    // ShiftTwo
+    setMatchState(false, 100.0);
+    assertTrue(ShiftData.canScore());
+
+    // ShiftThree
+    setMatchState(false, 70.0);
+    assertFalse(ShiftData.canScore());
+
+    // ShiftFour
+    setMatchState(false, 50.0);
+    assertTrue(ShiftData.canScore());
+
+    // Endgame
+    setMatchState(false, 30.0);
+    assertTrue(ShiftData.canScore());
+  }
+
   private void setMatchState(boolean autonomous, double matchTimeSeconds) {
     DriverStationSim.setDsAttached(true);
     DriverStationSim.setEnabled(true);
     DriverStationSim.setAutonomous(autonomous);
     DriverStationSim.setMatchTime(matchTimeSeconds);
     DriverStationSim.notifyNewData();
+  }
+
+  private void configureFirstActiveAlliance(boolean isFirstActiveAlliance) {
+    resetShiftDataAllianceCache();
+    DriverStationSim.setDsAttached(true);
+    DriverStationSim.setEnabled(true);
+    DriverStationSim.setAllianceStationId(
+        isFirstActiveAlliance ? AllianceStationID.Blue1 : AllianceStationID.Red1);
+    // 'R' means Blue is first active for this game.
+    DriverStationSim.setGameSpecificMessage("R");
+    DriverStationSim.notifyNewData();
+  }
+
+  private void resetShiftDataAllianceCache() {
+    try {
+      Field ourAlliance = ShiftData.class.getDeclaredField("m_ourAlliance");
+      Field firstActiveAlliance = ShiftData.class.getDeclaredField("m_firstActiveAlliance");
+      ourAlliance.setAccessible(true);
+      firstActiveAlliance.setAccessible(true);
+      ourAlliance.set(null, null);
+      firstActiveAlliance.set(null, null);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -12,41 +12,6 @@ public class ShiftData {
   private static DriverStation.Alliance m_ourAlliance;
 
   /**
-   * Assigns the values for our alliance and the first active alliance. Should be called every time
-   * getFirstActiveAlliance is called, at least until the data is found.
-   */
-  private static void getFMSData() {
-    if (m_ourAlliance == null) {
-      // Gets the alliance from driver's station, and assigns it to m_ourAlliance.
-      Optional<DriverStation.Alliance> ourAlliance = DriverStation.getAlliance();
-      if (ourAlliance.isPresent()) {
-        m_ourAlliance = ourAlliance.get();
-      }
-    }
-
-    if (m_firstActiveAlliance == null) {
-      // Gets the alliance which has the second shift.
-      String gameData = DriverStation.getGameSpecificMessage();
-      if (gameData.length() < 1) return;
-
-      switch (gameData.charAt(0)) {
-        // If 'R', Blue has the first shift.
-        case 'R':
-          m_firstActiveAlliance = DriverStation.Alliance.Blue;
-          break;
-        // If 'B', Red has the first shift.
-        case 'B':
-          m_firstActiveAlliance = DriverStation.Alliance.Red;
-          break;
-        // If it somehow gets here, then somehow we recived invalid data, so don't modify the value.
-        default:
-          m_firstActiveAlliance = null;
-          break;
-      }
-    }
-  }
-
-  /**
    * Enumeration to keep track of the shifts including the time in each shift. Shift duration is the
    * shift's length. Start time is the time remaining in the match when the shift starts. All times
    * are pulled from the <a

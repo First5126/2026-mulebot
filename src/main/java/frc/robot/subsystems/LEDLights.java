@@ -37,7 +37,7 @@ public class LEDLights extends SubsystemBase {
           .withColor(LEDConstants.KNIGHT_RIDER);
 
   public LEDLights(ShiftData shiftData) {
-    LEDConstants.m_shiftData = shiftData;
+    LEDConstants.setShiftData(shiftData);
     m_candle.getConfigurator().apply(m_configs);
   }
 
@@ -46,7 +46,7 @@ public class LEDLights extends SubsystemBase {
         () -> {
           switch (zone.getZone()) {
             case ALLIANCE_ZONE:
-              applyColor(LEDConstants.GREEN);
+              applyColor(LEDConstants.BLUE);
               break;
             case NEUTRAL_ZONE_LEFT:
             case NEUTRAL_ZONE_RIGHT:
@@ -92,7 +92,7 @@ public class LEDLights extends SubsystemBase {
           int ledCount = (int) Math.round(timeLeft.get());
           int ammountLightingUp =
               LEDConstants.COUNTDOWN_LED_END_INDEX - LEDConstants.COUNTDOWN_LED_START_INDEX;
-          SmartDashboard.putNumber("Ammount of leds", ledCount);
+          SmartDashboard.putNumber("Amount of leds", ledCount);
           int endIndex =
               (int)
                   (LEDConstants.COUNTDOWN_LED_END_INDEX

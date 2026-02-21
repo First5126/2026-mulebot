@@ -78,6 +78,11 @@ public class ShootingMechanism extends SubsystemBase {
     );
   }
 
+  private boolean withinHoodBounds(Angle angle) {
+    return ShootingMechanismConstants.minimumHoodAngle.in(Degrees) <= angle.in(Degrees) &&
+    angle.in(Degrees) < ShootingMechanismConstants.maximumHoodAngle.in(Degrees);
+  }
+
   /**
    * @param robotPoseSupplier The current pose of the robot
    * @param speed The chassis speeds of the drivetrain
@@ -174,12 +179,11 @@ public class ShootingMechanism extends SubsystemBase {
                 .isNear(
                     m_currentShootingSolution.predictedTurretAngle,
                     ShootingMechanismConstants.turretMaximumError)
-            && (!goalPose.requiresShift || ShiftData.canScore() == true);
-        &&
-        m_hood.getPosition()
+            && (!goalPose.requiresShift || ShiftData.canScore())
+        //&&
+        /*m_hood.getPosition()
         .isNear(m_currentShootingSolution.predictedHoodAngle,
-        ShootingMechanismConstants.hoodMaximumError)
-            && (!goalPose.requiresShift || StageData.canScore() == true)
+        ShootingMechanismConstants.hoodMaximumError)*/
         && SmartDashboard.getBoolean("Shot Possible", false);
 
     SmartDashboard.putNumber("Calculated Turret Angle (Deg)", m_currentShootingSolution.predictedTurretAngle.in(Degrees));

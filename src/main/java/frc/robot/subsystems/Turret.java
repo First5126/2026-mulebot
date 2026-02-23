@@ -2,16 +2,13 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,22 +21,22 @@ import java.util.function.Supplier;
 public class Turret extends SubsystemBase {
   private final TalonFXS m_turretMotor =
       new TalonFXS(CANConstants.turretMotor, CANConstants.driveBaseCanivore);
-  private final CANcoder m_turretEncoder =
-      new CANcoder(CANConstants.turretEncoder, CANConstants.driveBaseCanivore);
+  // private final CANcoder m_turretEncoder =
+  //  new CANcoder(CANConstants.turretEncoder, CANConstants.driveBaseCanivore);
   private final PositionVoltage m_positionControl = new PositionVoltage(0);
 
   public Turret() {
 
-    CANcoderConfiguration canCoderConfiguration = new CANcoderConfiguration();
-    canCoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    // CANcoderConfiguration canCoderConfiguration = new CANcoderConfiguration();
+    // canCoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
-    m_turretEncoder.getConfigurator().apply(canCoderConfiguration);
+    // m_turretEncoder.getConfigurator().apply(canCoderConfiguration);
 
     TalonFXSConfiguration talonFXSConfiguration = new TalonFXSConfiguration();
     talonFXSConfiguration.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
     talonFXSConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     talonFXSConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    talonFXSConfiguration.ExternalFeedback.withFusedCANcoder(m_turretEncoder);
+    // talonFXSConfiguration.ExternalFeedback.withFusedCANcoder(m_turretEncoder);
     talonFXSConfiguration.ExternalFeedback.RotorToSensorRatio = 4;
     talonFXSConfiguration.ExternalFeedback.SensorToMechanismRatio = 10;
     // This might work. Look into it before reanabling.

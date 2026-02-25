@@ -3,13 +3,18 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Degrees;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,6 +29,8 @@ public class Turret extends SubsystemBase {
   // private final CANcoder m_turretEncoder =
   //  new CANcoder(CANConstants.turretEncoder, CANConstants.driveBaseCanivore);
   private final PositionVoltage m_positionControl = new PositionVoltage(0);
+  private final VelocityVoltage m_velocityVoltage = new VelocityVoltage(0);
+  private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0);
 
   public Turret() {
 
@@ -53,7 +60,27 @@ public class Turret extends SubsystemBase {
 
     talonFXSConfiguration.Slot0 = slotConfigs;
 
+    Slot1Configs slot1Configs = new Slot1Configs();
+    slotConfigs.kP = 10;
+    slotConfigs.kV = 3.84;
+
+    talonFXSConfiguration.Slot1 = slot1Configs;
+
     m_turretMotor.getConfigurator().apply(talonFXSConfiguration);
+  }
+
+  public Command setSpeed(AngularVelocity velocity) {
+    return runOnce(
+      () -> {
+        setVelocity(velocity);
+      });
+  }
+
+  public Command stop() {
+    return runOnce(
+    () -> {
+      brake();
+    });
   }
 
   /**
@@ -62,6 +89,7 @@ public class Turret extends SubsystemBase {
    * @param position The target angle (use WPILib Units, e.g. Units.Degrees.of(90))
    * @return a WPILib Command object to run once
    */
+
   public Command rotateToPosition(Angle position) {
     return runOnce(
         () -> {
@@ -73,6 +101,20 @@ public class Turret extends SubsystemBase {
     return runOnce(
         () -> {
           setPosition(shootingSolution.get().predictedTurretAngle);
+        });
+  }
+
+  public Command setZero() {
+    return runOnce(
+        () -> {
+          m_turretMotor.setPosition(0);
+        });
+  }
+
+  public Command moveToZero() {
+    return runOnce(
+        () -> {
+          setPosition(Degrees.of(0));
         });
   }
 
@@ -105,6 +147,14 @@ public class Turret extends SubsystemBase {
     // Construct the measure back in degrees
     Angle clampedPosition = Degrees.of(clampedDegrees);
 
-    m_turretMotor.setControl(m_positionControl.withPosition(clampedPosition));
+    m_turretMotor.setControl(m_positionControl.withPosition(clampedPosition).withSlot(0));
+  }
+
+  private void setVelocity(AngularVelocity velocity) {
+    m_turretMotor.setControl(m_velocityVoltage.withVelocity(velocity).withSlot(1));
+  }
+
+  private void brake() {
+    m_turretMotor.setControl(m_dutyCycleOut.withOutput(0));
   }
 }

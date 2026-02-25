@@ -71,7 +71,7 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
+    //m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
     // TODO: add hood default command
   }
 

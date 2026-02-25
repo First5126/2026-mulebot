@@ -73,13 +73,18 @@ public class ShootingMechanism extends SubsystemBase {
 
   private Optional<Angle> getHoodAngle(Distance distance, LinearVelocity ballSpeed, Distance verticalOffset) {
 
-    double arcSin = Math.asin((distance.in(Meters) * ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond))/
-      (ballSpeed.in(MetersPerSecond)*ballSpeed.in(MetersPerSecond))) / 2;
+    double angle = Math.atan(
+      ((Math.pow(ballSpeed.in(MetersPerSecond), 2)) + 
+      Math.sqrt(Math.pow(ballSpeed.in(MetersPerSecond), 4) - ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond) 
+      * (ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond) * Math.pow(distance.in(Meters), 2) 
+      + 2 * verticalOffset.in(Meters) * Math.pow(ballSpeed.in(MetersPerSecond), 2))))
+      / ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond) * distance.in(Meters)
+    );
 
-    SmartDashboard.putBoolean("Shot Possible", !Double.isNaN(arcSin));
-    if (Double.isNaN(arcSin)) return Optional.empty(); // Return simpily a lower limit
+    SmartDashboard.putBoolean("Shot Possible", !Double.isNaN(angle));
+    if (Double.isNaN(angle)) return Optional.empty(); // Return simpily a lower limit
     else {
-      Angle calculatedAngle = Degrees.of(90).minus(Radians.of(arcSin)); // get the final calculation and the complemntary
+      Angle calculatedAngle = Radians.of(angle); // get the final calculation and the complemntary
 
       return Optional.ofNullable(withinHoodBounds(calculatedAngle)?calculatedAngle:null);     
     }

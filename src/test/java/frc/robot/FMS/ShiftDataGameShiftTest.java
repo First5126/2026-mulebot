@@ -21,6 +21,7 @@ class ShiftDataGameShiftTest {
   @AfterEach
   void resetDriverStation() {
     ShiftData.resetAllianceCacheForTesting();
+    ShiftData.resetMatchTimeCalibrationForTesting();
     DriverStationSim.resetData();
     DriverStationSim.notifyNewData();
   }
@@ -208,6 +209,29 @@ class ShiftDataGameShiftTest {
     // Endgame
     setMatchState(false, 30.0);
     assertTrue(ShiftData.canScore());
+  }
+
+  @Test
+  void zeroMatchTimeToClosestShiftCalibratesToShiftBoundary() {
+    // At 107 we are in ShiftOne, but closest start-time boundary is ShiftTwo at 105.
+    setMatchState(false, 107.0);
+    assertEquals(GameShift.ShiftOne, ShiftData.getShift());
+
+    assertEquals(GameShift.ShiftTwo, ShiftData.zeroMatchTimeToClosestShift());
+    assertEquals(105.0 - 107.0, ShiftData.getMatchTimeCalibrationOffsetSeconds());
+    assertEquals(GameShift.ShiftTwo, ShiftData.getShift());
+    assertEquals(25.0, ShiftData.getTimeRemainingInShift());
+  }
+
+  @Test
+  void resetMatchTimeCalibrationReturnsToRawDriverStationTime() {
+    setMatchState(false, 107.0);
+    ShiftData.zeroMatchTimeToClosestShift();
+    assertEquals(GameShift.ShiftTwo, ShiftData.getShift());
+
+    ShiftData.resetMatchTimeCalibration();
+    assertEquals(0.0, ShiftData.getMatchTimeCalibrationOffsetSeconds());
+    assertEquals(GameShift.ShiftOne, ShiftData.getShift());
   }
 
   private void setMatchState(boolean autonomous, double matchTimeSeconds) {

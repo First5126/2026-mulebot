@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6232218309859157,
-        "y": 0.37825704225352186
+        "x": 3.703063380281691,
+        "y": 7.276566901408451
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1339038729682764,
-        "y": 4.173756426306037
+        "x": 3.2137454222640516,
+        "y": 11.072066285460966
       },
       "isLocked": false,
       "linkedName": "Outpost Neutral Starting"
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 180.0
+    "rotation": -130.9143832200251
   },
   "useDefaultConstraints": true
 }

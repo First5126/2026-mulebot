@@ -45,7 +45,7 @@ public class RobotContainer {
   public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 
   // subsystems
-  private final Turret m_turret = new Turret();
+  //private final Turret m_turret = new Turret();
   private final FlyWheel m_flyWheel = new FlyWheel();
   private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
   private final ShiftData m_shiftData = new ShiftData();
@@ -55,9 +55,9 @@ public class RobotContainer {
     // AprilTagLocalizationConstants.camera1Details
   };
   public ShootingMechanism m_shootingMechanism =
-      new ShootingMechanism(m_turret, m_drivetrain, m_zone, m_flyWheel);
+      new ShootingMechanism(m_drivetrain, m_zone, m_flyWheel);
   public CommandFactory m_commandFactory =
-      new CommandFactory(m_drivetrain, m_turret, m_zone, m_shootingMechanism);
+      new CommandFactory(m_drivetrain, m_zone, m_shootingMechanism);
 
   private AprilTagLocalization m_aprilTagLocalization =
       new AprilTagLocalization(
@@ -73,7 +73,7 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
+    //m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
     // TODO: add hood default command
   }
 

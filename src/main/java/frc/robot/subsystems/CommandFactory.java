@@ -10,17 +10,14 @@ public class CommandFactory {
 
   private CommandSwerveDrivetrain m_drivetrain;
   private int m_side = 1;
-  private Turret m_turret;
   private Zones m_zone;
   private ShootingMechanism m_shootingMechanism;
 
   public CommandFactory(
       CommandSwerveDrivetrain drivetrain,
-      Turret turret,
       Zones zone,
       ShootingMechanism m_shootingMechanism) {
     this.m_drivetrain = drivetrain;
-    this.m_turret = turret;
     this.m_zone = zone;
     this.m_shootingMechanism = m_shootingMechanism;
   }

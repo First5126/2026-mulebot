@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6457602862254017,
-        "y": 5.973935599284436
+        "x": 3.0643309859154937,
+        "y": 5.488116197183099
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.645760286225401,
+        "x": 2.0394454382826472,
         "y": 5.973935599284436
       },
       "isLocked": false,
-      "linkedName": "Bump - Depot Side"
+      "linkedName": "Alliance Zone - Depot Side"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 5.973935599284436
       },
       "prevControl": {
-        "x": 1.9361180679785324,
-        "y": 5.973935599284436
+        "x": 2.0232200357781753,
+        "y": 6.00638640429338
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "Depot Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 131.30861401354872
   },
   "useDefaultConstraints": true
 }

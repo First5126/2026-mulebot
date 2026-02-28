@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6457602862254017,
-        "y": 5.973935599284436
+        "x": 7.695140845070423,
+        "y": 1.3010196779964212
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.645760286225401,
-        "y": 5.973935599284436
+        "x": 7.695140845070423,
+        "y": 2.301019677996422
       },
       "isLocked": false,
-      "linkedName": "Bump - Depot Side"
+      "linkedName": "Neutral Zone - Outpost Side"
     },
     {
       "anchor": {
-        "x": 0.9361180679785326,
-        "y": 5.973935599284436
+        "x": 7.695140845070423,
+        "y": 3.3616457960644004
       },
       "prevControl": {
-        "x": 1.9361180679785324,
-        "y": 5.973935599284436
+        "x": 7.695140845070423,
+        "y": 2.8094946832938588
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Pickup - Depot"
+      "linkedName": "Neutral Zone - Outpost Side Post-Pickup"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Depot Side",
+  "folder": "Outpost Side",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 0.0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

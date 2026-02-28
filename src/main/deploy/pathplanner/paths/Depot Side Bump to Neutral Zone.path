@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.645760286225401,
-        "y": 5.973935599284436
+        "x": 4.846440071556351,
+        "y": 4.64345259391771
       },
       "isLocked": false,
       "linkedName": "Bump - Depot Side"
     },
     {
       "anchor": {
-        "x": 0.9361180679785326,
-        "y": 5.973935599284436
+        "x": 7.718336314847942,
+        "y": 6.801431127012522
       },
       "prevControl": {
-        "x": 1.9361180679785324,
-        "y": 5.973935599284436
+        "x": 7.004418604651163,
+        "y": 7.888533094812164
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Pickup - Depot"
+      "linkedName": "Neutral Zone - Depot Side"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,8 +46,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 4.28,
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Depot Side",

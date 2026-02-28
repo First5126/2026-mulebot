@@ -14,9 +14,7 @@ public class CommandFactory {
   private ShootingMechanism m_shootingMechanism;
 
   public CommandFactory(
-      CommandSwerveDrivetrain drivetrain,
-      Zones zone,
-      ShootingMechanism m_shootingMechanism) {
+      CommandSwerveDrivetrain drivetrain, Zones zone, ShootingMechanism m_shootingMechanism) {
     this.m_drivetrain = drivetrain;
     this.m_zone = zone;
     this.m_shootingMechanism = m_shootingMechanism;

@@ -1,7 +1,5 @@
 package frc.robot.controller;
 
-import static edu.wpi.first.units.Units.Degrees;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -83,11 +81,6 @@ public class Driver extends CustomXboxController implements Controller {
     this.a().onTrue(aprilTagLocalization.setTrust(true));
     this.a().onFalse(aprilTagLocalization.setTrust(false));
 
-    this.b().onTrue(Commands.runOnce(() -> ShiftData.zeroMatchTimeToClosestShift()));
-
-    this.povUp().onTrue(turret.rotateToPosition(Degrees.of(0)));
-    this.povLeft().onTrue(turret.rotateToPosition(Degrees.of(90)));
-    this.povRight().onTrue(turret.rotateToPosition(Degrees.of(180)));
     this.povLeft().whileTrue(commandFactory.driveCircle());
 
     // Reset the field-centric heading on left bumper press.

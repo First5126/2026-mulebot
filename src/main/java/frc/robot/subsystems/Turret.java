@@ -1,25 +1,9 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degrees;
-
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.TalonFXS;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorArrangementValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.CANConstants;
-import frc.robot.constants.TurretConstants;
-import frc.robot.subsystems.ShootingMechanism.ShootingSolution;
-import java.util.function.Supplier;
 
 public class Turret extends SubsystemBase {
-  private final TalonFXS m_turretMotor =
+  /*private final TalonFXS m_turretMotor =
       new TalonFXS(CANConstants.turretMotor, CANConstants.driveBaseCanivore);
   // private final CANcoder m_turretEncoder =
   //  new CANcoder(CANConstants.turretEncoder, CANConstants.driveBaseCanivore);
@@ -62,7 +46,7 @@ public class Turret extends SubsystemBase {
    * @param position The target angle (use WPILib Units, e.g. Units.Degrees.of(90))
    * @return a WPILib Command object to run once
    */
-  public Command rotateToPosition(Angle position) {
+  /*public Command rotateToPosition(Angle position) {
     return runOnce(
         () -> {
           setPosition(position);
@@ -106,5 +90,5 @@ public class Turret extends SubsystemBase {
     Angle clampedPosition = Degrees.of(clampedDegrees);
 
     m_turretMotor.setControl(m_positionControl.withPosition(clampedPosition));
-  }
+  }*/
 }

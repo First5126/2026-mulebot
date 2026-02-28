@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ShootingMechanismConstants {
   public static final Angle turretMaximumError = Degree.of(5);
@@ -17,4 +18,6 @@ public class ShootingMechanismConstants {
   public static final Angle minimumHoodAngle = Degrees.of(39.947);
   public static final Angle maximumDistanceHoodAngle = Degrees.of(45);
   public static final Angle maximumHoodAngle = Degrees.of(71.947);
+
+  public static final LinearVelocity maximumFlywheelSpeed = MetersPerSecond.of(11.969);
 }

@@ -1,12 +1,10 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,13 +17,10 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.GoalPoseConstants.GoalPose;
-import frc.robot.constants.HoodConstants;
 import frc.robot.constants.ShootingMechanismConstants;
 import frc.robot.constants.TurretConstants;
-
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -50,17 +45,18 @@ public class ShootingMechanism extends SubsystemBase {
   private CommandSwerveDrivetrain m_drivetrain;
   private Zones m_zone;
   private FlyWheel m_flyWheel;
-  
-    public ShootingMechanism(CommandSwerveDrivetrain m_drivetrain, Zones m_zone, FlyWheel m_flyWheel) {
-      //this.m_turret = m_turret;
-      this.m_drivetrain = m_drivetrain;
-      this.m_zone = m_zone;
-      this.m_flyWheel = m_flyWheel;
+
+  public ShootingMechanism(
+      CommandSwerveDrivetrain m_drivetrain, Zones m_zone, FlyWheel m_flyWheel) {
+    // this.m_turret = m_turret;
+    this.m_drivetrain = m_drivetrain;
+    this.m_zone = m_zone;
+    this.m_flyWheel = m_flyWheel;
     // TODO: get the hood too
 
     canShoot = new Trigger(this::canShootFuel);
 
-    //SmartDashboard.putNumber("Ball Velocity", 7.5);
+    // SmartDashboard.putNumber("Ball Velocity", 7.5);
   }
 
   public Trigger getCanShoot() {
@@ -71,61 +67,77 @@ public class ShootingMechanism extends SubsystemBase {
     return m_currentShootingSolution;
   }
 
-  private Optional<Angle> getHoodAngle(Distance distance, LinearVelocity ballSpeed, Distance verticalOffset) {
+  private Optional<Angle> getHoodAngle(
+      Distance distance, LinearVelocity ballSpeed, Distance verticalOffset) {
 
-    double angle = Math.atan(
-      ((Math.pow(ballSpeed.in(MetersPerSecond), 2)) + 
-      Math.sqrt(Math.pow(ballSpeed.in(MetersPerSecond), 4) - ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond) 
-      * (ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond) * Math.pow(distance.in(Meters), 2) 
-      + 2 * verticalOffset.in(Meters) * Math.pow(ballSpeed.in(MetersPerSecond), 2))))
-      / ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond) * distance.in(Meters)
-    );
+    double angle =
+        Math.atan(
+            ((Math.pow(ballSpeed.in(MetersPerSecond), 2))
+                    + Math.sqrt(
+                        Math.pow(ballSpeed.in(MetersPerSecond), 4)
+                            - ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
+                                * (ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
+                                        * Math.pow(distance.in(Meters), 2)
+                                    + 2
+                                        * verticalOffset.in(Meters)
+                                        * Math.pow(ballSpeed.in(MetersPerSecond), 2))))
+                / (ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
+                * distance.in(Meters)));
 
     SmartDashboard.putBoolean("Shot Possible", !Double.isNaN(angle));
     if (Double.isNaN(angle)) return Optional.empty(); // Return simpily a lower limit
     else {
       Angle calculatedAngle = Radians.of(angle); // get the final calculation and the complemntary
 
-      return Optional.ofNullable(withinHoodBounds(calculatedAngle)?calculatedAngle:null);     
+      return Optional.ofNullable(withinHoodBounds(calculatedAngle) ? calculatedAngle : null);
     }
   }
 
   private Time getAirTime(Angle angle, LinearVelocity speed, Distance distance) {
     return Seconds.of(
-      distance.in(Meters) / (speed.in(MetersPerSecond)*Math.cos(angle.in(Radians)))
-    );
+        distance.in(Meters) / (speed.in(MetersPerSecond) * Math.cos(angle.in(Radians))));
   }
 
   private boolean withinHoodBounds(Angle angle) {
-    return ShootingMechanismConstants.minimumHoodAngle.in(Degrees) <= angle.in(Degrees) &&
-    angle.in(Degrees) <= ShootingMechanismConstants.maximumHoodAngle.in(Degrees);
+    return ShootingMechanismConstants.minimumHoodAngle.in(Degrees) <= angle.in(Degrees)
+        && angle.in(Degrees) <= ShootingMechanismConstants.maximumHoodAngle.in(Degrees);
   }
 
   private Distance getDistance(Angle angle, LinearVelocity speed, Distance verticalOffset) {
     return Meters.of(
-      ((speed.in(MetersPerSecond)*Math.cos(angle.in(Radians)))/ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond))
-      * (speed.in(MetersPerSecond)*Math.sin(angle.in(Radians))) +
-      Math.sqrt(
-        Math.pow(speed.in(MetersPerSecond)*Math.sin(angle.in(Radians)),2) 
-        - 2 * ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)*verticalOffset.in(Meters)
-      ));
+        ((speed.in(MetersPerSecond) * Math.cos(angle.in(Radians)))
+                    / ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond))
+                * (speed.in(MetersPerSecond) * Math.sin(angle.in(Radians))
+            + Math.sqrt(
+                Math.pow(speed.in(MetersPerSecond) * Math.sin(angle.in(Radians)), 2)
+                    - (2
+                        * ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
+                        * verticalOffset.in(Meters)))));
   }
 
-  private Angle getClosestHoodAngle(LinearVelocity speed, Distance goalDistance, Distance verticalOffset) {
-      Distance lowerDistance = getDistance(ShootingMechanismConstants.minimumHoodAngle, speed, verticalOffset);
-      Distance upperDistance = getDistance(ShootingMechanismConstants.maximumDistanceHoodAngle, speed, verticalOffset);
+  private Angle getClosestHoodAngle(
+      LinearVelocity speed, Distance goalDistance, Distance verticalOffset) {
+    Distance lowerDistance =
+        getDistance(ShootingMechanismConstants.minimumHoodAngle, speed, verticalOffset);
+    Distance upperDistance =
+        getDistance(ShootingMechanismConstants.maximumDistanceHoodAngle, speed, verticalOffset);
 
-      double lowerDifference = Math.abs(goalDistance.minus(lowerDistance).in(Meters));
-      double upperDifference = Math.abs(goalDistance.minus(upperDistance).in(Meters));
+    double lowerDifference = Math.abs(goalDistance.minus(lowerDistance).in(Meters));
+    double upperDifference = Math.abs(goalDistance.minus(upperDistance).in(Meters));
 
-      return lowerDifference<upperDifference?ShootingMechanismConstants.minimumHoodAngle:ShootingMechanismConstants.maximumDistanceHoodAngle;
+    return lowerDifference < upperDifference
+        ? ShootingMechanismConstants.minimumHoodAngle
+        : ShootingMechanismConstants.maximumDistanceHoodAngle;
   }
 
   private LinearVelocity getSpeed(Distance distance, Angle angle, Distance verticalOffset) {
-      return MetersPerSecond.of(
-      (distance.in(Meters) / (Math.cos(angle.in(Radians)))) *
-      Math.sqrt(ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond) /
-      2 * (distance.in(Meters) * Math.tan(angle.in(Radians)) - verticalOffset.in(Meters))));
+    return MetersPerSecond.of(
+        (distance.in(Meters) / (Math.cos(angle.in(Radians))))
+            * Math.sqrt(
+                ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
+                    / (2
+                    * (distance.in(Meters) * Math.tan(angle.in(Radians))
+                        - verticalOffset.in(Meters)))));
   }
   /**
    * @param robotPoseSupplier The current pose of the robot
@@ -140,24 +152,26 @@ public class ShootingMechanism extends SubsystemBase {
       Supplier<GoalPose> goalPoseSupplier) {
 
     // check to see if our suppliers are valid
-    if (robotPoseSupplier.get() != null
-        && goalPoseSupplier.get() != null
-        && speed.get() != null) {
+    if (robotPoseSupplier.get() != null && goalPoseSupplier.get() != null && speed.get() != null) {
       SmartDashboard.putBoolean("Valid Shooting Solution", true);
 
       // retreive the value of all the suppliers
       Pose2d robotPose = robotPoseSupplier.get();
       ChassisSpeeds robotSpeeds = speed.get();
       GoalPose goalPose = goalPoseSupplier.get();
-      
+
       Pose2d targetPose = goalPose.pose;
       Distance verticalOffset = goalPose.verticalOffset;
 
       // find air time from distance
-      Distance distanceToTarget = Meters.of(robotPose.getTranslation().getDistance(targetPose.getTranslation()));
+      Distance distanceToTarget =
+          Meters.of(Math.abs(robotPose.getTranslation().getDistance(targetPose.getTranslation())));
+
+      SmartDashboard.putNumber("Distance To Target (Meters)", distanceToTarget.in(Meters));
 
       // inital hood angle
-      Optional<Angle> optionalHoodAngle = getHoodAngle(distanceToTarget,m_flyWheel.getSpeed(),goalPose.verticalOffset);
+      Optional<Angle> optionalHoodAngle =
+          getHoodAngle(distanceToTarget, m_flyWheel.getSpeed(), goalPose.verticalOffset);
       Angle hoodAngle;
       LinearVelocity ballSpeed = m_flyWheel.getSpeed();
 
@@ -165,16 +179,16 @@ public class ShootingMechanism extends SubsystemBase {
       if (optionalHoodAngle.isEmpty()) {
         // if we get a new hood angle we need to calculate a new ball speed
         hoodAngle = getClosestHoodAngle(m_flyWheel.getSpeed(), distanceToTarget, verticalOffset);
-        ballSpeed = getSpeed(distanceToTarget,hoodAngle,verticalOffset);
-      } 
-      else hoodAngle = optionalHoodAngle.get();
+        ballSpeed = getSpeed(distanceToTarget, hoodAngle, verticalOffset);
+      } else hoodAngle = optionalHoodAngle.get();
 
       Time airTime = getAirTime(hoodAngle, m_flyWheel.getSpeed(), distanceToTarget);
       SmartDashboard.putNumber("Air Time (S)", airTime.in(Seconds));
 
       // find how far we travel by the time the ball will reach the target
       double predicatedDistance =
-          airTime.in(Seconds) * Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+          airTime.in(Seconds)
+              * Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
 
       // find the angle of the the speeds that are currently in robotcentric
       Rotation2d rotation =
@@ -211,27 +225,27 @@ public class ShootingMechanism extends SubsystemBase {
               .getMeasure();
 
       // find the angle of the hood from the predicted pose
-      //Angle estimatedHoodAngle = getHoodAngle(totalDistance);
+      // Angle estimatedHoodAngle = getHoodAngle(totalDistance);
       // TODO: remove the line below since its for debug
       m_flyWheel.setSpeed(ballSpeed);
 
-      //distanceToTarget.equals(getDistance(hoodAngle, ballSpeed));
+      // distanceToTarget.equals(getDistance(hoodAngle, ballSpeed));
 
       return new ShootingSolution(hoodAngle, robotRelativeAngle, ballSpeed);
     } else {
       SmartDashboard.putBoolean("Valid Shooting Solution", false);
-      return new ShootingSolution(Degrees.of(0), Degrees.of(0),MetersPerSecond.of(0));
+      return new ShootingSolution(Degrees.of(0), Degrees.of(0), MetersPerSecond.of(0));
     }
   }
 
   @Override
   public void periodic() {
     m_currentShootingSolution =
-        getShootingSolution(
-            m_drivetrain::getPose2d, m_drivetrain::getSpeeds, m_zone::getGoalPose);
+        getShootingSolution(m_drivetrain::getPose2d, m_drivetrain::getSpeeds, m_zone::getGoalPose);
 
     SmartDashboard.putBoolean("Can Shoot", canShootFuel());
-    //ShootingMechanismConstants.ballVelocity = MetersPerSecond.of(SmartDashboard.getNumber("Ball Velocity", 7.5));
+    // ShootingMechanismConstants.ballVelocity = MetersPerSecond.of(SmartDashboard.getNumber("Ball
+    // Velocity", 7.5));
   }
 
   private boolean canShootFuel() {
@@ -239,29 +253,35 @@ public class ShootingMechanism extends SubsystemBase {
     GoalPose goalPose = m_zone.getGoalPose();
     boolean check =
         /*m_turret
-                .getPosition()
-                .isNear(
-                    m_currentShootingSolution.predictedTurretAngle,
-                    ShootingMechanismConstants.turretMaximumError)
-            && (!goalPose.requiresShift || ShiftData.canScore())*/
-        //&&
+            .getPosition()
+            .isNear(
+                m_currentShootingSolution.predictedTurretAngle,
+                ShootingMechanismConstants.turretMaximumError)
+        && (!goalPose.requiresShift || ShiftData.canScore())*/
+        // &&
         /*m_hood.getPosition()
         .isNear(m_currentShootingSolution.predictedHoodAngle,
         ShootingMechanismConstants.hoodMaximumError)*/
-        //&& SmartDashboard.getBoolean("Shot Possible", false)
-        //&& 
+        // && SmartDashboard.getBoolean("Shot Possible", false)
+        // &&
         withinHoodBounds(m_currentShootingSolution.predictedHoodAngle);
 
-    SmartDashboard.putNumber("Calculated Turret Angle (Deg)", m_currentShootingSolution.predictedTurretAngle.in(Degrees));
-    SmartDashboard.putNumber("Calculated Hood Angle (Deg)", m_currentShootingSolution.predictedHoodAngle.in(Degrees));
-    SmartDashboard.putNumber("Calculated FlyWheel Speed (MpS)", m_currentShootingSolution.flyWheelSpeed.in(MetersPerSecond));
-    
-    SmartDashboard.putNumber("Current FlyWheel Speed (MpS)", m_flyWheel.getSpeed().in(MetersPerSecond));
+    SmartDashboard.putNumber(
+        "Calculated Turret Angle (Deg)",
+        m_currentShootingSolution.predictedTurretAngle.in(Degrees));
+    SmartDashboard.putNumber(
+        "Calculated Hood Angle (Deg)", m_currentShootingSolution.predictedHoodAngle.in(Degrees));
+    SmartDashboard.putNumber(
+        "Calculated FlyWheel Speed (MpS)",
+        m_currentShootingSolution.flyWheelSpeed.in(MetersPerSecond));
+
+    SmartDashboard.putNumber(
+        "Current FlyWheel Speed (MpS)", m_flyWheel.getSpeed().in(MetersPerSecond));
 
     // TODO: add hood
     /*SmartDashboard.putNumber(
-        "Turret Deviation Deg",
-        m_turret.getPosition().minus(m_currentShootingSolution.predictedTurretAngle).in(Degrees));*/
+    "Turret Deviation Deg",
+    m_turret.getPosition().minus(m_currentShootingSolution.predictedTurretAngle).in(Degrees));*/
     return check;
   }
 }

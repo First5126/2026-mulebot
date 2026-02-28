@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 7.718336314847942,
-        "y": 1.2685688729874767
+        "y": 4.561954225352113
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.98221824686941,
-        "y": 2.9722361359570666
+        "x": 6.35380281690141,
+        "y": 5.5839260563380275
       },
       "isLocked": false,
       "linkedName": "Neutral Zone Ballpit - Outpost Side Post-Pickup"
     },
     {
       "anchor": {
-        "x": 2.4613059033989266,
-        "y": 2.8748837209302325
+        "x": 3.0643309859154937,
+        "y": 5.488116197183099
       },
       "prevControl": {
-        "x": 5.625259391771019,
-        "y": 2.3232200357781743
+        "x": 5.267957746478873,
+        "y": 5.823450704225352
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,9 +31,9 @@
   "rotationTargets": [],
   "constraintZones": [
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.55,
-      "maxWaypointRelativePos": 0.85,
+      "name": "Bump Zone",
+      "minWaypointRelativePos": 0.6,
+      "maxWaypointRelativePos": 0.9,
       "constraints": {
         "maxVelocity": 2.88,
         "maxAcceleration": 3.0,
@@ -56,7 +56,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -161.24134965215774
+    "rotation": 131.30861401354872
   },
   "reversed": false,
   "folder": null,

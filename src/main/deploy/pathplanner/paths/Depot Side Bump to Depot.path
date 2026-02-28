@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 3.6457602862254017,
-        "y": 0.37617173524150194
+        "y": 5.973935599284436
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.648726849782672,
-        "y": 0.45314138260461073
+        "x": 2.645760286225401,
+        "y": 5.973935599284436
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot Side Bump"
     },
     {
       "anchor": {
-        "x": 0.36822898032200313,
-        "y": 0.6520035778175304
+        "x": 0.9361180679785326,
+        "y": 5.973935599284436
       },
       "prevControl": {
-        "x": 0.11844500480822037,
-        "y": 0.6623942263309764
+        "x": 1.9361180679785324,
+        "y": 5.973935599284436
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Outpost"
+      "linkedName": "Depot"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.35,
-        "y": 5.065313059033989
+        "x": 7.718336314847942,
+        "y": 1.2685688729874767
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.35,
-        "y": 5.065313059033989
+        "x": 5.98221824686941,
+        "y": 2.9722361359570666
       },
       "isLocked": false,
-      "linkedName": "Depot End"
+      "linkedName": "Neutral Zone Ballpit - Outpost Side Post-Pickup"
     },
     {
       "anchor": {
-        "x": 2.3639534883720925,
-        "y": 4.07556350626118
+        "x": 2.4613059033989266,
+        "y": 2.8748837209302325
       },
       "prevControl": {
-        "x": 1.3639534883720925,
-        "y": 4.07556350626118
+        "x": 5.625259391771019,
+        "y": 2.3232200357781743
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.55,
+      "maxWaypointRelativePos": 0.85,
+      "constraints": {
+        "maxVelocity": 2.88,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -42,7 +56,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -179.3562542858247
+    "rotation": -161.24134965215774
   },
   "reversed": false,
   "folder": null,

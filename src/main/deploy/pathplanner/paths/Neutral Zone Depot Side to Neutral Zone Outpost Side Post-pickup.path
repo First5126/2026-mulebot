@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.703063380281691,
-        "y": 7.276566901408451
+        "x": 7.718336314847942,
+        "y": 6.801431127012522
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1317517916077335,
-        "y": 5.046584197482836
+        "x": 7.718336314847942,
+        "y": 5.801431127012522
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Neutral Zone Ballpit - Depot Side"
     },
     {
       "anchor": {
-        "x": 1.5473415492957754,
-        "y": 3.7316021126760566
+        "x": 7.718336314847942,
+        "y": 1.2685688729874767
       },
       "prevControl": {
-        "x": 2.091324624459872,
-        "y": 4.491469787800388
+        "x": 7.718336314847942,
+        "y": 2.268568872987477
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Neutral Zone Ballpit - Outpost Side Post-Pickup"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -179.01223960036018
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -130.9143832200251
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

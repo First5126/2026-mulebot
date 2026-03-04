@@ -118,7 +118,7 @@ public class ShootingMechanism extends SubsystemBase {
   private Angle getClosestHoodAngle(
       LinearVelocity speed, Distance goalDistance, Distance verticalOffset) {
     Distance lowerDistance =
-        getDistance(ShootingMechanismConstants.minimumHoodAngle, speed, verticalOffset);
+        getDistance(ShootingMechanismConstants.maximumHoodAngle, speed, verticalOffset);
     Distance upperDistance =
         getDistance(ShootingMechanismConstants.maximumDistanceHoodAngle, speed, verticalOffset);
 
@@ -126,7 +126,7 @@ public class ShootingMechanism extends SubsystemBase {
     double upperDifference = Math.abs(goalDistance.minus(upperDistance).in(Meters));
 
     return lowerDifference < upperDifference
-        ? ShootingMechanismConstants.minimumHoodAngle
+        ? ShootingMechanismConstants.maximumHoodAngle
         : ShootingMechanismConstants.maximumDistanceHoodAngle;
   }
 
@@ -164,8 +164,7 @@ public class ShootingMechanism extends SubsystemBase {
       Distance verticalOffset = goalPose.verticalOffset;
 
       // find air time from distance
-      Distance distanceToTarget =
-          Meters.of(Math.abs(robotPose.getTranslation().getDistance(targetPose.getTranslation())));
+      Distance distanceToTarget = Meters.of(robotPose.getTranslation().getDistance(targetPose.getTranslation()));
 
       SmartDashboard.putNumber("Distance To Target (Meters)", distanceToTarget.in(Meters));
 
@@ -178,11 +177,11 @@ public class ShootingMechanism extends SubsystemBase {
       SmartDashboard.putBoolean("Optional Hood Angle Is Present", optionalHoodAngle.isPresent());
       if (optionalHoodAngle.isEmpty()) {
         // if we get a new hood angle we need to calculate a new ball speed
-        hoodAngle = getClosestHoodAngle(m_flyWheel.getSpeed(), distanceToTarget, verticalOffset);
+        hoodAngle = getClosestHoodAngle(ballSpeed, distanceToTarget, verticalOffset);
         ballSpeed = getSpeed(distanceToTarget, hoodAngle, verticalOffset);
       } else hoodAngle = optionalHoodAngle.get();
 
-      Time airTime = getAirTime(hoodAngle, m_flyWheel.getSpeed(), distanceToTarget);
+      Time airTime = getAirTime(hoodAngle, ballSpeed, distanceToTarget);
       SmartDashboard.putNumber("Air Time (S)", airTime.in(Seconds));
 
       // find how far we travel by the time the ball will reach the target

@@ -24,6 +24,7 @@ import frc.robot.subsystems.CommandFactory;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LEDLights;
 import frc.robot.subsystems.FlyWheel;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.ShootingMechanism;
 import frc.robot.vision.AprilTagLocalization;
 
@@ -46,6 +47,7 @@ public class RobotContainer {
   // subsystems
   // private final Turret m_turret = new Turret();
   private final FlyWheel m_flyWheel = new FlyWheel();
+  private final Hood m_hood = new Hood();
   private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
   private final ShiftData m_shiftData = new ShiftData();
   private final LEDLights m_ledLights = new LEDLights(m_shiftData);
@@ -54,7 +56,7 @@ public class RobotContainer {
     // AprilTagLocalizationConstants.camera1Details
   };
   public ShootingMechanism m_shootingMechanism =
-      new ShootingMechanism(m_drivetrain, m_zone, m_flyWheel);
+      new ShootingMechanism(m_drivetrain, m_zone, m_flyWheel, m_hood);
   public CommandFactory m_commandFactory =
       new CommandFactory(m_drivetrain, m_zone, m_shootingMechanism);
 

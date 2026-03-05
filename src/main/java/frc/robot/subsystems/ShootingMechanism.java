@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -47,11 +48,12 @@ public class ShootingMechanism extends SubsystemBase {
   private FlyWheel m_flyWheel;
 
   public ShootingMechanism(
-      CommandSwerveDrivetrain m_drivetrain, Zones m_zone, FlyWheel m_flyWheel) {
+      CommandSwerveDrivetrain m_drivetrain, Zones m_zone, FlyWheel m_flyWheel, Hood m_hood) {
     // this.m_turret = m_turret;
     this.m_drivetrain = m_drivetrain;
     this.m_zone = m_zone;
     this.m_flyWheel = m_flyWheel;
+    this.m_hood = m_hood;
     // TODO: get the hood too
 
     canShoot = new Trigger(this::canShootFuel);
@@ -67,40 +69,45 @@ public class ShootingMechanism extends SubsystemBase {
     return m_currentShootingSolution;
   }
 
+  private boolean withinHoodBounds(Angle angle) {
+    return ShootingMechanismConstants.minimumHoodAngle.in(Degrees) <= angle.in(Degrees)
+        && angle.in(Degrees) <= ShootingMechanismConstants.maximumHoodAngle.in(Degrees);
+  }
+
+  private boolean validAngle(Angle angle) {
+    if (Double.isNaN(angle.in(Radians))) return false;
+    else return withinHoodBounds(angle);
+  }
+
   private Optional<Angle> getHoodAngle(
       Distance distance, LinearVelocity ballSpeed, Distance verticalOffset) {
 
-    double angle =
-        Math.atan(
-            ((Math.pow(ballSpeed.in(MetersPerSecond), 2))
-                    + Math.sqrt(
-                        Math.pow(ballSpeed.in(MetersPerSecond), 4)
+    double d = Math.sqrt(Math.pow(ballSpeed.in(MetersPerSecond), 4)
                             - ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
                                 * (ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
                                         * Math.pow(distance.in(Meters), 2)
                                     + 2
                                         * verticalOffset.in(Meters)
-                                        * Math.pow(ballSpeed.in(MetersPerSecond), 2))))
+                                        * Math.pow(ballSpeed.in(MetersPerSecond), 2)));
+
+    Angle angle1 =
+        Radians.of(Math.atan(((Math.pow(ballSpeed.in(MetersPerSecond), 2)) + d)
                 / (ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
-                * distance.in(Meters)));
+                * distance.in(Meters))));
 
-    SmartDashboard.putBoolean("Shot Possible", !Double.isNaN(angle));
-    if (Double.isNaN(angle)) return Optional.empty(); // Return simpily a lower limit
-    else {
-      Angle calculatedAngle = Radians.of(angle); // get the final calculation and the complemntary
+    Angle angle2 =
+        Radians.of(Math.atan(((Math.pow(ballSpeed.in(MetersPerSecond), 2)) - d)
+                / (ShootingMechanismConstants.gravity.in(MetersPerSecondPerSecond)
+                * distance.in(Meters))));
 
-      return Optional.ofNullable(withinHoodBounds(calculatedAngle) ? calculatedAngle : null);
-    }
+    if (validAngle(angle1)) return Optional.of(angle1);
+    //else if (validAngle(angle2)) return Optional.of(angle2);
+    else return Optional.empty();
   }
 
   private Time getAirTime(Angle angle, LinearVelocity speed, Distance distance) {
     return Seconds.of(
         distance.in(Meters) / (speed.in(MetersPerSecond) * Math.cos(angle.in(Radians))));
-  }
-
-  private boolean withinHoodBounds(Angle angle) {
-    return ShootingMechanismConstants.minimumHoodAngle.in(Degrees) <= angle.in(Degrees)
-        && angle.in(Degrees) <= ShootingMechanismConstants.maximumHoodAngle.in(Degrees);
   }
 
   private Distance getDistance(Angle angle, LinearVelocity speed, Distance verticalOffset) {

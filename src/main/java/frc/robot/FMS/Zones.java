@@ -88,8 +88,8 @@ public class Zones {
     double x = m_pose.get().getX();
     double y = m_pose.get().getY();
 
-    for (Trench tench : Trench.values()) {
-      if (isWithin(x, y, tench.getTopLeftTranslation(), tench.getBottomRightTranslation())) {
+    for (Trench trench : Trench.values()) {
+      if (isWithin(x, y, trench.getTopLeftTranslation(), trench.getBottomRightTranslation())) {
         return true;
       }
     }

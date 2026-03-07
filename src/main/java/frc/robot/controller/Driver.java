@@ -76,17 +76,6 @@ public class Driver extends CustomXboxController implements Controller {
             this::getLeftX,
             zones));
 
-    ledLights.setDefaultCommand(ledLights.ledByShifts());
-
-    this.a().onTrue(aprilTagLocalization.setTrust(true));
-    this.a().onFalse(aprilTagLocalization.setTrust(false));
-
-    this.b().onTrue(Commands.runOnce(() -> ShiftData.zeroMatchTimeToClosestShift()));
-
-    this.povUp().onTrue(turret.rotateToPosition(Degrees.of(0)));
-    this.povLeft().onTrue(turret.rotateToPosition(Degrees.of(90)));
-    this.povRight().onTrue(turret.rotateToPosition(Degrees.of(180)));
-    this.povLeft().whileTrue(commandFactory.driveCircle());
 
     // Reset the field-centric heading on left bumper press.
     SmartDashboard.putNumber("Pose X", 0);

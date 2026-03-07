@@ -82,14 +82,16 @@ public class RobotContainer {
 
     Trigger trenchTrigger = new Trigger(m_zone::nearTrench);
     trenchTrigger
-        .onTrue(m_commandFactory.checkTrenchCommand())
-        .onFalse(m_commandFactory.checkTrenchCommand());
+        .onTrue(m_commandFactory.checkTrenchCommand(true))
+        .onFalse(m_commandFactory.checkTrenchCommand(false));
+    
 
     final var idle = new SwerveRequest.Idle();
     RobotModeTriggers.disabled()
         .whileTrue(m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
     m_drivetrain.registerTelemetry(logger::telemeterize);
+
   }
 
   public Command getAutonomousCommand() {

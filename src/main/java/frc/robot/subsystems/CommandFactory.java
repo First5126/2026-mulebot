@@ -24,11 +24,10 @@ public class CommandFactory {
     this.m_shootingMechanism = m_shootingMechanism;
   }
 
-  public Command checkTrenchCommand() {
+  public Command checkTrenchCommand(Boolean value) {
     return Commands.runOnce(
         () -> {
-          Supplier<Boolean> nearTrench = () -> m_zone.nearTrench();
-          SmartDashboard.putBoolean("In Trench", nearTrench.get());
+          SmartDashboard.putBoolean("In Trench", value);
         });
   }
 

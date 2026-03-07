@@ -15,9 +15,9 @@ public class ShootingMechanismConstants {
   public static final LinearAcceleration gravity = MetersPerSecondPerSecond.of(9.8);
 
   // TODO: get real angle readings
-  public static final Angle minimumHoodAngle = Degrees.of(39.947);
+  public static final Angle minimumHoodAngle = Degrees.of(42);
   public static final Angle maximumDistanceHoodAngle = Degrees.of(45);
-  public static final Angle maximumHoodAngle = Degrees.of(71.947);
+  public static final Angle maximumHoodAngle = Degrees.of(69);
 
   public static final LinearVelocity maximumFlywheelSpeed = MetersPerSecond.of(11.969);
 }

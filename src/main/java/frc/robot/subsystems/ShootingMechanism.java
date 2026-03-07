@@ -100,7 +100,7 @@ public class ShootingMechanism extends SubsystemBase {
                 * distance.in(Meters))));
 
     if (validAngle(angle1)) return Optional.of(angle1);
-    //else if (validAngle(angle2)) return Optional.of(angle2);
+    else if (validAngle(angle2)) return Optional.of(angle2);
     else return Optional.empty();
   }
 
@@ -145,6 +145,28 @@ public class ShootingMechanism extends SubsystemBase {
                     * (distance.in(Meters) * Math.tan(angle.in(Radians))
                         - verticalOffset.in(Meters)))));
   }
+
+  private ShootingSolution calculateSolution(ShootingSolution solution, Distance distance, Distance verticalOffset) {
+
+    // inital hood angle
+    Optional<Angle> optionalHoodAngle =
+        getHoodAngle(distance, solution.flyWheelSpeed, verticalOffset);
+    Angle hoodAngle;
+    LinearVelocity ballSpeed = solution.flyWheelSpeed;
+
+    SmartDashboard.putBoolean("Optional Hood Angle Is Present", optionalHoodAngle.isPresent());
+    if (optionalHoodAngle.isEmpty()) {
+      // if we get a new hood angle we need to calculate a new ball speed
+      hoodAngle = getClosestHoodAngle(ballSpeed, distance, verticalOffset);
+      ballSpeed = getSpeed(distance, hoodAngle, verticalOffset);
+    } else hoodAngle = optionalHoodAngle.get();
+
+    solution.predictedHoodAngle = hoodAngle;
+    solution.flyWheelSpeed = ballSpeed;
+
+    return solution;
+  }
+
   /**
    * @param robotPoseSupplier The current pose of the robot
    * @param speed The chassis speeds of the drivetrain
@@ -174,20 +196,10 @@ public class ShootingMechanism extends SubsystemBase {
 
       SmartDashboard.putNumber("Distance To Target (Meters)", distanceToTarget.in(Meters));
 
-      // inital hood angle
-      Optional<Angle> optionalHoodAngle =
-          getHoodAngle(distanceToTarget, m_flyWheel.getSpeed(), goalPose.verticalOffset);
-      Angle hoodAngle;
-      LinearVelocity ballSpeed = m_flyWheel.getSpeed();
-
-      SmartDashboard.putBoolean("Optional Hood Angle Is Present", optionalHoodAngle.isPresent());
-      if (optionalHoodAngle.isEmpty()) {
-        // if we get a new hood angle we need to calculate a new ball speed
-        hoodAngle = getClosestHoodAngle(ballSpeed, distanceToTarget, verticalOffset);
-        ballSpeed = getSpeed(distanceToTarget, hoodAngle, verticalOffset);
-      } else hoodAngle = optionalHoodAngle.get();
-
-      Time airTime = getAirTime(hoodAngle, ballSpeed, distanceToTarget);
+      ShootingSolution calculatedSoltion = new ShootingSolution(m_hood.getPosition(), Degree.of(0), m_flyWheel.getSpeed());
+      calculatedSoltion = calculateSolution(calculatedSoltion, distanceToTarget, verticalOffset);
+      
+      Time airTime = getAirTime(calculatedSoltion.predictedHoodAngle, calculatedSoltion.flyWheelSpeed, distanceToTarget);
       SmartDashboard.putNumber("Air Time (S)", airTime.in(Seconds));
 
       // find how far we travel by the time the ball will reach the target
@@ -232,11 +244,11 @@ public class ShootingMechanism extends SubsystemBase {
       // find the angle of the hood from the predicted pose
       // Angle estimatedHoodAngle = getHoodAngle(totalDistance);
       // TODO: remove the line below since its for debug
-      m_flyWheel.setSpeed(ballSpeed);
+      m_flyWheel.setSpeed(calculatedSoltion.flyWheelSpeed);
 
       // distanceToTarget.equals(getDistance(hoodAngle, ballSpeed));
 
-      return new ShootingSolution(hoodAngle, robotRelativeAngle, ballSpeed);
+      return calculatedSoltion;
     } else {
       SmartDashboard.putBoolean("Valid Shooting Solution", false);
       return new ShootingSolution(Degrees.of(0), Degrees.of(0), MetersPerSecond.of(0));

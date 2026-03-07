@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FMS.ShiftData;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.AprilTagLocalizationConstants;
@@ -44,18 +45,16 @@ public class RobotContainer {
   public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
 
   // subsystems
-  private final Turret m_turret = new Turret();
+  //private final Turret m_turret = new Turret();
   private final Zones m_zone = new Zones(m_drivetrain::getPose2d);
   private final ShiftData m_shiftData = new ShiftData();
-  private final LEDLights m_ledLights = new LEDLights(m_shiftData);
+  //private final LEDLights m_ledLights = new LEDLights(m_shiftData);
 
   PhotonDetails[] photonDetails = {
     // AprilTagLocalizationConstants.camera1Details
   };
-  public ShootingMechanism m_shootingMechanism =
-      new ShootingMechanism(m_turret, m_drivetrain, m_zone);
   public CommandFactory m_commandFactory =
-      new CommandFactory(m_drivetrain, m_turret, m_zone, m_shootingMechanism);
+      new CommandFactory(m_drivetrain, m_zone);
 
   private AprilTagLocalization m_aprilTagLocalization =
       new AprilTagLocalization(
@@ -71,16 +70,21 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    m_turret.setDefaultCommand(m_turret.rotateToPosition(m_shootingMechanism::getShootingSolution));
     // TODO: add hood default command
   }
 
   private void configureBindings() {
-    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone, m_ledLights)
+    Driver.init(m_drivetrain, m_aprilTagLocalization, m_commandFactory, m_zone)
         .configureBindings();
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
+
+    Trigger trenchTrigger = new Trigger(m_zone::nearTrench);
+    trenchTrigger
+        .onTrue(m_commandFactory.checkTrenchCommand())
+        .onFalse(m_commandFactory.checkTrenchCommand());
+
     final var idle = new SwerveRequest.Idle();
     RobotModeTriggers.disabled()
         .whileTrue(m_drivetrain.applyRequest(() -> idle).ignoringDisable(true));

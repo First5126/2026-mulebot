@@ -1,10 +1,12 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FMS.Zones;
 import frc.robot.constants.WaypointConstants;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class CommandFactory {
 
@@ -16,13 +18,18 @@ public class CommandFactory {
 
   public CommandFactory(
       CommandSwerveDrivetrain drivetrain,
-      Turret turret,
-      Zones zone,
-      ShootingMechanism m_shootingMechanism) {
+      Zones zone) {
     this.m_drivetrain = drivetrain;
-    this.m_turret = turret;
     this.m_zone = zone;
     this.m_shootingMechanism = m_shootingMechanism;
+  }
+
+  public Command checkTrenchCommand() {
+    return Commands.runOnce(
+        () -> {
+          Supplier<Boolean> nearTrench = () -> m_zone.nearTrench();
+          SmartDashboard.putBoolean("In Trench", nearTrench.get());
+        });
   }
 
   public Command driveCircle() {

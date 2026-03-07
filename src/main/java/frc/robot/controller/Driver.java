@@ -50,15 +50,13 @@ public class Driver extends CustomXboxController implements Controller {
       CommandSwerveDrivetrain drivetrain,
       AprilTagLocalization aprilTagLocalization,
       CommandFactory commandFactory,
-      Zones zones,
-      LEDLights ledLights) {
+      Zones zones) {
     Driver driver = getInstance();
     driver.setDrivetrain(drivetrain);
     driver.setAprilTagLocalization(aprilTagLocalization);
     driver.setCommandFactory(commandFactory);
     driver.setTurret(new Turret());
     driver.setIntake(new Intake());
-    driver.setLedLights(ledLights);
 
     driver.setZones(zones);
 

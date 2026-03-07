@@ -58,7 +58,6 @@ public class ShootingMechanism extends SubsystemBase {
 
     canShoot = new Trigger(this::canShootFuel);
 
-    // SmartDashboard.putNumber("Ball Velocity", 7.5);
   }
 
   public Trigger getCanShoot() {
